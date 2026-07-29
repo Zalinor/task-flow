@@ -4,32 +4,43 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
-function TaskCard({ text }) {
-  return <div className="card">{text}</div>;
+function TaskCard({ text, onDelete }) {
+  return <div className="card">
+    {text}
+    <button onClick={onDelete}>X</button>
+    </div>;
 }
-const tasks = [
-  {id: 1, text: "Купить ведро котят"},
-  {id: 2, text: "Купить ведро щенят"},
-  {id: 3, text: "Купить ведро цыплят"}
-];
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [name, setName] = useState("Чишачок");
+
+  const [tasks, setTasks] = useState([
+  {id: 1, text: "Купить ведро котят"},
+  {id: 2, text: "Купить ведро щенят"}
+]);
+
+  const handleDelete = (id) => {
+    setTasks(tasks.filter((task) => task.id !== id));
+  }
+  // const [count, setCount] = useState(0)
   return (
     <>
     <div>
+
       {tasks.map((task) => (
-        <TaskCard key = {task.id} text={task.text}/>
+        <TaskCard
+        key={task.id}
+        text={task.text}
+        onDelete={() => handleDelete(task.id)}
+        />
       ))}
-        <button
+      
+        {/* <button
           type="button"
           className="counter"
           onClick={() => setCount((count) => count + 1)}
         >
           Count is {count}
-          Name is {name}
-        </button>
+        </button> */}
     </div>
     </>
   )
