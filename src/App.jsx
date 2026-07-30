@@ -5,15 +5,51 @@ import heroImg from './assets/hero.png'
 import './App.css'
 
 // A single task card. Recieves data via props from the parent (Column)
-function TaskCard({ text, id, onDelete }) {
+function TaskCard({text, id, onDelete, onEdit}) {
+  // Whether this card is currently showing an editable input instead of plain text
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Local draft of the while the user is typing - kept separate from
+  // the "official" text prop so nothing is saved until editing finishes
+  const [draftText, setDraftText] = useState(text);
+
+  // Switches the card into edit mode, resetting the draft to the current saved text
+  const handleStartEditing = () => {
+    setDraftText(text);
+    setIsEditing(true);
+  };
+
+  // Saves the edited text (if it actually changed) and exits edit mode
+  const handleFinishEditing = () => {
+    const trimmed = draftText.trim();
+    if (trimmed !== "" && trimmed !== text) {
+      onEdit(id, trimmed); // tell App to update this task's text
+    }
+    setIsEditing(false);
+  };
   // Fires when the user starts dragging this card
   // We store the task id in the drag event so the drop target can read it later
   const handleDragStart = (event) => {
     event.dataTransfer.setData("text/plain", id);
   }
   return ( 
-    <div className="card" draggable onDragStart={handleDragStart}>
-      {text}
+    <div className="card" draggable={!isEditing} onDragStart={handleDragStart}>
+      {isEditing ? (
+        // Edit mode: an input bound to the draft text
+        <input
+          type="text"
+          value={draftText}
+          onChange={(event) => setDraftText(event.target.value)}
+          onBlur={handleFinishEditing} //clicking away saves and exit mode
+          onKeyDown={(event) => {
+            if (event.key === "Enter") event.target.blur(); // Enter also saves
+          }}
+          autoFocus
+        />
+      ) : (
+        // Normal mode: plain text, click to start editing
+        <span onClick={handleStartEditing}>{text}</span>
+      )}
       <button onClick={onDelete}>X</button>
     </div>
   );
@@ -21,7 +57,7 @@ function TaskCard({ text, id, onDelete }) {
 
 // A single board column (e.g. "To Do"). Renders the tasks it's given
 // and doesn't known anything about the full task list - just what's passed in
-function Column({title, status, tasks, onDelete, onDrop}) {
+function Column({title, status, tasks, onDelete, onDrop, onEdit}) {
   // Required to allow dropping - browsers block drop by default otherwise
   const handleDragOver = (event) => {
     event.preventDefault();
@@ -45,12 +81,16 @@ function Column({title, status, tasks, onDelete, onDrop}) {
             id={task.id}
             text={task.text}
             onDelete={() => onDelete(task.id)}
+            onEdit={onEdit}
           />
         ))}
       </div>
     </div>
   );
 }
+
+
+
 
 function App() {
   // Single source of truth: a;; tasks live here, regardless of status
@@ -91,6 +131,15 @@ function App() {
       )
     );
   };
+
+// Updates a task's text after inline editing finishes 
+  const handleEdit = (id, newText) => {
+      setTasks(
+        tasks.map((task) =>
+          task.id === id ? {...task, text: newText } : task
+        )
+      );
+    };
   return (
     <>
     <div className="task-input-row">
@@ -103,9 +152,9 @@ function App() {
     </div>
 
     <div className="board">
-      <Column title="To Do" status = "todo" tasks={todoTasks} onDelete={handleDelete} onDrop={handleDrop}/>
-      <Column title="In Progress" status = "in-progress" tasks={inProgressTasks} onDelete={handleDelete} onDrop={handleDrop}/>
-      <Column title="Done" status = "done" tasks={doneTasks} onDelete={handleDelete} onDrop={handleDrop}/>
+      <Column title="To Do" status = "todo" tasks={todoTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit}/>
+      <Column title="In Progress" status = "in-progress" tasks={inProgressTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit}/>
+      <Column title="Done" status = "done" tasks={doneTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit}/>
     </div>
     </>
   )
