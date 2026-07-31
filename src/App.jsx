@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
@@ -113,9 +113,17 @@ function Column({title, status, tasks, onDelete, onDrop, onEdit, onReorder}) {
 
 
 function App() {
-  // Single source of truth: a;; tasks live here, regardless of status
-  const [tasks, setTasks] = useState([]);
+  // Single source of truth: tasks live here, regardless of status
+  const [tasks, setTasks] = useState(() => {
+    const saved = localStorage.getItem("tasks");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [inputValue, setInputValue] = useState("");
+
+  // Persist task to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
   
   const sortedTasks = [...tasks].sort((a, b) => a.order - b.order);
   // Derived data: instead of storing 3 separate arrays, we filter
