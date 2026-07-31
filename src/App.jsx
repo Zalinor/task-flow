@@ -73,7 +73,7 @@ function Column({title, status, tasks, onDelete, onDrop, onEdit}) {
 
   return (
     <div className="column" onDragOver={handleDragOver} onDrop={handleDrop}>
-      <h2>{title}</h2>
+      <h2>{title} <span className="count">{tasks.length}</span></h2>
       <div className="cards">
         {tasks.map((task) => (
           <TaskCard
