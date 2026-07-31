@@ -301,3 +301,12 @@ h1, h2 {
   color: #ff6b6b;
   background-color: #40405a;
 }
+
+.count {
+  font-size: 12px;
+  color: #8a8a9a;
+  background-color: #33334a;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 6px;
+}

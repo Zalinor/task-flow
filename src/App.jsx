@@ -5,7 +5,7 @@ import heroImg from './assets/hero.png'
 import './App.css'
 
 // A single task card. Recieves data via props from the parent (Column)
-function TaskCard({text, id, onDelete, onEdit}) {
+function TaskCard({text, id, onDelete, onEdit, onReorder}) {
   // Whether this card is currently showing an editable input instead of plain text
   const [isEditing, setIsEditing] = useState(false);
 
@@ -27,13 +27,31 @@ function TaskCard({text, id, onDelete, onEdit}) {
     }
     setIsEditing(false);
   };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const draggedId = Number(event.dataTransfer.getData("text/plain"));
+    if (draggedId === id) return;
+    onReorder(draggedId, id);
+  };
   // Fires when the user starts dragging this card
   // We store the task id in the drag event so the drop target can read it later
   const handleDragStart = (event) => {
     event.dataTransfer.setData("text/plain", id);
   }
   return ( 
-    <div className="card" draggable={!isEditing} onDragStart={handleDragStart}>
+    <div 
+      className="card"
+      draggable={!isEditing}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
       {isEditing ? (
         // Edit mode: an input bound to the draft text
         <input
@@ -57,7 +75,7 @@ function TaskCard({text, id, onDelete, onEdit}) {
 
 // A single board column (e.g. "To Do"). Renders the tasks it's given
 // and doesn't known anything about the full task list - just what's passed in
-function Column({title, status, tasks, onDelete, onDrop, onEdit}) {
+function Column({title, status, tasks, onDelete, onDrop, onEdit, onReorder}) {
   // Required to allow dropping - browsers block drop by default otherwise
   const handleDragOver = (event) => {
     event.preventDefault();
@@ -79,9 +97,11 @@ function Column({title, status, tasks, onDelete, onDrop, onEdit}) {
           <TaskCard
             key={task.id}
             id={task.id}
+            order={task.order}
             text={task.text}
             onDelete={() => onDelete(task.id)}
             onEdit={onEdit}
+            onReorder={onReorder}
           />
         ))}
       </div>
@@ -97,11 +117,12 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [inputValue, setInputValue] = useState("");
   
+  const sortedTasks = [...tasks].sort((a, b) => a.order - b.order);
   // Derived data: instead of storing 3 separate arrays, we filter
   // the same "tasks" array be status on every render
-  const todoTasks = tasks.filter((task) => task.status === "todo");
-  const inProgressTasks = tasks.filter((task) => task.status === "in-progress");
-  const doneTasks = tasks.filter((task) => task.status === "done");
+  const todoTasks = sortedTasks.filter((task) => task.status === "todo");
+  const inProgressTasks = sortedTasks.filter((task) => task.status === "in-progress");
+  const doneTasks = sortedTasks.filter((task) => task.status === "done");
 
   // Creates a new task and adds it to the list, always starting as "todo"
   const handleAdd = () => {
@@ -111,7 +132,8 @@ function App() {
     const newTask = {
       id: Date.now(),
       text: text,
-      status: "todo"
+      status: "todo",
+      order: tasks.length
     };
 
     setTasks([...tasks, newTask]);
@@ -140,6 +162,24 @@ function App() {
         )
       );
     };
+
+    //Reordering: moves the dragged task to sit right before the target task,
+    // then recalculates "order" for every task based on the new array position
+  const handleReorder = (draggedId, targetId) => {
+    setTasks((prevTasks) => {
+      const draggedIndex = prevTasks.findIndex((task) => task.id === draggedId);
+      const targetIndex = prevTasks.findIndex((task) => task.id === targetId);
+      if (draggedIndex === -1 || targetIndex === -1) return prevTasks;
+
+      const updated = [...prevTasks];
+      const [draggedTask] = updated.splice(draggedIndex, 1);
+      const newTargetIndex = updated.findIndex((task) => task.id === targetId);
+      updated.splice(newTargetIndex, 0, draggedTask);
+
+      // reassign order to match the new array positions, avoiding any duplicate value
+      return updated.map((task, index) => ({...task, order: index}));
+    });
+  };
   return (
     <>
     <div className="task-input-row">
@@ -152,9 +192,9 @@ function App() {
     </div>
 
     <div className="board">
-      <Column title="To Do" status = "todo" tasks={todoTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit}/>
-      <Column title="In Progress" status = "in-progress" tasks={inProgressTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit}/>
-      <Column title="Done" status = "done" tasks={doneTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit}/>
+      <Column title="To Do" status = "todo" tasks={todoTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit} onReorder={handleReorder}/>
+      <Column title="In Progress" status = "in-progress" tasks={inProgressTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit} onReorder={handleReorder}/>
+      <Column title="Done" status = "done" tasks={doneTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit} onReorder={handleReorder}/>
     </div>
     </>
   )
