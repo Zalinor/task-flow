@@ -268,9 +268,11 @@ h1, h2 {
 .cards {
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
+.card-slot {
+  padding-bottom: 8px;
+}
 /* Task card */
 .card {
   background-color: #33334a;
@@ -309,4 +311,11 @@ h1, h2 {
   padding: 2px 8px;
   border-radius: 10px;
   margin-left: 6px;
+}
+
+.drop-indicator {
+  height: 2px;
+  background-color: #6c8cff;
+  border-radius: 1px;
+  margin: 2px 0;
 }
