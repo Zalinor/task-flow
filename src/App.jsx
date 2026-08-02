@@ -2,7 +2,14 @@ import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
+import searchIcon from './assets/Search_icon.svg'
+import unionIcon from './assets/Union.svg'
+import userFilter from './assets/User_Filter.svg'
+import filter from './assets/filter.svg'
+import timer from './assets/timer.svg'
+import ellipsis from './assets/ellipsis.svg'
 import './App.css'
+
 
 // A single task card. Recieves data via props from the parent (Column)
 function TaskCard({text, id, onDelete, onEdit, draggedTaskId, onDragStart, onDragEnd}) {
@@ -42,6 +49,7 @@ function TaskCard({text, id, onDelete, onEdit, draggedTaskId, onDragStart, onDra
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
     >
+    <div className="card-high-layer">
       {isEditing ? (
         // Edit mode: an input bound to the draft text
         <input
@@ -56,9 +64,16 @@ function TaskCard({text, id, onDelete, onEdit, draggedTaskId, onDragStart, onDra
         />
       ) : (
         // Normal mode: plain text, click to start editing
-        <span onClick={handleStartEditing}>{text}</span>
+        
+        <span onClick={handleStartEditing}>{text} <a href="">High</a></span>
       )}
-      <button onClick={onDelete}>X</button>
+      <button onClick={onDelete}><img src={ellipsis}/></button>
+    </div>
+    <div className="card-low-layer">
+      <span><img src={timer}/>Due 00/00</span>
+      <img src={userFilter} alt="" width={28} height={28}/>
+    </div>
+      
     </div>
   );
 }
@@ -256,14 +271,29 @@ function App() {
   const [draggedTaskId, setDraggedTaskId] = useState(null);
   return (
     <>
-    <div className="task-input-row">
-      <input 
-        type="text"
-        value={inputValue}
-        onChange={(event) => setInputValue(event.target.value)} 
-      />
-      <button onClick={handleAdd}>Добавить</button>
+    <div className="project-row">
+      <div className="task-input-row">
+        <button className="task-button" onClick={handleAdd}><img src={unionIcon}/> Add Task</button>
+        <div className="search-input-wrapper">
+          <img src={searchIcon} alt="" className="search-icon" />
+        <input
+          type="text"
+          placeholder="Search Work"
+          value={inputValue}
+          onChange={(event) => setInputValue(event.target.value)} 
+        />  
+        </div>
+        <button className="filter-button"><img src={filter} alt=""/> Filter</button>
+        <div className="user-filter-row">
+          <button className="user-avatar" style={{ backgroundColor: "#4a4a5a" }}>
+          <img src={userFilter} alt="User" />
+          </button>
+            <button className="user-avatar user-avatar--active" style={{ backgroundColor: "#2ea043" }}></button>
+</div>
+        <a href=""><span>Clear filters</span></a>
+      </div>
     </div>
+      
 
     <div className="board">
       <Column title="To Do" status = "todo" tasks={todoTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit} onReorder={handleReorder} draggedTaskId={draggedTaskId} onDragStart={setDraggedTaskId} onDragEnd={() => setDraggedTaskId(null)}/>
