@@ -1,0 +1,73 @@
+import {useState} from 'react'
+import ellipsis from '../assets/ellipsis.svg'
+import timer from '../assets/timer.svg'
+import userFilter from '../assets/User_Filter.svg'
+
+// A single task card. Recieves data via props from the parent (Column)
+function TaskCard({text, id, onDelete, onEdit, draggedTaskId, onDragStart, onDragEnd}) {
+  // Whether this card is currently showing an editable input instead of plain text
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Local draft of the while the user is typing - kept separate from
+  // the "official" text prop so nothing is saved until editing finishes
+  const [draftText, setDraftText] = useState(text);
+
+  // Switches the card into edit mode, resetting the draft to the current saved text
+  const handleStartEditing = () => {
+    setDraftText(text);
+    setIsEditing(true);
+  };
+
+  // Saves the edited text (if it actually changed) and exits edit mode
+  const handleFinishEditing = () => {
+    const trimmed = draftText.trim();
+    if (trimmed !== "" && trimmed !== text) {
+      onEdit(id, trimmed); // tell App to update this task's text
+    }
+    setIsEditing(false);
+  };
+
+  
+  // Fires when the user starts dragging this card
+  // We store the task id in the drag event so the drop target can read it later
+  const handleDragStart = (event) => {
+    event.dataTransfer.setData("text/plain", id);
+    onDragStart(id);
+  }
+  return ( 
+    <div 
+      className="card"
+      draggable={!isEditing}
+      onDragStart={handleDragStart}
+      onDragEnd={onDragEnd}
+    >
+    <div className="card-high-layer">
+      {isEditing ? (
+        // Edit mode: an input bound to the draft text
+        <input
+          type="text"
+          value={draftText}
+          onChange={(event) => setDraftText(event.target.value)}
+          onBlur={handleFinishEditing} //clicking away saves and exit mode
+          onKeyDown={(event) => {
+            if (event.key === "Enter") event.target.blur(); // Enter also saves
+          }}
+          autoFocus
+        />
+      ) : (
+        // Normal mode: plain text, click to start editing
+        
+        <span onClick={handleStartEditing}>{text} <a href="">High</a></span>
+      )}
+      <button onClick={onDelete}><img src={ellipsis}/></button>
+    </div>
+    <div className="card-low-layer">
+      <span><img src={timer}/>Due 00/00</span>
+      <img src={userFilter} alt="" width={28} height={28}/>
+    </div>
+      
+    </div>
+  );
+}
+
+export default TaskCard;
