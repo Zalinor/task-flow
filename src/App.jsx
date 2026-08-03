@@ -78,12 +78,24 @@ function TaskCard({text, id, onDelete, onEdit, draggedTaskId, onDragStart, onDra
   );
 }
 
-// A single board column (e.g. "To Do"). Renders the tasks it's given
-// and doesn't known anything about the full task list - just what's passed in
-function Column({title, status, tasks, onDelete, onDrop, onEdit, onReorder, draggedTaskId, onDragStart, onDragEnd}) {
-  // Which task the dragged card is currently hovering over, or "end" if hovering over
-  // empty space below the last card. null - not dragging here.
+function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn}) {
+  
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [draftTitle, setDraftTitle] = useState(title);
   const [dragOverId, setDragOverId] = useState(null);
+
+  const handleStartEditingTitle = () => {
+    setDraftTitle(title);
+    setIsEditingTitle(true);
+  };
+
+  const handleFinishEditingTitle = () => {
+    const trimmed = draftTitle.trim();
+    if (trimmed !== "" && trimmed !== title) {
+      onRenameColumn(columnId, trimmed);
+    }
+    setIsEditingTitle(false);
+  };
 
   // Hovering over empty column space (not a specific card)
   const handleDragOver = (event) => {
@@ -100,7 +112,7 @@ function Column({title, status, tasks, onDelete, onDrop, onEdit, onReorder, drag
   const handleDrop = (event) => {
     event.preventDefault();
     const taskId = Number(event.dataTransfer.getData("text/plain"));
-    onDrop(taskId, status);
+    onDrop(taskId, columnId);
     onReorder(taskId, null);
     setDragOverId(null);
   };
@@ -134,7 +146,7 @@ function Column({title, status, tasks, onDelete, onDrop, onEdit, onReorder, drag
     if (draggedId === taskId) return;
 
     const position = getPosition(event);
-    onDrop(draggedId, status);
+    onDrop(draggedId, columnId);
 
     if (position === "before") {
       onReorder(draggedId, taskId);
@@ -154,7 +166,24 @@ function Column({title, status, tasks, onDelete, onDrop, onEdit, onReorder, drag
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <h2>{title} <span className="count">{tasks.length}</span></h2>
+      <h2>
+        {isEditingTitle ? (
+          <input 
+            type="text"
+            value={draftTitle}
+            onChange={(event) => setDraftTitle(event.target.value)}
+            onBlur={handleFinishEditingTitle}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") event.target.blur();
+            }}
+            autoFocus
+          />
+        ) : (
+          <span onClick={handleStartEditingTitle}>{title}</span>
+        )}
+        <span className="count">{tasks.length}</span>
+        <button onClick={onDeleteColumn}>x</button>
+      </h2>
       <div className="cards">
         {tasks.map((task) => (
           <div 
@@ -185,6 +214,41 @@ function Column({title, status, tasks, onDelete, onDrop, onEdit, onReorder, drag
 
 
 function App() {
+  // Single source of truth for columns, same pattern as tasks
+  const [columns, setColumns] = useState(() => {
+    const saved = localStorage.getItem("columns");
+    return saved ? JSON.parse(saved) : [
+      {id: "todo", title: "To Do"},
+      {id: "in-progress", title: "In Progress"},
+      {id: "done", title: "Done"},
+    ];
+  });
+
+  //Persist columns to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("columns", JSON.stringify(columns));
+  }, [columns]);
+
+  const handleRenameColumnn = (columnId, newTitle) => {
+    setColumns(
+      columns.map((column) =>
+        column.id === columnId ? {...column, title: newTitle} : column
+      )
+    )
+  };
+
+  const handleAddColumn = () => {
+    const newColumn = {
+      id: crypto.randomUUID(),
+      title: "New Column",
+    };
+    setColumns([...columns, newColumn]);
+  };
+
+  const handleDeleteColumn = (columnId) => {
+    setColumns(columns.filter((column) => column.id !== columnId));
+    setTasks(tasks.filter((task) => task.columnId !== columnId));
+  };
   // Single source of truth: tasks live here, regardless of status
   const [tasks, setTasks] = useState(() => {
     const saved = localStorage.getItem("tasks");
@@ -200,19 +264,19 @@ function App() {
   const sortedTasks = [...tasks].sort((a, b) => a.order - b.order);
   // Derived data: instead of storing 3 separate arrays, we filter
   // the same "tasks" array be status on every render
-  const todoTasks = sortedTasks.filter((task) => task.status === "todo");
-  const inProgressTasks = sortedTasks.filter((task) => task.status === "in-progress");
-  const doneTasks = sortedTasks.filter((task) => task.status === "done");
+  const todoTasks = sortedTasks.filter((task) => task.columnId === "todo");
+  const inProgressTasks = sortedTasks.filter((task) => task.columnId === "in-progress");
+  const doneTasks = sortedTasks.filter((task) => task.columnId === "done");
 
   // Creates a new task and adds it to the list, always starting as "todo"
-  const handleAdd = () => {
+  const handleAdd = (columnId) => {
     const text = inputValue.trim();
     if (text === "") return;
     
     const newTask = {
       id: Date.now(),
       text: text,
-      status: "todo",
+      columnId: columnId,
       order: tasks.length
     };
 
@@ -226,10 +290,10 @@ function App() {
   }
 
   // Updates a task's status when it's dropped into a different column
-  const handleDrop = (taskId, newStatus) => {
+  const handleMoveTask = (taskId, newColumnId) => {
     setTasks(
       tasks.map((task) =>
-        task.id === taskId ? { ...task, status: newStatus } : task
+        task.id === taskId ? { ...task, columnId: newColumnId } : task
       )
     );
   };
@@ -273,7 +337,11 @@ function App() {
     <>
     <div className="project-row">
       <div className="task-input-row">
-        <button className="task-button" onClick={handleAdd}><img src={unionIcon}/> Add Task</button>
+        <button 
+          className="task-button"
+          onClick={() => handleAdd(columns[0]?.id)}>
+            <img src={unionIcon}/> Add Task
+          </button>
         <div className="search-input-wrapper">
           <img src={searchIcon} alt="" className="search-icon" />
         <input
@@ -296,9 +364,24 @@ function App() {
       
 
     <div className="board">
-      <Column title="To Do" status = "todo" tasks={todoTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit} onReorder={handleReorder} draggedTaskId={draggedTaskId} onDragStart={setDraggedTaskId} onDragEnd={() => setDraggedTaskId(null)}/>
-      <Column title="In Progress" status = "in-progress" tasks={inProgressTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit} onReorder={handleReorder} draggedTaskId={draggedTaskId} onDragStart={setDraggedTaskId} onDragEnd={() => setDraggedTaskId(null)}/>
-      <Column title="Done" status = "done" tasks={doneTasks} onDelete={handleDelete} onDrop={handleDrop} onEdit={handleEdit} onReorder={handleReorder} draggedTaskId={draggedTaskId} onDragStart={setDraggedTaskId} onDragEnd={() => setDraggedTaskId(null)}/>
+      {columns.map((column) => (
+        <Column
+          key={column.id}
+          title={column.title} 
+          columnId={column.id} 
+          tasks={sortedTasks.filter((task) => task.columnId === column.id)} 
+          onDelete={handleDelete} 
+          onDrop={handleMoveTask} 
+          onEdit={handleEdit} 
+          onReorder={handleReorder} 
+          draggedTaskId={draggedTaskId} 
+          onDragStart={setDraggedTaskId} 
+          onDragEnd={() => setDraggedTaskId(null)}
+          onDeleteColumn={() => handleDeleteColumn(column.id)}
+          onRenameColumn={handleRenameColumnn}
+        />
+      ))}
+      <button onClick={handleAddColumn} className="add-column-button"> + Add Column</button>
     </div>
     </>
   )
