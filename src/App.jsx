@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Column from './components/Column'
+import AddTaskModal from './components/AddTaskModal'
 import searchIcon from './assets/Search_icon.svg'
 import unionIcon from './assets/Union.svg'
 import userFilter from './assets/User_Filter.svg'
@@ -59,19 +60,14 @@ function App() {
   const sortedTasks = [...tasks].sort((a, b) => a.order - b.order);
 
   // Creates a new task and adds it to the list, always starting as "todo"
-  const handleAdd = (columnId) => {
-    const text = inputValue.trim();
-    if (text === "") return;
-    
+  const handleAddTask = (taskData) => {
     const newTask = {
       id: Date.now(),
-      text: text,
-      columnId: columnId,
-      order: tasks.length
+      order: tasks.length,
+      ...taskData,
     };
-
     setTasks([...tasks, newTask]);
-    setInputValue("");
+    setIsModalOpen(false);
   };
 
   // Removes a task by id
@@ -96,7 +92,7 @@ function App() {
         )
       );
     };
-
+  
     //Reordering: moves the dragged task to sit right before the target task,
     // then recalculates "order" for every task based on the new array position
   const handleReorder = (draggedId, targetId) => {
@@ -123,13 +119,14 @@ function App() {
   };
 
   const [draggedTaskId, setDraggedTaskId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <>
     <div className="project-row">
       <div className="task-input-row">
         <button 
           className="task-button"
-          onClick={() => handleAdd(columns[0]?.id)}>
+          onClick={() => setIsModalOpen(true)}>
             <img src={unionIcon}/> Add Task
           </button>
         <div className="search-input-wrapper">
@@ -173,6 +170,13 @@ function App() {
       ))}
       <button onClick={handleAddColumn} className="add-column-button"> + Add Column</button>
     </div>
+      {isModalOpen && (
+      <AddTaskModal
+        columns={columns}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleAddTask}
+      />
+      )}
     </>
   )
 }
