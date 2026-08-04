@@ -13,6 +13,8 @@
   --task-text: black;
   --task-bg: white;
   
+  --modal-text:#030213;
+  
   --sans: "Inter", sans-serif;
   --heading: "Inter", sans-serif;
   --mono: ui-monospace, Consolas, monospace;

@@ -448,3 +448,146 @@ h1, h2 {
   max-width: 90vw;
 }
 
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  width: 660px;
+  min-height: 620px;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--modal-text);
+}
+
+.modal-header button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #9E9E9E;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.modal-header button:hover {
+  background: #f0f0f2;
+}
+
+.modal-subtitle {
+  color: var(--text);
+  font-size: 14px;
+  margin: 4px 0 20px;
+}
+
+/* Form layout — two fields per row where it makes sense (Stage next to Title, etc.) */
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-row {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-row > label {
+  flex: 1;
+}
+
+.modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--modal-text);
+}
+
+.modal select {
+  background-color:#ffffff;
+
+}
+.modal input,
+.modal select,
+.modal textarea {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: normal;
+  padding: 10px 10px;
+  border-radius: 8px;
+  border: 0.5pt solid var(--border-task);
+  color: var(--text-h);
+}
+
+.modal input:focus,
+.modal select:focus,
+.modal textarea:focus {
+  outline: none;
+  border-color: #6c8cff;
+}
+
+.modal textarea {
+  resize: vertical;
+  min-height: 70px;
+  font-family: var(--sans);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.modal-actions button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--sans);
+  cursor: pointer;
+}
+
+.modal-actions button[type="button"] {
+  background: white;
+  border: 0.5pt solid var(--border-task);
+  color: var(--text-h);
+}
+
+.modal-actions button[type="submit"] {
+  background: var(--button-bg);
+  border: none;
+  color: white;
+}
+
+label input {
+  width: 447px;
+}
+
+label select {
+  width: 100%;
+}
+
+label input, textarea {
+  background-color: #f7f7f8;
+}

@@ -33,7 +33,8 @@ function AddTaskModal({columns, onClose, onSubmit}) {
                 <p className="modal-subtitle">Fill in the details to create a new task</p>
 
                 <form onSubmit={handleSubmit}>
-                    <label>
+                    <div className="modal-row">
+                        <label>
                         Title*
                         <input type="text"
                             value={title}
@@ -44,13 +45,15 @@ function AddTaskModal({columns, onClose, onSubmit}) {
                     </label>
 
                     <label>
-                        Stage*
+                        Stage
                         <select value={stageId} onChange={(event) => setStageId(event.target.value)}>
                             {columns.map((column) => (
                                 <option key={column.id} value={column.id}>{column.title}</option>
                             ))}
                         </select>
                     </label>
+                    </div>
+                    
 
                     <label>
                         Description
@@ -60,33 +63,37 @@ function AddTaskModal({columns, onClose, onSubmit}) {
                             placeholder="Enter task description (optional)"
                         /> 
                     </label>
-
-                    <label>
+                    <div className="modal-row">
+                        <label>
                         Priority
                         <select value={priority} onChange={(event) => setPriority(event.target.value)}>
-                            <option value="High">High</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Low">Low</option>
-                            <option value="Frozen">Frozen</option>
-                        </select>
-                    </label>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                                <option value="Frozen">Frozen</option>
+                            </select>
+                        </label>
 
-                    <label >
+                        <label >
                         Status
-                        <select value={status} onChange={(event) => setStatus(event.target.value)}>
-                            <option value="Open">Open</option>
-                            <option value="In Review">In Review</option>
-                        </select>
-                    </label>
-
-                    <label>
+                            <select value={status} onChange={(event) => setStatus(event.target.value)}>
+                                <option value="Open">Open</option>
+                                <option value="In Review">In Review</option>
+                            </select>
+                        </label>
+                    </div>
+                    
+                    <div className="modal-row">
+                        <label>
                         Due Date
                         <input 
                             type="date"
                             value={dueDate}
                             onChange={(event) => setDueDate(event.target.value)}
                         />
-                    </label>
+                        </label>
+                    </div>
+                    
 
                     <div className="modal-actions">
                         <button type="button" onClick={onClose}>Cancel</button>
