@@ -3,11 +3,64 @@ import TaskCard from './TaskCard'
 
 
 
-function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn}) {
+function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder}) {
   
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
   const [dragOverId, setDragOverId] = useState(null);
+  const [columnDragOverSide, setColumnDragOverSide] = useState(null);
+
+  const handleColumnDragStart = (event) => {
+    event.dataTransfer.setData("application/column-id", columnId);
+    onColumnDragStart(columnId);
+  };
+
+  const handleColumnDragOver = (event) => {
+    if (draggedColumnId === null || draggedColumnId === columnId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const rect = event.currentTarget.getBoundingClientRect();
+    const midpoint = rect.left + rect.width / 2;
+    setColumnDragOverSide(event.clientX < midpoint ? "before" : "after");
+  };
+
+  const handleColumnDragLeave = (event) => {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setColumnDragOverSide(null);
+    }
+  }
+
+  const handleColumnDrop = (event) => {
+    if (draggedColumnId === null || draggedColumnId === columnId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    onColumnReorder(draggedColumnId, columnId, columnDragOverSide);
+    setColumnDragOverSide(null);
+  }
+
+  const handleContainerDragOver = (event) => {
+    if (draggedColumnId !== null) {
+      handleColumnDragOver(event);
+    } else {
+      handleDragOver(event);
+    }
+  };
+
+  const handleContainerDragLeave = (event) => {
+    if (draggedColumnId !== null) {
+      handleColumnDragLeave(event);
+    } else {
+      handleDragLeave(event);
+    }
+  };
+
+  const handleContainerDrop = (event) => {
+    if (draggedColumnId !== null) {
+      handleColumnDrop(event);
+    } else {
+      handleDrop(event);
+    }
+  };
 
   const handleStartEditingTitle = () => {
     setDraftTitle(title);
@@ -51,6 +104,7 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onReorder, dr
   };
 
   const handleSlotDragOver = (taskId) => (event) => {
+    if (draggedColumnId !== null) return;
     event.preventDefault();
     event.stopPropagation();
     const position = getPosition(event);
@@ -65,6 +119,7 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onReorder, dr
   };
 
   const handleSlotDrop = (taskId) => (event) => {
+    if (draggedColumnId !== null) return;
     event.preventDefault();
     event.stopPropagation();
     const draggedId = Number(event.dataTransfer.getData("text/plain"));
@@ -86,12 +141,16 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onReorder, dr
 
   return (
     <div 
-      className="column" 
-      onDragOver={handleDragOver} 
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
+      className={`column ${columnDragOverSide ? `column-drag-over-${columnDragOverSide}` : ""}`}
+      onDragOver={handleContainerDragOver} 
+      onDragLeave={handleContainerDragLeave}
+      onDrop={handleContainerDrop}
     >
-      <h2>
+      <h2
+        draggable={!isEditingTitle}
+        onDragStart={handleColumnDragStart}
+        onDragEnd={() => {onColumnDragEnd(); setColumnDragOverSide(null);}}
+        >
         {isEditingTitle ? (
           <input 
             type="text"

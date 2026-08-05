@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import Column from './components/Column'
 import AddTaskModal from './components/AddTaskModal'
+import EmptyState from './components/EmptyState'
+
 import searchIcon from './assets/Search_icon.svg'
 import unionIcon from './assets/Union.svg'
 import userFilter from './assets/User_Filter.svg'
@@ -61,10 +63,19 @@ function App() {
 
   // Creates a new task and adds it to the list, always starting as "todo"
   const handleAddTask = (taskData) => {
+    let targetColumnId = taskData.columnId;
+
+    if (columns.length === 0) {
+      const defaultColumn = {id:"todo", title: "To Do"};
+      setColumns([defaultColumn]);
+      targetColumnId = defaultColumn.id;
+    }
+
     const newTask = {
       id: Date.now(),
       order: tasks.length,
       ...taskData,
+      columnId: targetColumnId,
     };
     setTasks([...tasks, newTask]);
     setIsModalOpen(false);
@@ -117,6 +128,27 @@ function App() {
       return updated.map((task, index) => ({...task, order: index}));
     });
   };
+  const [draggedColumnId, setDraggedColumnId] = useState(null);
+
+  const handleReorderColumns = (draggedId, targetColumnId, side) => {
+    setColumns((prevColumns) => {
+      const draggedIndex = prevColumns.findIndex((col) => col.id === draggedId);
+      if (draggedIndex === -1) return prevColumns;
+
+      const updated = [...prevColumns];
+      const [draggedColumn] = updated.splice(draggedIndex, 1);
+
+      const targetIndex = updated.findIndex((col) => col.id === targetColumnId);
+      if (targetIndex === -1) {
+        updated.push(draggedColumn);
+      } else {
+        const insertIndex = side === "after" ? targetIndex + 1 : targetIndex;
+        updated.splice(insertIndex, 0, draggedColumn);
+      }
+      return updated;
+    });
+    setDraggedColumnId(null);
+  };
 
   const [draggedTaskId, setDraggedTaskId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -149,8 +181,10 @@ function App() {
       </div>
     </div>
       
-
-    <div className="board">
+    {columns.length === 0 ? (
+      <EmptyState onAddTask={() => setIsModalOpen(true)} />
+    ) : (
+      <div className="board">
       {columns.map((column) => (
         <Column
           key={column.id}
@@ -166,10 +200,16 @@ function App() {
           onDragEnd={() => setDraggedTaskId(null)}
           onDeleteColumn={() => handleDeleteColumn(column.id)}
           onRenameColumn={handleRenameColumnn}
+          draggedColumnId={draggedColumnId}
+          onColumnDragStart={setDraggedColumnId}
+          onColumnDragEnd={() => setDraggedColumnId(null)}
+          onColumnReorder={handleReorderColumns}
         />
       ))}
       <button onClick={handleAddColumn} className="add-column-button"> + Add Column</button>
     </div>
+    )}
+    
       {isModalOpen && (
       <AddTaskModal
         columns={columns}
