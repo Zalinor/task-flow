@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Column from './components/Column'
-import AddTaskModal from './components/AddTaskModal'
 import EmptyState from './components/EmptyState'
+import TaskModal from './components/TaskModal'
 
 import searchIcon from './assets/Search_icon.svg'
 import unionIcon from './assets/Union.svg'
@@ -151,7 +151,25 @@ function App() {
   };
 
   const [draggedTaskId, setDraggedTaskId] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Task editing
+  const [editingTaskId, setEditingTaskId] = useState(null);
+
+  const editingTask = tasks.find((task) => task.id === editingTaskId) ?? null;
+
+  const handleEditTaskRequest = (taskId) => {
+    setEditingTaskId(taskId);
+  };
+
+  const handleUpdateTask = (taskData) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === taskData.id ? {...task, ...taskData} : task
+      )
+    );
+    setEditingTaskId(null);
+  }
   return (
     <>
     <div className="project-row">
@@ -192,7 +210,8 @@ function App() {
           tasks={sortedTasks.filter((task) => task.columnId === column.id)} 
           onDelete={handleDelete} 
           onDrop={handleMoveTask} 
-          onEdit={handleEdit} 
+          onEdit={handleEdit}
+          onEditTask={handleEditTaskRequest}
           onReorder={handleReorder} 
           draggedTaskId={draggedTaskId} 
           onDragStart={setDraggedTaskId} 
@@ -215,6 +234,14 @@ function App() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddTask}
       />
+      )}
+      {editingTask && (
+        <TaskModal
+          columns={columns}
+          initialTask={editingTask}
+          onClose={() => setEditingTaskId(null)}
+          onSubmit={handleUpdateTask}
+        />
       )}
     </>
   )

@@ -1,12 +1,14 @@
 import { useState } from "react";
 
-function AddTaskModal({columns, onClose, onSubmit}) {
-    const [title, setTitle] = useState("");
-    const [stageId, setStageId] = useState(columns[0]?.id ?? "");
-    const [description, setDescription] = useState("");
-    const [priority, setPriority] = useState("Medium");
-    const [status, setStatus] = useState("Open");
-    const [dueDate, setDueDate] = useState("");
+function TaskModal({columns, onClose, onSubmit, initialTask = null}) {
+    const isEditMode = Boolean(initialTask);
+
+    const [title, setTitle] = useState(initialTask?.text ?? "");
+    const [stageId, setStageId] = useState(initialTask?.columnId ?? columns[0]?.id ?? "");
+    const [description, setDescription] = useState(initialTask?.description ?? "");
+    const [priority, setPriority] = useState(initialTask?.priority ?? "Medium");
+    const [status, setStatus] = useState(initialTask?.status ?? "Open");
+    const [dueDate, setDueDate] = useState(initialTask?.dueDate ?? "");
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -14,6 +16,7 @@ function AddTaskModal({columns, onClose, onSubmit}) {
         if (trimmedTitle === "") return;
 
         onSubmit({
+            ...(isEditMode ? {id: initialTask.id} : {}),
             text: trimmedTitle,
             columnId: stageId,
             description: description.trim(),
@@ -27,10 +30,12 @@ function AddTaskModal({columns, onClose, onSubmit}) {
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal" onClick={(event) => event.stopPropagation()}>
                 <div className="modal-header">
-                    <h3>Add New Task</h3>
+                    <h3>{isEditMode ? "Edit Task" : "Add New Task"}</h3>
                     <button onClick={onClose}>x</button>
                 </div>
-                <p className="modal-subtitle">Fill in the details to create a new task</p>
+                <p className="modal-subtitle">
+                    {isEditMode ? "Update the task details" : "Fill in the details to create a new task"}
+                </p>
 
                 <form onSubmit={handleSubmit}>
                     <div className="modal-row">
@@ -43,7 +48,7 @@ function AddTaskModal({columns, onClose, onSubmit}) {
                             autoFocus
                          />
                     </label>
-
+                {columns.length > 0 &&(
                     <label>
                         Stage
                         <select value={stageId} onChange={(event) => setStageId(event.target.value)}>
@@ -52,6 +57,7 @@ function AddTaskModal({columns, onClose, onSubmit}) {
                             ))}
                         </select>
                     </label>
+                )}
                     </div>
                     
 
@@ -97,7 +103,7 @@ function AddTaskModal({columns, onClose, onSubmit}) {
 
                     <div className="modal-actions">
                         <button type="button" onClick={onClose}>Cancel</button>
-                        <button type="submit">Add Task</button>
+                        <button type="submit">{isEditMode ? "Save Changes" : "Add Task"}</button>
                     </div>
                 </form>
             </div>
@@ -105,4 +111,4 @@ function AddTaskModal({columns, onClose, onSubmit}) {
     );
 }
 
-export default AddTaskModal;
+export default TaskModal;

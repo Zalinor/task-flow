@@ -2,6 +2,7 @@ import {useState} from 'react'
 import ellipsis from '../assets/ellipsis.svg'
 import timer from '../assets/timer.svg'
 import userFilter from '../assets/User_Filter.svg'
+import TaskMenu from './TaskMenu'
 
 
 const PRIORITY_CLASSES = {
@@ -17,13 +18,10 @@ function formatDueDate(dueDate) {
   return `${month}/${day}`;
 }
 // A single task card. Recieves data via props from the parent (Column)
-function TaskCard({text, id, priority, dueDate, onDelete, onEdit, draggedTaskId, onDragStart, onDragEnd}) {
-  // Whether this card is currently showing an editable input instead of plain text
+function TaskCard({text, id, priority, dueDate, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
   const [isEditing, setIsEditing] = useState(false);
-
-  // Local draft of the while the user is typing - kept separate from
-  // the "official" text prop so nothing is saved until editing finishes
   const [draftText, setDraftText] = useState(text);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Switches the card into edit mode, resetting the draft to the current saved text
   const handleStartEditing = () => {
@@ -78,7 +76,19 @@ function TaskCard({text, id, priority, dueDate, onDelete, onEdit, draggedTaskId,
           {text} <span className={`priority-badge ${priorityClass}`}>{priority}</span> 
         </span>
       )}
-      <button onClick={onDelete}><img src={ellipsis}/></button>
+      <div className="task-menu-wrapper">
+        <button onClick={() => setIsMenuOpen((open) => !open)}>
+          <img src={ellipsis}/>
+          </button>
+          {isMenuOpen && (
+            <TaskMenu
+              onEdit={() => {setIsMenuOpen(false); onEditRequest();}}
+              onDelete={() => {setIsMenuOpen(false); onDelete();}}
+              onClose={() => setIsMenuOpen(false)}
+            />
+          )}
+      </div>
+      
     </div>
     <div className="card-low-layer">
       <span><img src={timer}/>{formattedDate ? `Due ${formattedDate}` : "No due date"}</span>

@@ -270,6 +270,43 @@ h1, h2 {
   background-color: #1C1B2B;
 }
 
+.task-menu-wrapper {
+  position: relative;
+}
+
+.task-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border: 0.5pt solid var(--border-task);
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  z-index: 20;
+  overflow: hidden;
+}
+
+.task-menu button {
+background: none;
+border: none;
+text-align: left;
+padding: 10px 14px;
+font-size: 14px;
+cursor: pointer;
+color: var(--text-h);
+}
+
+.task-menu button:hover {
+  background-color: f0f0f2;
+}
+
+.task-menu-delete {
+  color: #e5484d;
+}
+
 .priority-badge {
   display: inline-flex;
   align-items: center;
