@@ -177,9 +177,12 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onReorder, dr
             onDrop={handleSlotDrop(task.id)}
           >
             {dragOverId === task.id && <div className="drop-indicator" />}
+
             <TaskCard
               id={task.id}
               text={task.text}
+              priority={task.priority}
+              dueDate={task.dueDate}
               onDelete={() => onDelete(task.id)}
               onEdit={onEdit}
               draggedTaskId={draggedTaskId}

@@ -3,8 +3,21 @@ import ellipsis from '../assets/ellipsis.svg'
 import timer from '../assets/timer.svg'
 import userFilter from '../assets/User_Filter.svg'
 
+
+const PRIORITY_CLASSES = {
+  High: "priority-high",
+  Medium: "priority-medium",
+  Low: "priority-low",
+  Frozen: "priority-frozen",
+};
+
+function formatDueDate(dueDate) {
+  if (!dueDate) return null;
+  const [year, month, day] = dueDate.split("-")
+  return `${month}/${day}`;
+}
 // A single task card. Recieves data via props from the parent (Column)
-function TaskCard({text, id, onDelete, onEdit, draggedTaskId, onDragStart, onDragEnd}) {
+function TaskCard({text, id, priority, dueDate, onDelete, onEdit, draggedTaskId, onDragStart, onDragEnd}) {
   // Whether this card is currently showing an editable input instead of plain text
   const [isEditing, setIsEditing] = useState(false);
 
@@ -34,6 +47,10 @@ function TaskCard({text, id, onDelete, onEdit, draggedTaskId, onDragStart, onDra
     event.dataTransfer.setData("text/plain", id);
     onDragStart(id);
   }
+
+  const formattedDate = formatDueDate(dueDate);
+  const priorityClass = PRIORITY_CLASSES[priority] ?? "priority-medium";
+
   return ( 
     <div 
       className="card"
@@ -57,12 +74,14 @@ function TaskCard({text, id, onDelete, onEdit, draggedTaskId, onDragStart, onDra
       ) : (
         // Normal mode: plain text, click to start editing
         
-        <span onClick={handleStartEditing}>{text} <a href="">High</a></span>
+        <span onClick={handleStartEditing}>
+          {text} <span className={`priority-badge ${priorityClass}`}>{priority}</span> 
+        </span>
       )}
       <button onClick={onDelete}><img src={ellipsis}/></button>
     </div>
     <div className="card-low-layer">
-      <span><img src={timer}/>Due 00/00</span>
+      <span><img src={timer}/>{formattedDate ? `Due ${formattedDate}` : "No due date"}</span>
       <img src={userFilter} alt="" width={28} height={28}/>
     </div>
       

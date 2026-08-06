@@ -172,10 +172,9 @@ function App() {
         </div>
         <button className="filter-button"><img src={filter} alt=""/> Filter</button>
         <div className="user-filter-row">
-          <button className="user-avatar" style={{ backgroundColor: "#4a4a5a" }}>
-          <img src={userFilter} alt="User" />
+          <button className="user-avatar">
           </button>
-            <button className="user-avatar user-avatar--active" style={{ backgroundColor: "#2ea043" }}></button>
+            <button className="user-avatar"></button>
 </div>
         <a href=""><span>Clear filters</span></a>
       </div>

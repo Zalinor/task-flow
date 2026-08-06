@@ -270,6 +270,36 @@ h1, h2 {
   background-color: #1C1B2B;
 }
 
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600px;
+  margin-left: 6px;
+}
+
+.priority-high {
+  background-color: #fdebec;
+  color: #e5484d;
+}
+
+.priority-medium {
+  background-color: #fdf3e7;
+  color: #d97706;
+}
+
+.priority-low {
+  background-color: #e9f0ff;
+  color: #3b82f6;
+}
+
+.priority-frozen {
+  background-color: #f0f0f3;
+  color: #6b7280;
+}
+
 .filter-button {
   width: 88.33px;
   height: 40px;
@@ -312,9 +342,9 @@ h1, h2 {
   border-color: var(--border-task);
 }
 
-.user-avatar--active {
-  border-color: var(--button-bg); /* или любой акцентный цвет, которым будешь отмечать "выбран" */
-}
+/* .user-avatar--active {
+  border-color: var(--button-bg);
+} */
 /* Board layout — three equal columns side by side */
 .board {
   display: flex;
