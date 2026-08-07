@@ -1,8 +1,8 @@
-import {useState} from 'react'
-import ellipsis from '../assets/ellipsis.svg'
-import timer from '../assets/timer.svg'
-import userFilter from '../assets/User_Filter.svg'
-import TaskMenu from './TaskMenu'
+import {useState} from 'react';
+import ellipsis from '../assets/ellipsis.svg';
+import timer from '../assets/timer.svg';
+import userFilter from '../assets/User_Filter.svg';
+import TaskMenu from './TaskMenu';
 
 
 const PRIORITY_CLASSES = {

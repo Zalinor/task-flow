@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef } from "react";
 
-function TaskMenu({onEdit, onDelete, onClose}) {
+function TaskMenu({onEdit, onDelete, onClose, showEdit = true}) {
     const menuRef = useRef(null);
 
     useEffect(() => {
@@ -15,7 +15,7 @@ function TaskMenu({onEdit, onDelete, onClose}) {
 
     return (
         <div className="task-menu" ref={menuRef}>
-            <button onClick={onEdit}>Edit Task</button>
+            {showEdit && <button onClick={onEdit}>Edit Task</button>}
             <button onClick={onDelete} className="task-menu-delete">Delete</button>
         </div>
     );

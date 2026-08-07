@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react'
-import Column from './components/Column'
-import EmptyState from './components/EmptyState'
-import TaskModal from './components/TaskModal'
+import { useEffect, useState } from 'react';
+import Column from './components/Column';
+import EmptyState from './components/EmptyState';
+import TaskModal from './components/TaskModal';
+import TaskDetailModal from './components/TaskDetailModal';
 
-import searchIcon from './assets/Search_icon.svg'
-import unionIcon from './assets/Union.svg'
-import userFilter from './assets/User_Filter.svg'
-import filter from './assets/filter.svg'
-import './App.css'
+import searchIcon from './assets/Search_icon.svg';
+import unionIcon from './assets/Union.svg';
+import userFilter from './assets/User_Filter.svg';
+import filter from './assets/filter.svg';
+import './App.css';
 
 
 
@@ -165,11 +166,29 @@ function App() {
   const handleUpdateTask = (taskData) => {
     setTasks(
       tasks.map((task) =>
-        task.id === taskData.id ? {...task, ...taskData} : task
+        task.id === taskData.id 
+        ? {...task, ...taskData, updatedAt: new Date().toISOString()}
+        : task
       )
     );
     setEditingTaskId(null);
-  }
+  };
+
+  const handleAddComment = (taskId, text) => {
+    const newComment = {
+      id: crypto.randomUUID(),
+      author: "You", //Placeholder
+      text,
+      createdAt: new Date().toISOString(),
+    };
+    setTasks(
+      tasks.map((task) => 
+        task.id === taskId
+        ? {...task, comments: [...(task.comments ?? []), newComment], updatedAt: new Date().toISOString()}
+        : task
+      )
+    );
+  };
   return (
     <>
     <div className="project-row">
@@ -229,18 +248,21 @@ function App() {
     )}
     
       {isModalOpen && (
-      <AddTaskModal
+      <TaskModal
         columns={columns}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddTask}
       />
       )}
       {editingTask && (
-        <TaskModal
+        <TaskDetailModal
+          task={editingTask}
           columns={columns}
-          initialTask={editingTask}
           onClose={() => setEditingTaskId(null)}
-          onSubmit={handleUpdateTask}
+          onSave={handleUpdateTask}
+          onAddComment={handleAddComment}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
         />
       )}
     </>
