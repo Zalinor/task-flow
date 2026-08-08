@@ -703,6 +703,32 @@ color: var(--text-h);
   color: white;
 }
 
+.task-done-text {
+  text-decoration: line-through;
+  color: #9E9E9E;
+}
+
+.done-check {
+  color: #2ea043;
+  margin-right: 4px;
+  font-weight: bold;
+}
+
+.add-task-in-column {
+  background: none;
+  border: none;
+  color: var(--text-h);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 0;
+  text-align: left;
+  width: 100%;
+}
+
+.add-task-in-column:hover {
+  color: var(--button-bg);
+}
+
 .modal-header h3 {
   cursor: pointer;
 }

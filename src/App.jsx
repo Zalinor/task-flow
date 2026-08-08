@@ -231,6 +231,7 @@ function App() {
           onDrop={handleMoveTask} 
           onEdit={handleEdit}
           onEditTask={handleEditTaskRequest}
+          onAddTask={(columnId) => setAddTaskContext({columnId})}
           onReorder={handleReorder} 
           draggedTaskId={draggedTaskId} 
           onDragStart={setDraggedTaskId} 

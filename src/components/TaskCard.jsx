@@ -9,7 +9,6 @@ const PRIORITY_CLASSES = {
   High: "priority-high",
   Medium: "priority-medium",
   Low: "priority-low",
-  Frozen: "priority-frozen",
 };
 
 function formatDueDate(dueDate) {
@@ -18,7 +17,7 @@ function formatDueDate(dueDate) {
   return `${month}/${day}`;
 }
 // A single task card. Recieves data via props from the parent (Column)
-function TaskCard({text, id, priority, dueDate, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
+function TaskCard({text, id, priority, dueDate, isDone, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftText, setDraftText] = useState(text);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -38,7 +37,6 @@ function TaskCard({text, id, priority, dueDate, onDelete, onEdit, onEditRequest,
     setIsEditing(false);
   };
 
-  
   // Fires when the user starts dragging this card
   // We store the task id in the drag event so the drop target can read it later
   const handleDragStart = (event) => {
@@ -63,16 +61,15 @@ function TaskCard({text, id, priority, dueDate, onDelete, onEdit, onEditRequest,
           type="text"
           value={draftText}
           onChange={(event) => setDraftText(event.target.value)}
-          onBlur={handleFinishEditing} //clicking away saves and exit mode
+          onBlur={handleFinishEditing} 
           onKeyDown={(event) => {
-            if (event.key === "Enter") event.target.blur(); // Enter also saves
+            if (event.key === "Enter") event.target.blur(); 
           }}
           autoFocus
         />
       ) : (
-        // Normal mode: plain text, click to start editing
-        
-        <span onClick={handleStartEditing}>
+        <span onClick={handleStartEditing} className={isDone ? "task-done-text" : ""}>
+          {isDone && <span className="done-check">✓</span>}
           {text} <span className={`priority-badge ${priorityClass}`}>{priority}</span> 
         </span>
       )}

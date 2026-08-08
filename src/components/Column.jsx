@@ -3,7 +3,7 @@ import TaskCard from './TaskCard';
 
 
 
-function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder}) {
+function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, onAddTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder}) {
   
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
@@ -138,6 +138,7 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
     setDragOverId(null);
   };
 
+  const isDoneColumn = columnId === "done";
 
   return (
     <div 
@@ -194,6 +195,9 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
         ))}
         {dragOverId === "end" && <div className="drop-indicator"/>}
       </div>
+      <button className="add-task-in-column" onClick={() => onAddTask(columnId)}>
+        + Add
+      </button>
     </div>
   );
 }

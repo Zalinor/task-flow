@@ -197,7 +197,6 @@ function TaskDetailModal({task, columns, onClose, onSave, onAddComment, onDelete
                                     <option value="High">High</option>
                                     <option value="Medium">Medium</option>
                                     <option value="Low">Low</option>
-                                    <option value="Frozen">Frozen</option>
                                 </select>
                             </label>
                         </div>
@@ -207,6 +206,7 @@ function TaskDetailModal({task, columns, onClose, onSave, onAddComment, onDelete
                             <select value={status} onChange={(event) => setStatus(event.target.value)}>
                                 <option value="Open">Open</option>
                                 <option value="In Review">In Review</option>
+                                <option value="Frozen">Frozen</option>
                             </select>
                         </label>
 

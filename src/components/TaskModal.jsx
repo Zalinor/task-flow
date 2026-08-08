@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-function TaskModal({columns, onClose, onSubmit}) {
+function TaskModal({columns, onClose, onSubmit, initialStageid = null}) {
 
     const [title, setTitle] = useState("");
-    const [stageId, setStageId] = useState(columns[0]?.id ?? "");
+    const [stageId, setStageId] = useState(initialStageid ?? columns[0]?.id ?? "");
     const [description, setDescription] = useState("");
     const [priority, setPriority] = useState("Medium");
     const [status, setStatus] = useState("Open");
@@ -72,7 +72,6 @@ function TaskModal({columns, onClose, onSubmit}) {
                                 <option value="High">High</option>
                                 <option value="Medium">Medium</option>
                                 <option value="Low">Low</option>
-                                <option value="Frozen">Frozen</option>
                             </select>
                         </label>
 
@@ -81,6 +80,7 @@ function TaskModal({columns, onClose, onSubmit}) {
                             <select value={status} onChange={(event) => setStatus(event.target.value)}>
                                 <option value="Open">Open</option>
                                 <option value="In Review">In Review</option>
+                                <option value="Frozen">Frozen</option>
                             </select>
                         </label>
                     </div>
