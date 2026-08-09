@@ -3,12 +3,14 @@ import ellipsis from '../assets/ellipsis.svg';
 import timer from '../assets/timer.svg';
 import userFilter from '../assets/User_Filter.svg';
 import TaskMenu from './TaskMenu';
+import {getDisplayPriority} from "../utils/task"
 
 
 const PRIORITY_CLASSES = {
   High: "priority-high",
   Medium: "priority-medium",
   Low: "priority-low",
+  Frozen: "priority-frozen",
 };
 
 function formatDueDate(dueDate) {
@@ -17,7 +19,7 @@ function formatDueDate(dueDate) {
   return `${month}/${day}`;
 }
 // A single task card. Recieves data via props from the parent (Column)
-function TaskCard({text, id, priority, dueDate, isDone, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
+function TaskCard({text, id, priority, status, dueDate, isDone, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftText, setDraftText] = useState(text);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,7 +47,8 @@ function TaskCard({text, id, priority, dueDate, isDone, onDelete, onEdit, onEdit
   }
 
   const formattedDate = formatDueDate(dueDate);
-  const priorityClass = PRIORITY_CLASSES[priority] ?? "priority-medium";
+  const displayPriority = getDisplayPriority({priority, status});
+  const priorityClass = PRIORITY_CLASSES[displayPriority] ?? "priority-medium";
 
   return ( 
     <div 
@@ -70,7 +73,7 @@ function TaskCard({text, id, priority, dueDate, isDone, onDelete, onEdit, onEdit
       ) : (
         <span onClick={handleStartEditing} className={isDone ? "task-done-text" : ""}>
           {isDone && <span className="done-check">✓</span>}
-          {text} <span className={`priority-badge ${priorityClass}`}>{priority}</span> 
+          {text} <span className={`priority-badge ${priorityClass}`}>{displayPriority}</span> 
         </span>
       )}
       <div className="task-menu-wrapper">

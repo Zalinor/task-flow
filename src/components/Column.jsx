@@ -3,7 +3,7 @@ import TaskCard from './TaskCard';
 
 
 
-function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, onAddTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder}) {
+function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, onAddTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder, isFinal, onSetFinal}) {
   
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
@@ -138,7 +138,7 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
     setDragOverId(null);
   };
 
-  const isDoneColumn = columnId === "done";
+  // const isDoneColumn = columnId === "done";
 
   return (
     <div 
@@ -167,6 +167,13 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
           <span onClick={handleStartEditingTitle}>{title}</span>
         )}
         <span className="count">{tasks.length}</span>
+        <button
+          className="column-final-toggle"
+          onClick={onSetFinal}
+          title={isFinal ? "Final column" : "Mark as fina; column"}
+        >
+          {isFinal ? "★" : "☆"}
+        </button>
         <button onClick={onDeleteColumn}>x</button>
       </h2>
       <div className="cards">
@@ -183,7 +190,9 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
               id={task.id}
               text={task.text}
               priority={task.priority}
+              status={task.status}
               dueDate={task.dueDate}
+              isDone={isFinal}
               onDelete={() => onDelete(task.id)}
               onEdit={onEdit}
               onEditRequest={() => onEditTask(task.id)}

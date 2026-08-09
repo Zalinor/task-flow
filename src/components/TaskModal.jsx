@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-function TaskModal({columns, onClose, onSubmit, initialStageid = null}) {
+function TaskModal({columns, onClose, onSubmit, initialStageId = null}) {
 
     const [title, setTitle] = useState("");
-    const [stageId, setStageId] = useState(initialStageid ?? columns[0]?.id ?? "");
+    const [stageId, setStageId] = useState(initialStageId ?? columns[0]?.id ?? "");
     const [description, setDescription] = useState("");
     const [priority, setPriority] = useState("Medium");
     const [status, setStatus] = useState("Open");

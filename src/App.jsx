@@ -3,13 +3,17 @@ import Column from './components/Column';
 import EmptyState from './components/EmptyState';
 import TaskModal from './components/TaskModal';
 import TaskDetailModal from './components/TaskDetailModal';
+import FilterPanel from './components/FilterPanel';
+import {getDisplayPriority} from "./utils/task"
 
 import searchIcon from './assets/Search_icon.svg';
-import unionIcon from './assets/Union.svg';
 import userFilter from './assets/User_Filter.svg';
 import filter from './assets/filter.svg';
 import './App.css';
 
+const unionIco = <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.81055 5.18945H12V6.81055H6.81055V12H5.18945V6.81055H0V5.18945H5.18945V0H6.81055V5.18945Z" fill="#82858D"/>
+</svg>
 
 
 function App() {
@@ -19,9 +23,22 @@ function App() {
     return saved ? JSON.parse(saved) : [
       {id: "todo", title: "To Do"},
       {id: "in-progress", title: "In Progress"},
-      {id: "done", title: "Done"},
+      {id: "done", title: "Done", isFinal: true},
     ];
   });
+
+  const handleSetFinalColumn = (columnId) => {
+    setColumns((prevColumns) => 
+      prevColumns.map((column) => ({
+        ...column,
+        isFinal: column.id === columnId ? !column.isFinal : false,
+      }))
+    );
+  }
+
+  const finalColumnId = columns.find((c) => c.isFinal)?.id
+    ?? columns.find((c) => c.id === "done")?.id
+    ?? null;
 
   //Persist columns to localStorage whenever they change
   useEffect(() => {
@@ -59,8 +76,46 @@ function App() {
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
-  
-  const sortedTasks = [...tasks].sort((a, b) => a.order - b.order);
+
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [priorityFilter, setPriorityFilter] = useState("All");
+  const [dueDateSort, setDueDateSort] = useState(null);
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+
+  const hasActiveFilters = statusFilter !== "All" || priorityFilter !== "All" || dueDateSort !== null;
+
+  const handleClearFilters = () => {
+    setStatusFilter("All");
+    setPriorityFilter("All");
+    setDueDateSort(null);
+  };
+
+  const taskMatchesFilters = (task) => {
+    if (statusFilter === "Done") {
+      if (!finalColumnId || task.columnId !== finalColumnId) return false;
+    } else if (statusFilter !== "All" && task.status !== statusFilter) {
+      return false;
+    }
+    if (priorityFilter !== "All" && getDisplayPriority(task) !== priorityFilter) {
+      return false;
+    }
+    return true;
+  };
+
+  const filteredTasks = tasks.filter(taskMatchesFilters);
+
+  const displayTasks = dueDateSort
+    ? [...filteredTasks].sort((a, b) => {
+      if (!a.dueDate && !b.dueDate) return 0;
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return dueDateSort === "asc"
+      ? a.dueDate.localeCompare(b.dueDate)
+      : b.dueDate.localeCompare(a.dueDate);
+    })
+    : [...filteredTasks].sort((a,b) => a.order - b.order);
+
+    const [addTaskContext, setAddTaskContext] = useState(null);
 
   // Creates a new task and adds it to the list, always starting as "todo"
   const handleAddTask = (taskData) => {
@@ -79,7 +134,7 @@ function App() {
       columnId: targetColumnId,
     };
     setTasks([...tasks, newTask]);
-    setIsModalOpen(false);
+    setAddTaskContext(null);
   };
 
   // Removes a task by id
@@ -195,8 +250,9 @@ function App() {
       <div className="task-input-row">
         <button 
           className="task-button"
-          onClick={() => setIsModalOpen(true)}>
-            <img src={unionIcon}/> Add Task
+          onClick={() => setAddTaskContext({columnId: null})}>
+            {unionIco}
+            Add Task
           </button>
         <div className="search-input-wrapper">
           <img src={searchIcon} alt="" className="search-icon" />
@@ -207,18 +263,37 @@ function App() {
           onChange={(event) => setInputValue(event.target.value)} 
         />  
         </div>
-        <button className="filter-button"><img src={filter} alt=""/> Filter</button>
-        <div className="user-filter-row">
-          <button className="user-avatar">
+        <div className="filter-wrapper">
+          <button className="filter-button" onClick={() => setIsFilterPanelOpen((open) => !open)}>
+          <img src={filter} alt=""/> Filter
           </button>
+          {isFilterPanelOpen && (
+            <FilterPanel
+              statusFilter={statusFilter}
+              onStatusChange={setStatusFilter}
+              priorityFilter={priorityFilter}
+              onPriorityChange={setPriorityFilter}
+              dueDateSort={dueDateSort}
+              onDueDateSortChange={setDueDateSort}
+              onClose={() => setIsFilterPanelOpen(false)}
+            />
+          )}
+        </div>
+        
+        <div className="user-filter-row">
+          <button className="user-avatar"></button>
             <button className="user-avatar"></button>
-</div>
-        <a href=""><span>Clear filters</span></a>
+        </div>
+        {hasActiveFilters && (
+          <button className="clear-filters-link" onClick={handleClearFilters}>
+            Clear filters
+          </button>
+        )}
       </div>
     </div>
       
     {columns.length === 0 ? (
-      <EmptyState onAddTask={() => setIsModalOpen(true)} />
+      <EmptyState onAddTask={() => setAddTaskContext({columnId: null})} />
     ) : (
       <div className="board">
       {columns.map((column) => (
@@ -226,7 +301,9 @@ function App() {
           key={column.id}
           title={column.title} 
           columnId={column.id} 
-          tasks={sortedTasks.filter((task) => task.columnId === column.id)} 
+          isFinal={column.id === finalColumnId}
+          onSetFinal={() => handleSetFinalColumn(column.id)}
+          tasks={displayTasks.filter((task) => task.columnId === column.id)} 
           onDelete={handleDelete} 
           onDrop={handleMoveTask} 
           onEdit={handleEdit}
@@ -244,14 +321,17 @@ function App() {
           onColumnReorder={handleReorderColumns}
         />
       ))}
-      <button onClick={handleAddColumn} className="add-column-button"> + Add Column</button>
+      <button onClick={handleAddColumn} className="add-column-button">
+        {unionIco}
+      </button>
     </div>
     )}
     
-      {isModalOpen && (
+      {addTaskContext && (
       <TaskModal
         columns={columns}
-        onClose={() => setIsModalOpen(false)}
+        initialStageId={addTaskContext.columnId}
+        onClose={() => setAddTaskContext(null)}
         onSubmit={handleAddTask}
       />
       )}
