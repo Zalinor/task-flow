@@ -5,6 +5,7 @@ import TaskModal from './components/TaskModal';
 import TaskDetailModal from './components/TaskDetailModal';
 import FilterPanel from './components/FilterPanel';
 import {getDisplayPriority} from "./utils/task"
+import Report from './components/Report';
 
 import searchIcon from './assets/Search_icon.svg';
 import userFilter from './assets/User_Filter.svg';
@@ -14,6 +15,12 @@ import './App.css';
 const unionIco = <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M6.81055 5.18945H12V6.81055H6.81055V12H5.18945V6.81055H0V5.18945H5.18945V0H6.81055V5.18945Z" fill="#82858D"/>
 </svg>
+const PROJECT_NAME = "Your Project";
+const PROJECT_DESCRIPTION = "info about project.";
+const PROJECT_ATTACHMENTS = [
+  {name: "Client_Proporsal.xls", meta: "Today - 4 MB"},
+  {name: "PRD.docx", meta: "Yesterday - Google Docs"},
+];
 
 
 function App() {
@@ -244,55 +251,84 @@ function App() {
       )
     );
   };
+
+  const [activeTab, setActiveTab] = useState("tasks");
+
   return (
     <>
-    <div className="project-row">
-      <div className="task-input-row">
-        <button 
-          className="task-button"
-          onClick={() => setAddTaskContext({columnId: null})}>
-            {unionIco}
-            Add Task
-          </button>
-        <div className="search-input-wrapper">
-          <img src={searchIcon} alt="" className="search-icon" />
-        <input
-          type="text"
-          placeholder="Search Work"
-          value={inputValue}
-          onChange={(event) => setInputValue(event.target.value)} 
-        />  
-        </div>
-        <div className="filter-wrapper">
-          <button className="filter-button" onClick={() => setIsFilterPanelOpen((open) => !open)}>
-          <img src={filter} alt=""/> Filter
-          </button>
-          {isFilterPanelOpen && (
-            <FilterPanel
-              statusFilter={statusFilter}
-              onStatusChange={setStatusFilter}
-              priorityFilter={priorityFilter}
-              onPriorityChange={setPriorityFilter}
-              dueDateSort={dueDateSort}
-              onDueDateSortChange={setDueDateSort}
-              onClose={() => setIsFilterPanelOpen(false)}
-            />
-          )}
-        </div>
-        
-        <div className="user-filter-row">
-          <button className="user-avatar"></button>
-            <button className="user-avatar"></button>
-        </div>
-        {hasActiveFilters && (
-          <button className="clear-filters-link" onClick={handleClearFilters}>
-            Clear filters
-          </button>
-        )}
+    <div className="project-header">
+      <h1>{PROJECT_NAME}</h1>
+      <div className="project-header-actions">
+        <button type="button" className="icon-button">⇪</button>
+        <button type="button" className="icon-button">...</button>
       </div>
     </div>
-      
-    {columns.length === 0 ? (
+
+    <div className="project-tabs">
+      <button
+        type="button"
+        className={`project-tab ${activeTab === "tasks" ? "active" : ""}`}
+        onClick={() => setActiveTab("tasks")}
+      >
+        Tasks
+      </button>
+      <button
+      type="button"
+        className={`project-tab ${activeTab === "report" ? "active" : ""}`}
+        onClick={() => setActiveTab("report")}
+      >
+        Report
+      </button>
+    </div>
+    {activeTab === "tasks" ? (
+      <>
+        <div className="project-row">
+        <div className="task-input-row">
+          <button 
+            className="task-button"
+            onClick={() => setAddTaskContext({columnId: null})}>
+              {unionIco}
+              Add Task
+            </button>
+          <div className="search-input-wrapper">
+            <img src={searchIcon} alt="" className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search Work"
+            value={inputValue}
+            onChange={(event) => setInputValue(event.target.value)} 
+          />  
+          </div>
+          <div className="filter-wrapper">
+            <button className="filter-button" onClick={() => setIsFilterPanelOpen((open) => !open)}>
+            <img src={filter} alt=""/> Filter
+            </button>
+            {isFilterPanelOpen && (
+              <FilterPanel
+                statusFilter={statusFilter}
+                onStatusChange={setStatusFilter}
+                priorityFilter={priorityFilter}
+                onPriorityChange={setPriorityFilter}
+                dueDateSort={dueDateSort}
+                onDueDateSortChange={setDueDateSort}
+                onClose={() => setIsFilterPanelOpen(false)}
+              />
+            )}
+          </div>
+          
+          <div className="user-filter-row">
+            <button className="user-avatar"></button>
+              <button className="user-avatar"></button>
+          </div>
+          {hasActiveFilters && (
+            <button className="clear-filters-link" onClick={handleClearFilters}>
+              Clear filters
+            </button>
+          )}
+        </div>
+      </div>
+
+      {columns.length === 0 ? (
       <EmptyState onAddTask={() => setAddTaskContext({columnId: null})} />
     ) : (
       <div className="board">
@@ -326,7 +362,16 @@ function App() {
       </button>
     </div>
     )}
-    
+    </>
+    ) : (
+      <Report
+        tasks={tasks}
+        finalColumnId={finalColumnId}
+        description={PROJECT_DESCRIPTION}
+        attachments={PROJECT_ATTACHMENTS}
+      />
+    )}
+
       {addTaskContext && (
       <TaskModal
         columns={columns}
