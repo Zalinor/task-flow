@@ -267,9 +267,9 @@ body {
   fill: #fff;
 }
 
-.task-input-row button:hover {
+/* .task-input-row button:hover {
   background-color: #1C1B2B;
-}
+} */
 
 .task-menu-wrapper {
   position: relative;
@@ -300,7 +300,7 @@ cursor: pointer;
 color: var(--text-h);
 }
 
-.task-menu button:hover {
+.add-task-button:hover {
   background-color: f0f0f2;
 }
 
@@ -353,6 +353,10 @@ color: var(--text-h);
   align-items: center;
   justify-content: space-evenly;
   border: 0.5pt solid var(--border-task);
+}
+
+.filter-button:hover {
+  background-color: var(--bg);
 }
 
 .filter-wrapper {
@@ -421,6 +425,7 @@ color: var(--text-h);
   cursor: pointer;
   padding: 0;
   transition: border-color 0.2s;
+  background-color: #F0F2F5;
 }
 
 .user-avatar:hover {
@@ -437,6 +442,7 @@ color: var(--text-h);
 }
 
 .column {
+  position: relative;
   width: 380px;
   background-color: white;
   border-radius: 16px;
@@ -465,6 +471,19 @@ color: var(--text-h);
   padding: 0 4px;
 }
 
+.column-delete-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color:  red;
+  font-size: 20px;
+  opacity: 0;
+  cursor: pointer;
+}
+
+
 .add-column-button{
   width: 46px;
   height: 46px;
@@ -473,9 +492,9 @@ color: var(--text-h);
   border-radius: 8px;
 }
 
-/* .add-column-button img {
-  filter: ;
-} */
+.add-column-button svg {
+  fill: #82858D;
+}
 
 .cards {
   display: flex;
@@ -797,6 +816,10 @@ color: var(--text-h);
   opacity: 1;
 }
 
+.column:hover .column-delete-button{
+  opacity: 1;
+}
+
 .add-task-in-column:hover {
   color: var(--button-bg);
 }
@@ -876,7 +899,6 @@ label input, textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 32px 0;
 }
 
 .project-header h1 {
@@ -890,21 +912,27 @@ label input, textarea {
 }
 
 .icon-button {
-  width: 36px;
-  height: 36px;
+  width: 46px;
+  height: 46px;
   border-radius: 8px;
   border: 1pt solid #e2e8f0;
-  background: #fff;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-button:hover {
+  background-color: white;
 }
 
 .project-tabs {
   display: inline-flex;
   gap: 4px;
-  margin: 16px 32px;
   padding: 4px;
   background: #f1f3f6;
   border-radius: 10px;
-  width: fit-content;
+  width: 200px;
 }
 
 .project-tab {
@@ -912,13 +940,17 @@ label input, textarea {
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: #64748b;
+  color: #818089;
+  width: 100px;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .project-tab.active {
+  width: 100px;
+  height: 46px;
   background: #fff;
   color: #0f172a;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .report {

@@ -147,6 +147,7 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
       onDragLeave={handleContainerDragLeave}
       onDrop={handleContainerDrop}
     >
+      <button onClick={onDeleteColumn} className="column-delete-button">х</button>
       <h2
         draggable={!isEditingTitle}
         onDragStart={handleColumnDragStart}
@@ -174,7 +175,6 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
         >
           {isFinal ? "★" : "☆"}
         </button>
-        <button onClick={onDeleteColumn}>x</button>
       </h2>
       <div className="cards">
         {tasks.map((task) => (
