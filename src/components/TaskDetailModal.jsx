@@ -154,7 +154,7 @@ function TaskDetailModal({task, columns, onClose, onSave, onAddComment, onDelete
                         </p>
 
                         <div className="task-detail-comments">
-                            <h4>Comments</h4>
+                            <label>Comments</label>
                             <div className="comments-list">
                                 {comments.length === 0 && <p className="no-comments">No comments yet</p>}
                                 {comments.map((comment) => (
@@ -162,9 +162,9 @@ function TaskDetailModal({task, columns, onClose, onSave, onAddComment, onDelete
                                         <div className="comment-avatar"/>
                                         <div>
                                             <p className="comment-meta">
-                                                <strong>{comment.author}</strong> {formatUpdatedAt(comment.createdAt)}
+                                                <strong>{comment.author}</strong>{formatUpdatedAt(comment.createdAt)}
                                             </p>
-                                            <p>{comment.text}</p>
+                                            <p className="comment-text">{comment.text}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -173,6 +173,7 @@ function TaskDetailModal({task, columns, onClose, onSave, onAddComment, onDelete
                                 <input 
                                     type="text"
                                     placeholder="Write a comment"
+                                    className="task-detail-input"
                                     value={commentDraft}
                                     onChange={(event) => setCommentDraft(event.target.value)} 
                                 />

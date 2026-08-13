@@ -212,7 +212,7 @@ body {
 }
 
 .task-input-row input {
-  padding: 10px 12px;
+  padding: 10px 10px;
   border-radius: 8px;
   border: 1px solid #3a3a4a;
   background-color: #f7f7f8;
@@ -373,18 +373,29 @@ color: var(--text-h);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   border: 0.5px solid var(--border-task);
   padding: 16px;
-  min-width: 200px;
   z-index: 20;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 220px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .filter-group h4 {
   margin: 0 0 8px;
   font-size: 13px;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: #9E9E9E;
+}
+
+.filter-group:not(:last-child) {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-task);
 }
 
 .filter-option {
@@ -392,9 +403,40 @@ color: var(--text-h);
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  padding: 4px 0;
   cursor: pointer;
   color: var(--text-h);
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.filter-option input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  min-width: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #d0d0d8;
+  margin: 0;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.15s ease;
+}
+
+.filter-option input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #6c8cff;
+  transform: translate(-50%, -50%);
+}
+
+.filter-option:hover input[type="radio"] {
+  border-color: #6c8cff;
 }
 
 .clear-filters-link {
@@ -469,6 +511,12 @@ color: var(--text-h);
   font-size: 16px;
   color: #f5a623;
   padding: 0 4px;
+  position: absolute;
+  top: 10px;
+  right: 30px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 1s;
 }
 
 .column-delete-button {
@@ -481,6 +529,7 @@ color: var(--text-h);
   font-size: 20px;
   opacity: 0;
   cursor: pointer;
+  transition: opacity 1s ease;
 }
 
 
@@ -684,6 +733,16 @@ color: var(--text-h);
   color: var(--modal-text);
 }
 
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("./assets/select.svg");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px;
+}
+
 .modal select {
   background-color:#ffffff;
 
@@ -741,8 +800,8 @@ color: var(--text-h);
 }
 
 .task-detail-modal {
-  width: 860px;
-  max-width: 95vw;
+  width: 960px;
+  height: 670px;
 }
 
 .task-detail-menu-wrapper {
@@ -753,19 +812,26 @@ color: var(--text-h);
 
 .task-detail-body {
   display: flex;
-  gap: 32px;
   margin-top: 16px;
 }
 
 .task-detail-left {
-  flex: 1.4;
+  width: 600px;
+  height: 450px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
+.task-detail-left:not(:last-child) {
+  margin-right: 20px;
+  padding-right: 20px;
+  border-right: 1px solid var(--border-task);
+}
+
 .task-detail-right {
-  flex:1;
+  width: 250px;
+  height: 450px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -773,8 +839,14 @@ color: var(--text-h);
 
 .task-detail-field label {
   display: flex;
-  align-items: center;
+  flex-direction: row;
   gap: 6px;
+}
+
+.task-detail-field p {
+  font-size: 14px;
+  font-weight: 300;
+  color: #6C6C6C;
 }
 
 .task-detail-title-input {
@@ -786,6 +858,10 @@ color: var(--text-h);
   font-family: var(--sans);
   flex: 1;
   color: white;
+}
+
+.task-detail-input {
+  background-color: var(--bg);
 }
 
 .task-done-text {
@@ -817,6 +893,10 @@ color: var(--text-h);
 }
 
 .column:hover .column-delete-button{
+  opacity: 1;
+}
+
+.column:hover .column-final-toggle {
   opacity: 1;
 }
 
@@ -871,6 +951,15 @@ color: var(--text-h);
   font-size: 12px;
   color: #9E9E9E;
   margin: 0 0 2px;
+}
+
+.comment-meta strong {
+  color: black;
+}
+
+.comment-text {
+  font-size: 12px;
+  color: #6C6C6C;
 }
 
 .no-comments {
@@ -1040,4 +1129,26 @@ label input, textarea {
 .attachment-meta {
   font-size: 13px;
   color: #94a3b8;
+}
+
+.empty-state {
+  width: 100%;
+  border: 1pt dashed #82858D;
+  border-radius: 16px;
+  height: 245px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state .task-button {
+  width: 194px;
+}
+
+.empty-state p {
+  font-size: 16px;
+  font-weight: 400;
+  color: #82858d;
+  margin-bottom: 13px;
 }

@@ -92,7 +92,7 @@ function FilterPanel({
                          checked={dueDateSort === "desc"}
                          onChange={() => onDueDateSortChange("desc")}
                         />
-                        Latest first
+                        <span>Latest first</span>
                     </label>
             </div>
         </div>

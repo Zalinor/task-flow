@@ -148,6 +148,13 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
       onDrop={handleContainerDrop}
     >
       <button onClick={onDeleteColumn} className="column-delete-button">х</button>
+      <button
+          className="column-final-toggle"
+          onClick={onSetFinal}
+          title={isFinal ? "Final column" : "Mark as fina; column"}
+        >
+          {isFinal ? "★" : "☆"}
+        </button>
       <h2
         draggable={!isEditingTitle}
         onDragStart={handleColumnDragStart}
@@ -168,13 +175,7 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
           <span onClick={handleStartEditingTitle}>{title}</span>
         )}
         <span className="count">{tasks.length}</span>
-        <button
-          className="column-final-toggle"
-          onClick={onSetFinal}
-          title={isFinal ? "Final column" : "Mark as fina; column"}
-        >
-          {isFinal ? "★" : "☆"}
-        </button>
+        
       </h2>
       <div className="cards">
         {tasks.map((task) => (
