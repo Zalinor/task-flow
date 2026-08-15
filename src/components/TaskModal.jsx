@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function TaskModal({columns, onClose, onSubmit, initialStageId = null}) {
+function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = null}) {
 
     const [title, setTitle] = useState("");
     const [stageId, setStageId] = useState(initialStageId ?? columns[0]?.id ?? "");
@@ -8,6 +8,22 @@ function TaskModal({columns, onClose, onSubmit, initialStageId = null}) {
     const [priority, setPriority] = useState("Medium");
     const [status, setStatus] = useState("Open");
     const [dueDate, setDueDate] = useState("");
+
+    const handleStageChange = (event) => {
+        const newStageId = event.target.value;
+        setStageId(newStageId);
+        if (finalColumnId && newStageId === finalColumnId) {
+            setStatus("Completed");
+        }
+    }
+
+    const handleStatusChange = (event) => {
+        const newStatus = event.target.value;
+        setStatus(newStatus);
+        if (newStatus === "Completed" && finalColumnId) {
+            setStageId(finalColumnId);
+        }
+    }
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -47,7 +63,7 @@ function TaskModal({columns, onClose, onSubmit, initialStageId = null}) {
                 {columns.length > 0 &&(
                     <label>
                         Stage
-                        <select value={stageId} onChange={(event) => setStageId(event.target.value)}>
+                        <select value={stageId} onChange={handleStageChange}>
                             {columns.map((column) => (
                                 <option key={column.id} value={column.id}>{column.title}</option>
                             ))}
@@ -77,7 +93,7 @@ function TaskModal({columns, onClose, onSubmit, initialStageId = null}) {
 
                         <label >
                         Status
-                            <select value={status} onChange={(event) => setStatus(event.target.value)}>
+                            <select value={status} onChange={handleStatusChange}>
                                 <option value="Open">Open</option>
                                 <option value="In Review">In Review</option>
                                 <option value="Frozen">Frozen</option>

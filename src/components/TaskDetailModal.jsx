@@ -15,7 +15,7 @@ function formatUpdatedAt(isoString) {
     return `${month}/${day}`;
 }
 
-function TaskDetailModal({task, columns, onClose, onSave, onAddComment, onDelete, onEdit}) {
+function TaskDetailModal({task, columns, finalColumnId, onClose, onSave, onAddComment, onDelete, onEdit}) {
     const [stageId, setStageId] = useState(task.columnId);
     const [priority, setPriority] = useState(task.priority ?? "Medium");
     const [status, setStatus] = useState(task.status ?? "Open");
@@ -31,6 +31,22 @@ function TaskDetailModal({task, columns, onClose, onSave, onAddComment, onDelete
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const comments = task.comments ?? [];
+
+    const handleStageChange = (event) => {
+        const newStageId = event.target.value;
+        setStageId(newStageId);
+        if (finalColumnId && newStageId === finalColumnId) {
+            setStatus("Completed");
+        }
+    }
+
+    const handleStatusChange = (event) => {
+        const newStatus = event.target.value;
+        setStatus(newStatus);
+        if (newStatus === "Completed" && finalColumnId) {
+            setStageId(finalColumnId);
+        }
+    }
 
     const handleSave = () => {
         onSave({
@@ -186,7 +202,7 @@ function TaskDetailModal({task, columns, onClose, onSave, onAddComment, onDelete
                         <div className="modal-row">
                             <label>
                                 Stage
-                                <select value={stageId} onChange={(event) => setStageId(event.target.value)}>
+                                <select value={stageId} onChange={handleStageChange}>
                                     {columns.map((column) => (
                                         <option key={column.id} value={column.id}>{column.title}</option>
                                     ))}
@@ -208,6 +224,7 @@ function TaskDetailModal({task, columns, onClose, onSave, onAddComment, onDelete
                                 <option value="Open">Open</option>
                                 <option value="In Review">In Review</option>
                                 <option value="Frozen">Frozen</option>
+                                <option value="Completed">Completed</option>
                             </select>
                         </label>
 

@@ -5,7 +5,7 @@ const STATUS_OPTIONS = [
     {value: "Open", label: "Open"},
     {value: "In Review", label: "In Review"},
     {value: "Frozen", label: "Frozen"},
-    {value: "Done", label: "Done"},
+    {value: "Completed", label: "Completed"},
 ];
 
 const PRIORITY_OPTIONS = [

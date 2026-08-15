@@ -29,7 +29,7 @@ const docIco = <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns
 
 
 
-function Report({tasks, finalColumnId, description, attachments}) {
+function Report({tasks, description, attachments}) {
     const stats = useMemo(() => {
         const todayStr = new Date().toISOString().slice(0, 10);
 
@@ -39,7 +39,7 @@ function Report({tasks, finalColumnId, description, attachments}) {
         let overdue = 0;
 
         for (const task of tasks) {
-            const isCompleted = finalColumnId !== null && task.ColumnId === finalColumnId;
+            const isCompleted = task.status === "Completed";
 
             if (task.status === "In Review") pending += 1;
             if (isCompleted) completed += 1;
@@ -48,7 +48,7 @@ function Report({tasks, finalColumnId, description, attachments}) {
         }
 
         return {total: tasks.length, pending, completed, frozen, overdue}
-    }, [tasks, finalColumnId]);
+    }, [tasks]);
 
     return (
         <div className="report">

@@ -107,9 +107,7 @@ function App() {
   };
 
   const taskMatchesFilters = (task) => {
-    if (statusFilter === "Done") {
-      if (!finalColumnId || task.columnId !== finalColumnId) return false;
-    } else if (statusFilter !== "All" && task.status !== statusFilter) {
+    if (statusFilter !== "All" && task.status !== statusFilter) {
       return false;
     }
     if (priorityFilter !== "All" && getDisplayPriority(task) !== priorityFilter) {
@@ -161,9 +159,15 @@ function App() {
   // Updates a task's status when it's dropped into a different column
   const handleMoveTask = (taskId, newColumnId) => {
     setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, columnId: newColumnId } : task
-      )
+      tasks.map((task) => {
+        if (task.id !== taskId) return task; 
+        const isMovingToFinal = finalColumnId !== null && newColumnId === finalColumnId;
+        return {
+          ...task,
+          columnId: newColumnId,
+          status: isMovingToFinal ? "Completed" : task.status,
+        };
+      })
     );
   };
 
@@ -375,7 +379,6 @@ function App() {
     ) : (
       <Report
         tasks={tasks}
-        finalColumnId={finalColumnId}
         description={PROJECT_DESCRIPTION}
         attachments={PROJECT_ATTACHMENTS}
       />
@@ -384,6 +387,7 @@ function App() {
       {addTaskContext && (
       <TaskModal
         columns={columns}
+        finalColumnId={finalColumnId}
         initialStageId={addTaskContext.columnId}
         onClose={() => setAddTaskContext(null)}
         onSubmit={handleAddTask}
@@ -393,6 +397,7 @@ function App() {
         <TaskDetailModal
           task={editingTask}
           columns={columns}
+          finalColumnId={finalColumnId}
           onClose={() => setEditingTaskId(null)}
           onSave={handleUpdateTask}
           onAddComment={handleAddComment}
