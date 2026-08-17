@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename}) {
+function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename, onDelete}) {
     const [isEditing, setIsEditing] = useState(shouldAutoEdit);
     const [draftName, setDraftName] = useState(project.name ?? "");
 
@@ -18,6 +18,10 @@ function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename}
         setIsEditing(false);
     };
 
+    const handleDeleteClick = (event) => {
+        event.stopPropagation();
+        onDelete(project.id);
+    };
 
     return (
         <div 
@@ -46,11 +50,12 @@ function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename}
                     </button>
                 </span>
             )}
+            <button type="button" className="sidebar-project-delete" onClick={handleDeleteClick}>🗑</button>
         </div>
     );
 }
 
-function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProject, onAddProject, onRenameProject}) {
+function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProject, onAddProject, onRenameProject, onDeleteProject}) {
     return (
         <aside className="sidebar">
             <div className="sidebar-workspace">
@@ -78,11 +83,12 @@ function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProje
                     {projects.map((project) => (
                         <ProjectListItem
                             key={project.id}
-                            project={projects}
+                            project={project}
                             isActive={project.id === activeProjectId}
                             shouldAutoEdit={project.id === justCreatedProjectId}
                             onSelect={onSelectProject}
                             onRename={onRenameProject}
+                            onDelete={onDeleteProject}
                         />
                     ))}
                     <button type="button" className="sidebar-add-project" onClick={onAddProject}>

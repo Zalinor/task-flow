@@ -1282,7 +1282,22 @@ label input, textarea {
   transition: opacity 0.15s ease;
 }
 
+.sidebar-project-delete {
+  margin-left: auto;
+  opacity: 0;
+  border: none;
+  background: transparent;
+  color: #ef4444;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
 .sidebar-project-row:hover .sidebar-project-rename{
+  opacity: 1;
+}
+
+.sidebar-project-row:hover .sidebar-project-delete{
   opacity: 1;
 }
 

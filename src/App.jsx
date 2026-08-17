@@ -71,6 +71,18 @@ function App () {
     );
   };
 
+  const handleDeleteProject = (projectId) => {
+    setProjects((prevProjects) => {
+      const remaining = prevProjects.filter((project) => project.id !== projectId);
+      return remaining.length > 0 ? remaining : [{id: crypto.randomUUID(), name: 
+      generateProjectName([]) }];
+      });
+      localStorage.removeItem(`project-${projectId}-columns`);
+      localStorage.removeItem(`project-${projectId}-tasks`);
+      setActiveProjectId((prevActiveId) =>
+      prevActiveId === projectId ? null : prevActiveId
+      );
+    };
   const activeProject = projects.find((project) => project.id === activeProjectId) ?? projects[0];
 
   return (
@@ -82,6 +94,7 @@ function App () {
         onSelectProject={setActiveProjectId}
         onAddProject={handleAddProject}
         onRenameProject={handleRenameProject}
+        onDeleteProject={handleDeleteProject}
       />
       {activeProject && (
         <ProjectBoard
