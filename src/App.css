@@ -356,6 +356,11 @@ color: var(--text-h);
   position: relative;
 }
 
+.filter-wrapper img {
+  width: 25px;
+  height: 25px;
+}
+
 .filter-panel {
   position: absolute;
   top: 100%;
