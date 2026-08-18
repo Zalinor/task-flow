@@ -19,7 +19,7 @@ function formatDueDate(dueDate) {
   return `${month}/${day}`;
 }
 // A single task card. Recieves data via props from the parent (Column)
-function TaskCard({text, id, priority, status, dueDate, isDone, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
+function TaskCard({text, id, priority, status, dueDate, isDone, isSelectMode, isSelected, onToggleSelect, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftText, setDraftText] = useState(text);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,18 +46,33 @@ function TaskCard({text, id, priority, status, dueDate, isDone, onDelete, onEdit
     onDragStart(id);
   }
 
+  const handleCardClick = () => {
+    if (isSelectMode) {
+      onToggleSelect(id);
+    }
+  };
+
   const formattedDate = formatDueDate(dueDate);
-  const displayPriority = getDisplayPriority({priority, status});
-  const priorityClass = PRIORITY_CLASSES[displayPriority] ?? "priority-medium";
+  const priorityClass = PRIORITY_CLASSES[getDisplayPriority({priority, status})] ?? "priority-medium";
 
   return ( 
     <div 
-      className="card"
-      draggable={!isEditing}
+      className={`card ${isSelectMode ? "card-select-mode" : ""} ${isSelected ? "card-selected" : ""}`}
+      draggable={!isEditing && !isSelectMode}
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
+      onClick={handleCardClick}
     >
     <div className="card-high-layer">
+      {isSelectMode && (
+        <input 
+          type="checkbox" 
+          className="card-select-checkbox"
+          checked={isSelected}
+          onChange={() => onToggleSelect(id)}
+          onClick={(event) => event.stopPropagation()}  
+        />
+      )}
       {isEditing ? (
         // Edit mode: an input bound to the draft text
         <input
@@ -71,23 +86,26 @@ function TaskCard({text, id, priority, status, dueDate, isDone, onDelete, onEdit
           autoFocus
         />
       ) : (
-        <span onClick={handleStartEditing} className={isDone ? "task-done-text" : ""}>
+        <span onClick={isSelectMode ? undefined : handleStartEditing} className={isDone ? "task-done-text" : ""}>
           {isDone && <span className="done-check">✓</span>}
-          {text} <span className={`priority-badge ${priorityClass}`}>{displayPriority}</span> 
+          {text} <span className={`priority-badge ${priorityClass}`}>{getDisplayPriority({priority, status})}</span> 
         </span>
       )}
-      <div className="task-menu-wrapper">
-        <button onClick={() => setIsMenuOpen((open) => !open)}>
-          <img src={ellipsis}/>
-          </button>
-          {isMenuOpen && (
-            <TaskMenu
-              onEdit={() => {setIsMenuOpen(false); onEditRequest();}}
-              onDelete={() => {setIsMenuOpen(false); onDelete();}}
-              onClose={() => setIsMenuOpen(false)}
-            />
-          )}
-      </div>
+      {!isSelectMode && (
+        <div className="task-menu-wrapper">
+          <button onClick={(event) => {event.stopPropagation(); setIsMenuOpen((open) => !open)}}>
+            <img src={ellipsis}/>
+            </button>
+            {isMenuOpen && (
+              <TaskMenu
+                onEdit={() => {setIsMenuOpen(false); onEditRequest();}}
+                onDelete={() => {setIsMenuOpen(false); onDelete();}}
+                onClose={() => setIsMenuOpen(false)}
+              />
+            )}
+        </div>
+      )}
+      
       
     </div>
     <div className="card-low-layer">

@@ -7,7 +7,7 @@ import FilterPanel from './FilterPanel';
 import {getDisplayPriority} from "../utils/task"
 import Report from './Report';
 
-import { unionIco, shareIco, ellipsisIco, searchIcon, userFilter, filter } from '../icons';
+import { unionIco, shareIco, ellipsisIco, userFilter, filter, selectIco } from '../icons';
 import '../App.css';
 
 
@@ -143,20 +143,52 @@ function ProjectBoard({projectId, projectName}) {
     setTasks(tasks.filter((task) => task.id !== id));
   }
 
-  // Updates a task's status when it's dropped into a different column
-  const handleMoveTask = (taskId, newColumnId) => {
-    setTasks(
-      tasks.map((task) => {
-        if (task.id !== taskId) return task; 
-        const isMovingToFinal = finalColumnId !== null && newColumnId === finalColumnId;
-        return {
-          ...task,
-          columnId: newColumnId,
-          status: isMovingToFinal ? "Completed" : task.status,
-        };
-      })
-    );
+  const moveTaskToColumn = (task, newColumnId) => {
+    const isMovingToFinal = finalColumnId !== null && newColumnId === finalColumnId;
+    return {
+      ...task,
+      columnId: newColumnId,
+      status: isMovingToFinal ? "Completed" : task.status,
+    };
   };
+
+  const handleMoveTask = (taskId, newColumnId) => {
+    setTasks(tasks.map((task) => (task.id === taskId ? moveTaskToColumn(task, newColumnId) : task)));
+  };
+
+  const [isSelectMode, setIsSelectMode] = useState(false)
+  const [selectedTaskIds, setSelectedTaskIds] = useState(new Set());
+
+  const handleToggleSelectMode = () => {
+    setIsSelectMode((prev) => !prev);
+    setSelectedTaskIds(new Set());
+ };
+
+ const handleToggleTaskSelection = (taskId) => {
+  setSelectedTaskIds((prev) => {
+    const next = new Set(prev);
+    if (next.has(taskId)) {
+      next.delete(taskId);
+    } else {
+      next.add(taskId);
+    }
+    return next;
+  });
+ };
+
+ const handleDeleteSelected = () => {
+  setTasks((prevTasks) => prevTasks.filter((task) => !selectedTaskIds.has(task.id)));
+  setSelectedTaskIds(new Set());
+  setIsSelectMode(false);
+ };
+
+ const handleMoveSeleted = (targetColumnId) => {
+  setTasks((prevTasks) =>
+  prevTasks.map((task) => (selectedTaskIds.has(task.id) ? moveTaskToColumn(task, targetColumnId) : task))
+  );
+  setSelectedTaskIds(new Set());
+  setIsSelectMode(false);
+ };
 
 // Updates a task's text after inline editing finishes 
   const handleEdit = (id, newText) => {
@@ -290,15 +322,13 @@ function ProjectBoard({projectId, projectName}) {
               {unionIco}
               Add Task
             </button>
-          <div className="search-input-wrapper">
-            {searchIcon}
-          <input className="add-task-button"
-            type="text"
-            placeholder="Search Work"
-            value={inputValue}
-            onChange={(event) => setInputValue(event.target.value)} 
-          />  
-          </div>
+            <button 
+              type="button"
+              className={`select-button ${isSelectMode ? "active" : ""}`}
+              onClick={handleToggleSelectMode}
+            >
+              {selectIco} {isSelectMode ? "Cancel" : "Select"}
+            </button>
           <div className="filter-wrapper">
             <button className="filter-button" onClick={() => setIsFilterPanelOpen((open) => !open)}>
             {filter} Filter
@@ -326,6 +356,34 @@ function ProjectBoard({projectId, projectName}) {
             </button>
           )}
         </div>
+        
+        {isSelectMode && (
+          <div className="selection-bar">
+            <span className="selection-count">{selectedTaskIds.size} selected</span>
+            <select 
+              className="selection-move-select"
+              value=""
+              onChange={(event) => {
+                if (event.target.value) handleMoveSeleted(event.target.value);
+              }}
+              disabled={selectedTaskIds.size === 0}
+              >
+                <option value="" disabled>Move to...</option>
+                {columns.map((column) => (
+                  <option key={column.id} value={column.id}>{column.title}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="selection-delete-button"
+                onClick={handleDeleteSelected}
+                disabled={selectedTaskIds.size === 0}
+              >
+                Delete
+              </button>
+          </div>
+        )}
+
       </div>
 
       {columns.length === 0 ? (
@@ -355,6 +413,9 @@ function ProjectBoard({projectId, projectName}) {
           onColumnDragStart={setDraggedColumnId}
           onColumnDragEnd={() => setDraggedColumnId(null)}
           onColumnReorder={handleReorderColumns}
+          isSelectMode={isSelectMode}
+          selectedTaskIds={selectedTaskIds}
+          onToggleTaskSelection={handleToggleTaskSelection}
         />
       ))}
       <button onClick={handleAddColumn} className="add-column-button">

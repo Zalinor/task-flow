@@ -22,32 +22,36 @@ export const userFilter = (<svg width="32" height="32" viewBox="0 0 32 32" fill=
 </svg>);
 
 export const filter = (<svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M0.834961 2.31177H12.3943M2.76152 6.16489H10.4678M5.0734 10.018H8.1559" stroke="#31373D" stroke-width="1.67" stroke-linecap="square" stroke-linejoin="round"/>
+<path d="M0.834961 2.31177H12.3943M2.76152 6.16489H10.4678M5.0734 10.018H8.1559" stroke="#31373D" strokeWidth="1.67" strokeLinecap="square" strokeLinejoin="round"/>
 </svg>);
 
 export const totalTaskIco = (<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M2.5 3.26318H17.5" stroke="#0000FF" stroke-width="1.63" stroke-linecap="square" stroke-linejoin="round"/>
-<path d="M2.5 10H17.5" stroke="#0000FF" stroke-width="1.63" stroke-linecap="square" stroke-linejoin="round"/>
-<path d="M2.5 16.7368H17.5" stroke="#0000FF" stroke-width="1.63" stroke-linecap="square" stroke-linejoin="round"/>
+<path d="M2.5 3.26318H17.5" stroke="#0000FF" strokeWidth="1.63" strokeLinecap="square" strokeLinejoin="round"/>
+<path d="M2.5 10H17.5" stroke="#0000FF" strokeWidth="1.63" strokeLinecap="square" strokeLinejoin="round"/>
+<path d="M2.5 16.7368H17.5" stroke="#0000FF" strokeWidth="1.63" strokeLinecap="square" strokeLinejoin="round"/>
 </svg>);
 export const pendingIco = (<svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M14.1488 1.08301C15.7906 1.84875 17.1796 3.06755 18.1522 4.59596C19.1248 6.12438 19.6407 7.89881 19.639 9.71046C19.639 12.2066 18.6474 14.6005 16.8823 16.3656C15.1173 18.1306 12.7234 19.1222 10.2272 19.1222C7.73104 19.1222 5.33712 18.1306 3.57208 16.3656C1.80703 14.6005 0.815434 12.2066 0.815434 9.71046C0.813735 7.89881 1.32955 6.12438 2.30218 4.59596C3.27481 3.06755 4.66377 1.84875 6.30563 1.08301" stroke="#DA843D" stroke-width="1.63" stroke-linecap="square" stroke-linejoin="round"/>
+<path d="M14.1488 1.08301C15.7906 1.84875 17.1796 3.06755 18.1522 4.59596C19.1248 6.12438 19.6407 7.89881 19.639 9.71046C19.639 12.2066 18.6474 14.6005 16.8823 16.3656C15.1173 18.1306 12.7234 19.1222 10.2272 19.1222C7.73104 19.1222 5.33712 18.1306 3.57208 16.3656C1.80703 14.6005 0.815434 12.2066 0.815434 9.71046C0.813735 7.89881 1.32955 6.12438 2.30218 4.59596C3.27481 3.06755 4.66377 1.84875 6.30563 1.08301" stroke="#DA843D" strokeWidth="1.63" strokeLinecap="square" strokeLinejoin="round"/>
 </svg>);
 export const completedIco = (<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="0.833008" y="0.833252" width="20" height="20" rx="10" stroke="#00B72B" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6.66602 11.6666L9.16602 14.1666L14.9993 8.33325" stroke="#00B72B" stroke-width="1.66667" stroke-linecap="square" stroke-linejoin="round"/>
+<rect x="0.833008" y="0.833252" width="20" height="20" rx="10" stroke="#00B72B" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M6.66602 11.6666L9.16602 14.1666L14.9993 8.33325" stroke="#00B72B" strokeWidth="1.66667" strokeLinecap="square" strokeLinejoin="round"/>
 </svg>);
 export const overdueIco = (<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="0.833008" y="0.833252" width="20" height="20" rx="10" stroke="#F30004" stroke-width="1.66667" stroke-miterlimit="10"/>
-<path d="M10.833 11.6666V5.83325" stroke="#F30004" stroke-width="1.66667" stroke-linecap="square" stroke-linejoin="round"/>
+<rect x="0.833008" y="0.833252" width="20" height="20" rx="10" stroke="#F30004" strokeWidth="1.66667" strokeMiterlimit="10"/>
+<path d="M10.833 11.6666V5.83325" stroke="#F30004" strokeWidth="1.66667" strokeLinecap="square" strokeLinejoin="round"/>
 <path d="M10.833 16.6665C11.5234 16.6665 12.083 16.1069 12.083 15.4165C12.083 14.7261 11.5234 14.1665 10.833 14.1665C10.1427 14.1665 9.58301 14.7261 9.58301 15.4165C9.58301 16.1069 10.1427 16.6665 10.833 16.6665Z" fill="#F30004"/>
 </svg>);
 export const frozenIco = (<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="0.833008" y="0.833252" width="20" height="20" rx="10" stroke="#6C6C6C" stroke-width="1.66667" stroke-miterlimit="10"/>
-<path d="M8.33301 7.5V14.1667" stroke="#6C6C6C" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M13.333 7.5V14.1667" stroke="#6C6C6C" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.33301 7.5V14.1667" stroke="#6C6C6C" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M13.333 7.5V14.1667" stroke="#6C6C6C" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>);
 export const docIco = (<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12.4997 1.66675H4.99967C4.55765 1.66675 4.13372 1.84234 3.82116 2.1549C3.5086 2.46746 3.33301 2.89139 3.33301 3.33341V16.6667C3.33301 17.1088 3.5086 17.5327 3.82116 17.8453C4.13372 18.1578 4.55765 18.3334 4.99967 18.3334H14.9997C15.4417 18.3334 15.8656 18.1578 16.1782 17.8453C16.4907 17.5327 16.6663 17.1088 16.6663 16.6667V5.83341L12.4997 1.66675Z" stroke="#6C6C6C" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M11.667 1.66675V5.00008C11.667 5.44211 11.8426 5.86603 12.1551 6.17859C12.4677 6.49115 12.8916 6.66675 13.3337 6.66675H16.667" stroke="#6C6C6C" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4997 1.66675H4.99967C4.55765 1.66675 4.13372 1.84234 3.82116 2.1549C3.5086 2.46746 3.33301 2.89139 3.33301 3.33341V16.6667C3.33301 17.1088 3.5086 17.5327 3.82116 17.8453C4.13372 18.1578 4.55765 18.3334 4.99967 18.3334H14.9997C15.4417 18.3334 15.8656 18.1578 16.1782 17.8453C16.4907 17.5327 16.6663 17.1088 16.6663 16.6667V5.83341L12.4997 1.66675Z" stroke="#6C6C6C" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M11.667 1.66675V5.00008C11.667 5.44211 11.8426 5.86603 12.1551 6.17859C12.4677 6.49115 12.8916 6.66675 13.3337 6.66675H16.667" stroke="#6C6C6C" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>);
+
+export const selectIco = (<svg width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.53418 4.03223C7.63638 3.98169 7.75798 3.99339 7.84863 4.0625L12.9561 7.96387H13.25V8.18848L15.8486 10.1738C15.9507 10.2519 15.9923 10.386 15.9512 10.5078C15.9099 10.6296 15.7956 10.7119 15.667 10.7119H13.2285C13.0616 12.1409 11.8488 13.25 10.375 13.25H8.81152L7.90918 14.4785C7.8324 14.5829 7.69638 14.6263 7.57324 14.5859C7.45023 14.5455 7.36729 14.4303 7.36719 14.3008V4.30078C7.36719 4.18671 7.43196 4.08283 7.53418 4.03223ZM1.25 10.375C1.25 11.2725 1.97754 12 2.875 12H5.28613V13.25H2.875C1.28718 13.25 0 11.9628 0 10.375V7.96387H1.25V10.375ZM10.6758 10.7119L9.72949 12H10.375C11.1569 12 11.8086 11.4476 11.9639 10.7119H10.6758ZM8.53809 11.6523L9.98828 9.67871L10.0361 9.62695C10.0896 9.58179 10.158 9.55673 10.2295 9.55664H12V8.69434L8.53809 6.0498V11.6523ZM5.28613 1.25H2.875C1.97754 1.25 1.25 1.97754 1.25 2.875V5.28613H0V2.875C0 1.28718 1.28718 0 2.875 0H5.28613V1.25ZM10.375 0C11.9628 0 13.25 1.28718 13.25 2.875V5.28613H12V2.875C12 1.97754 11.2725 1.25 10.375 1.25H7.96387V0H10.375Z" fill="#030213"/>
 </svg>);

@@ -3,7 +3,7 @@ import TaskCard from './TaskCard';
 
 
 
-function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, onAddTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder, isFinal, onSetFinal}) {
+function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, onAddTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder, isFinal, onSetFinal, isSelectMode, selectedTaskIds, onToggleTaskSelection}) {
   
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
@@ -194,6 +194,9 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
               status={task.status}
               dueDate={task.dueDate}
               isDone={isFinal}
+              isSelectMode={isSelectMode}
+              isSelected={selectedTaskIds.has(task.id)}
+              onToggleSelect={onToggleTaskSelection}
               onDelete={() => onDelete(task.id)}
               onEdit={onEdit}
               onEditRequest={() => onEditTask(task.id)}
