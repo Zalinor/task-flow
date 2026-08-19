@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { USERS, getUserById } from '../users';
 import Column from './Column';
 import EmptyState from './EmptyState'
 import TaskModal from './TaskModal';
@@ -18,7 +19,7 @@ const PROJECT_ATTACHMENTS = [
 ];
 
 
-function ProjectBoard({projectId, projectName}) {
+function ProjectBoard({projectId, projectName, activeUserId}) {
 
     const [columns, setColumns] = useState(() => {
         const saved = localStorage.getItem(`project-${projectId}-columns`);
@@ -84,13 +85,15 @@ function ProjectBoard({projectId, projectName}) {
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [dueDateSort, setDueDateSort] = useState(null);
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [assigneeFilter, setAssigneeFilter] = useState(null);
 
-  const hasActiveFilters = statusFilter !== "All" || priorityFilter !== "All" || dueDateSort !== null;
+  const hasActiveFilters = statusFilter !== "All" || priorityFilter !== "All" || dueDateSort !== null || assigneeFilter !== null;
 
   const handleClearFilters = () => {
     setStatusFilter("All");
     setPriorityFilter("All");
     setDueDateSort(null);
+    setAssigneeFilter(null);
   };
 
   const taskMatchesFilters = (task) => {
@@ -98,6 +101,9 @@ function ProjectBoard({projectId, projectName}) {
       return false;
     }
     if (priorityFilter !== "All" && getDisplayPriority(task) !== priorityFilter) {
+      return false;
+    }
+    if (assigneeFilter !== null && task.assignedTo !== assigneeFilter) {
       return false;
     }
     return true;
@@ -271,7 +277,7 @@ function ProjectBoard({projectId, projectName}) {
   const handleAddComment = (taskId, text) => {
     const newComment = {
       id: crypto.randomUUID(),
-      author: "You", //Placeholder
+      author: activeUser?.name ?? "Unknown",
       text,
       createdAt: new Date().toISOString(),
     };
@@ -347,8 +353,18 @@ function ProjectBoard({projectId, projectName}) {
           </div>
           
           <div className="user-filter-row">
-            <button className="user-avatar"></button>
-              <button className="user-avatar"></button>
+            {USERS.map((user) => (
+              <button 
+                key={user.id}
+                type="button"
+                className={`user-avatar ${assigneeFilter === user.id ? "user-avatar-active" : ""}`}
+                style={{ backgroundColor: user.color}}
+                title={`Filter by ${user.name}`}
+                onClick={() => setAssigneeFilter((prev) => (prev === user.id ? null : user.id))}
+              >
+                {user.name.split(" ").map((p) => p[0]).join("")}
+              </button>
+            ))}
           </div>
           {hasActiveFilters && (
             <button className="clear-filters-link" onClick={handleClearFilters}>

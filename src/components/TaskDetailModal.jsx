@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { USERS } from "../users";
 import TaskMenu from "./TaskMenu";
 
 function formatDueDate(dueDate) {
@@ -27,6 +28,7 @@ function TaskDetailModal({task, columns, finalColumnId, onClose, onSave, onAddCo
     const [isEditingDescription, setIsEditingDescription] = useState(false);
     const [isEditingDueDate, setIsEditingDueDate] = useState(false);
 
+    const [assignedTo, setAssignedTo] = useState(task.assignedTo ?? "");
     const [commentDraft, setCommentDraft] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -57,6 +59,7 @@ function TaskDetailModal({task, columns, finalColumnId, onClose, onSave, onAddCo
             status,
             description: description.trim(),
             dueDate,
+            assignedTo: assignedTo || null,
         });
     };
 
@@ -230,9 +233,10 @@ function TaskDetailModal({task, columns, finalColumnId, onClose, onSave, onAddCo
 
                         <label>
                             Assigned
-                            {/*Temporary placeholder*/}
-                            <select disabled defaultValue="user">
-                                <option value="User">User</option>
+                            <select value={assignedTo} onChange={(event) => setAssignedTo(event.target.value)}>
+                                {USERS.map((user) =>(
+                                    <option key={user.id} value={user.id}>{user.name}</option>
+                                ))}
                             </select>
                         </label>
                     </div>

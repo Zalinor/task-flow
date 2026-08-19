@@ -192,6 +192,7 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
               text={task.text}
               priority={task.priority}
               status={task.status}
+              assignedTo={task.assignedTo}
               dueDate={task.dueDate}
               isDone={isFinal}
               isSelectMode={isSelectMode}

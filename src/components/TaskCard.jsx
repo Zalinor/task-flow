@@ -1,7 +1,8 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import TaskMenu from './TaskMenu';
 import { ellipsisIco, timerIco, userFilter } from '../icons';
-import {getDisplayPriority} from "../utils/task"
+import { getDisplayPriority } from "../utils/task";
+import { getUserById, getInitials } from '../users';
 
 
 const PRIORITY_CLASSES = {
@@ -17,10 +18,11 @@ function formatDueDate(dueDate) {
   return `${month}/${day}`;
 }
 // A single task card. Recieves data via props from the parent (Column)
-function TaskCard({text, id, priority, status, dueDate, isDone, isSelectMode, isSelected, onToggleSelect, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
+function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isSelectMode, isSelected, onToggleSelect, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftText, setDraftText] = useState(text);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const assignedUser = getUserById(assignedTo);
 
   // Switches the card into edit mode, resetting the draft to the current saved text
   const handleStartEditing = () => {
@@ -108,9 +110,18 @@ function TaskCard({text, id, priority, status, dueDate, isDone, isSelectMode, is
     </div>
     <div className="card-low-layer">
       <span>{timerIco}{formattedDate ? `Due ${formattedDate}` : "No due date"}</span>
-      {userFilter}
+      {assignedUser ? (
+        <span
+          className="task-assignee-avatar"
+          style={{backgroundColor: assignedUser.color}}
+          title={assignedUser.name}
+        >
+          {getInitials(assignedUser.name)}
+        </span>
+      ) : (
+        userFilter
+      )}
     </div>
-      
     </div>
   );
 }

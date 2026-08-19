@@ -1,4 +1,57 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { USERS, getInitials } from "../users";
+
+function UserSwitcher({activeUserId, onSelectUser}) {
+    const [isOpen, setIsOpen] = useState(false);
+    const wrapperRef = useRef(null);
+    const activeUser = USERS.find((user) => user.id === activeUserId) ?? USERS[0];
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleClickOutside = (event) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isOpen]);
+
+    const handleSelect = (userId) => {
+        onSelectUser(userId);
+        setIsOpen(false);
+    };
+
+    return (
+        <div className="sidebar-workspace user-switcher" ref={wrapperRef}>
+                <span className="sidebar-avatar" style={{backgroundColor: activeUser.color}}>
+                    {getInitials(activeUser.name)}
+                </span>
+                <div>
+                    <button type="button" className="sidebar-workspace-name" onClick={() => setIsOpen((open) => !open)}>
+                        {activeUser.name} <span className="chevron"></span>⌄</button>
+                    <p className="sidebar-syncing">Acting as {activeUser.name}</p>
+                </div>
+                {isOpen && (
+                    <div className="user-switcher-dropdown">
+                        {USERS.map((user) => (
+                            <button
+                                type="button"
+                                key={user.id}
+                                className={`user-switcher-option ${user.id === activeUserId ? "active" : ""}`}
+                                onClick={() => handleSelect(user.id)}
+                            >
+                                <span className="sidebar-avatar sidebar-avatar-small" style={{backgroundColor: user.color}}>
+                                    {getInitials(user.name)}
+                                </span>
+                                {user.name}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+    );
+}
 
 function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename, onDelete}) {
     const [isEditing, setIsEditing] = useState(shouldAutoEdit);
@@ -55,16 +108,10 @@ function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename,
     );
 }
 
-function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProject, onAddProject, onRenameProject, onDeleteProject}) {
+function Sidebar({projects, activeProjectId, justCreatedProjectId, activeUserId, onSelectUser, onSelectProject, onAddProject, onRenameProject, onDeleteProject}) {
     return (
         <aside className="sidebar">
-            <div className="sidebar-workspace">
-                <span className="sidebar-avatar">A</span>
-                <div>
-                    <p className="sidebar-workspace-name">Agency <span className="chevron"></span>⌄</p>
-                    <p className="sidebar-syncing">↻ Syncing up</p>
-                </div>
-            </div>
+            <UserSwitcher activeUserId={activeUserId} onSelectUser={onSelectUser}/>
 
             {/* Stub items - no logic yet */}
             <nav className="sidebar-nav">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { USERS } from "./users";
 import Sidebar from "./components/Sidebar";
 import ProjectBoard from "./components/ProjectBoard";
 import ConfirmDialog from "./components/ConfirmDialog";
@@ -102,6 +103,8 @@ function App () {
       );
     };
   const activeProject = projects.find((project) => project.id === activeProjectId) ?? projects[0];
+  
+  const [activeUserId, setActiveUserId] = useState(USERS[0].id);
 
   return (
     <div className="app-shell">
@@ -109,6 +112,8 @@ function App () {
         projects={projects}
         activeProjectId={activeProject?.id ?? null}
         justCreatedProjectId={justCreatedProjectId}
+        activeUserId={activeUserId}
+        onSelectUser={setActiveUserId}
         onSelectProject={setActiveProjectId}
         onAddProject={handleAddProject}
         onRenameProject={handleRenameProject}
@@ -119,6 +124,7 @@ function App () {
           key={activeProject.id}
           projectId={activeProject.id}
           projectName={activeProject.name}
+          activeUserId={activeUserId}
         />
       )}
       {projectToDelete && (
