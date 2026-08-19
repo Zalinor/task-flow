@@ -1,8 +1,6 @@
 import {useState} from 'react';
-import ellipsis from '../assets/ellipsis.svg';
-import timer from '../assets/timer.svg';
-import userFilter from '../assets/User_Filter.svg';
 import TaskMenu from './TaskMenu';
+import { ellipsisIco, timerIco, userFilter } from '../icons';
 import {getDisplayPriority} from "../utils/task"
 
 
@@ -94,7 +92,7 @@ function TaskCard({text, id, priority, status, dueDate, isDone, isSelectMode, is
       {!isSelectMode && (
         <div className="task-menu-wrapper">
           <button onClick={(event) => {event.stopPropagation(); setIsMenuOpen((open) => !open)}}>
-            <img src={ellipsis}/>
+            {ellipsisIco}
             </button>
             {isMenuOpen && (
               <TaskMenu
@@ -109,8 +107,8 @@ function TaskCard({text, id, priority, status, dueDate, isDone, isSelectMode, is
       
     </div>
     <div className="card-low-layer">
-      <span><img src={timer}/>{formattedDate ? `Due ${formattedDate}` : "No due date"}</span>
-      <img src={userFilter} alt="" width={28} height={28}/>
+      <span>{timerIco}{formattedDate ? `Due ${formattedDate}` : "No due date"}</span>
+      {userFilter}
     </div>
       
     </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import ProjectBoard from "./components/ProjectBoard";
+import ConfirmDialog from "./components/ConfirmDialog";
 import "./App.css";
 
 function migrateLegacyProject() {
@@ -71,6 +72,23 @@ function App () {
     );
   };
 
+  const [projectPendingDeletion, setProjectPendingDeletion] = useState(null);
+
+  const handleRequestDeleteProject = (projectId) => {
+    setProjectPendingDeletion(projectId);
+  }
+
+  const handleConfirmDeleteProject = () => {
+    handleDeleteProject(projectPendingDeletion);
+    setProjectPendingDeletion(null);
+  };
+
+  const handleCancelDeleteProject = () => {
+    setProjectPendingDeletion(null);
+  }
+
+  const projectToDelete = projects.find((project) => project.id === projectPendingDeletion) ?? null;
+
   const handleDeleteProject = (projectId) => {
     setProjects((prevProjects) => {
       const remaining = prevProjects.filter((project) => project.id !== projectId);
@@ -94,13 +112,22 @@ function App () {
         onSelectProject={setActiveProjectId}
         onAddProject={handleAddProject}
         onRenameProject={handleRenameProject}
-        onDeleteProject={handleDeleteProject}
+        onDeleteProject={handleRequestDeleteProject}
       />
       {activeProject && (
         <ProjectBoard
           key={activeProject.id}
           projectId={activeProject.id}
           projectName={activeProject.name}
+        />
+      )}
+      {projectToDelete && (
+        <ConfirmDialog
+          title="Delete project?"
+          message={`This will permanently delete "${projectToDelete.name}" and all of its tasks. This can't be undone.`}
+          confirmLabel="Delete project"
+          onConfirm={handleConfirmDeleteProject}
+          onCancel={handleCancelDeleteProject}
         />
       )}
     </div>

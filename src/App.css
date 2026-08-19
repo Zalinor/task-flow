@@ -1422,3 +1422,27 @@ label input, textarea {
   margin-right: 4px;
   cursor: pointer;
 }
+
+.confirm-dialog {
+  width: 400px;
+  min-height: auto;
+  padding: 24px;
+}
+
+.confirm-dialog h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: var(--modal-text);
+}
+
+.confirm-dialog p {
+  color: var(--text);
+  font-size: 14px;
+  margin: 0 0 20px;
+}
+
+.column-delete-button {
+  background: #e5484d;
+  border: none;
+  color: #fff;
+}
