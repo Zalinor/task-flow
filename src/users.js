@@ -1,8 +1,15 @@
+import avatarAva from './assets/avatars/avaBennett.jpg';
+import avatarCaleb from './assets/avatars/calebTurner.jpg';
+import avatarOlivia from './assets/avatars/oliviaRhye.jpg';
+import avatarSofia from './assets/avatars/sofiaHayes.jpg';
+import avatarVictor from './assets/avatars/victorAmaro.jpg';
+
 export const USERS = [
-    { id: "u1", name: "Alex Morgan", color: "#6c8cff" },
-    { id: "u2", name: "Jordan Lee", color: "#f5a623" },
-    { id: "u3", name: "Sam Rivera", color: "#2ea043" },
-    { id: "u4", name: "Taylor Kim", color: "#e5484d" },
+    { id: "u1", name: "Ava Bennett", color: "#6c8cff", avatar: avatarAva },
+    { id: "u2", name: "Caleb Turner", color: "#f5a623", avatar: avatarCaleb },
+    { id: "u3", name: "Olivia Rhye", color: "#2ea043", avatar: avatarOlivia },
+    { id: "u4", name: "Sofia Hayes", color: "#e5484d", avatar: avatarSofia },
+    { id: "u5", name: "Victor Amaro", color: "#25989c", avatar: avatarVictor },
 ];
 
 export function getUserById(userId) {
@@ -16,4 +23,10 @@ export function getInitials(name) {
         .join("")
         .slice(0, 2)
         .toUpperCase();
+}
+
+export function normalizeAssignees(assignedTo) {
+    if (Array.isArray(assignedTo)) return assignedTo;
+    if (assignedTo) return [assignedTo];
+    return [];
 }

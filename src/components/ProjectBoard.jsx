@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { USERS, getUserById } from '../users';
+import AssigneeFilterButton from './AssigneeFilterButton';
 import Column from './Column';
 import EmptyState from './EmptyState'
 import TaskModal from './TaskModal';
@@ -85,15 +86,14 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [dueDateSort, setDueDateSort] = useState(null);
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
-  const [assigneeFilter, setAssigneeFilter] = useState(null);
+  const [assigneeFilter, setAssigneeFilter] = useState([]);
 
-  const hasActiveFilters = statusFilter !== "All" || priorityFilter !== "All" || dueDateSort !== null || assigneeFilter !== null;
-
+  const hasActiveFilters = statusFilter !== "All" || priorityFilter !== "All" || dueDateSort !== null || assigneeFilter.length > 0;
   const handleClearFilters = () => {
     setStatusFilter("All");
     setPriorityFilter("All");
     setDueDateSort(null);
-    setAssigneeFilter(null);
+    setAssigneeFilter([]);
   };
 
   const taskMatchesFilters = (task) => {
@@ -103,8 +103,11 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
     if (priorityFilter !== "All" && getDisplayPriority(task) !== priorityFilter) {
       return false;
     }
-    if (assigneeFilter !== null && task.assignedTo !== assigneeFilter) {
-      return false;
+    if (assigneeFilter.length > 0) {
+      const assignees = task.assignedTo ?? [];
+      const matchesUnassigned = assigneeFilter.includes("unassigned") && assignees.length === 0;
+      const matchesUser = assignees.some((userId) => assigneeFilter.includes(userId));
+      if (!matchesUnassigned && !matchesUser) return false;
     }
     return true;
   };
@@ -275,9 +278,10 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
   };
 
   const handleAddComment = (taskId, text) => {
+    const author = getUserById(activeUserId);
     const newComment = {
       id: crypto.randomUUID(),
-      author: activeUser?.name ?? "Unknown",
+      author: author?.name ?? "Unknown",
       text,
       createdAt: new Date().toISOString(),
     };
@@ -288,6 +292,16 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
         : task
       )
     );
+  };
+
+  const handleToggleAssigneeFilter = (value) => {
+    setAssigneeFilter((prev) =>
+    prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+  }
+
+  const handleClearAssigneeFilter = () => {
+    setAssigneeFilter([]);
   };
 
   const [activeTab, setActiveTab] = useState("tasks");
@@ -352,20 +366,11 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
             )}
           </div>
           
-          <div className="user-filter-row">
-            {USERS.map((user) => (
-              <button 
-                key={user.id}
-                type="button"
-                className={`user-avatar ${assigneeFilter === user.id ? "user-avatar-active" : ""}`}
-                style={{ backgroundColor: user.color}}
-                title={`Filter by ${user.name}`}
-                onClick={() => setAssigneeFilter((prev) => (prev === user.id ? null : user.id))}
-              >
-                {user.name.split(" ").map((p) => p[0]).join("")}
-              </button>
-            ))}
-          </div>
+          <AssigneeFilterButton 
+            selectedValues={assigneeFilter} 
+            onToggle={handleToggleAssigneeFilter}
+            onClear={handleClearAssigneeFilter}
+          />
           {hasActiveFilters && (
             <button className="clear-filters-link" onClick={handleClearFilters}>
               Clear filters

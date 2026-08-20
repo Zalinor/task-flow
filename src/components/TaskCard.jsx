@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import TaskMenu from './TaskMenu';
+import AvatarStack from './AvatarStack';
+import { normalizeAssignees } from '../users';
 import { ellipsisIco, timerIco, userFilter } from '../icons';
 import { getDisplayPriority } from "../utils/task";
 import { getUserById, getInitials } from '../users';
@@ -23,6 +25,7 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isSe
   const [draftText, setDraftText] = useState(text);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const assignedUser = getUserById(assignedTo);
+  const assigneeIds = normalizeAssignees(assignedTo);
 
   // Switches the card into edit mode, resetting the draft to the current saved text
   const handleStartEditing = () => {
@@ -110,17 +113,7 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isSe
     </div>
     <div className="card-low-layer">
       <span>{timerIco}{formattedDate ? `Due ${formattedDate}` : "No due date"}</span>
-      {assignedUser ? (
-        <span
-          className="task-assignee-avatar"
-          style={{backgroundColor: assignedUser.color}}
-          title={assignedUser.name}
-        >
-          {getInitials(assignedUser.name)}
-        </span>
-      ) : (
-        userFilter
-      )}
+      <AvatarStack userIds={assigneeIds} size={28} max={3} emptyIcon={userFilter} />
     </div>
     </div>
   );

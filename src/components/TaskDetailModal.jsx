@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { USERS } from "../users";
+import { USERS, normalizeAssignees } from "../users";
+import UserAvatar from "./UserAvatar";
+import { sendIco } from "../icons"
 import TaskMenu from "./TaskMenu";
 
 function formatDueDate(dueDate) {
@@ -28,11 +30,21 @@ function TaskDetailModal({task, columns, finalColumnId, onClose, onSave, onAddCo
     const [isEditingDescription, setIsEditingDescription] = useState(false);
     const [isEditingDueDate, setIsEditingDueDate] = useState(false);
 
-    const [assignedTo, setAssignedTo] = useState(task.assignedTo ?? "");
+    const [assignedIds, setAssignedIds] = useState(normalizeAssignees(task.assignedTo));
+    const [isAddingUser, setIsAddingUser] = useState(false);
     const [commentDraft, setCommentDraft] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const comments = task.comments ?? [];
+
+    const handleAddAssignee = (userId) => {
+        setAssignedIds((prev) => [...prev, userId]);
+        setIsAddingUser(false);
+    };
+
+    const handleRemoveAssignee = (userId) => {
+        setAssignedIds((prev) => prev.filter((id) => id !== userId));
+    }
 
     const handleStageChange = (event) => {
         const newStageId = event.target.value;
@@ -59,7 +71,7 @@ function TaskDetailModal({task, columns, finalColumnId, onClose, onSave, onAddCo
             status,
             description: description.trim(),
             dueDate,
-            assignedTo: assignedTo || null,
+            assignedTo: assignedIds,
         });
     };
 
@@ -196,6 +208,9 @@ function TaskDetailModal({task, columns, finalColumnId, onClose, onSave, onAddCo
                                     value={commentDraft}
                                     onChange={(event) => setCommentDraft(event.target.value)} 
                                 />
+                                <button type="submit" className="comment-send-button">
+                                    Send {sendIco}
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -230,15 +245,39 @@ function TaskDetailModal({task, columns, finalColumnId, onClose, onSave, onAddCo
                                 <option value="Completed">Completed</option>
                             </select>
                         </label>
-
-                        <label>
-                            Assigned
-                            <select value={assignedTo} onChange={(event) => setAssignedTo(event.target.value)}>
-                                {USERS.map((user) =>(
+                    <div className="assigned-section">
+                        <label>Assigned</label>
+                        {assignedIds.length === 0 && <p className="assigned-empty">Unassigned</p>}
+                        {assignedIds.map((userId) => {
+                            const user = USERS.find((u) => u.id === userId);
+                            if (!user) return null;
+                            return (
+                                <div key={userId} className="assigned-row">
+                                    <UserAvatar user={user} size={28} />
+                                    <span>{user.name}</span>
+                                    <button type="button" className="assigned-remove" onClick={() => handleRemoveAssignee(userId)}>x</button>
+                                </div>
+                            );
+                        })}
+                        {isAddingUser ? (
+                            <select 
+                                autoFocus
+                                value=""
+                                onChange={(event) => { if (event.target.value) handleAddAssignee(event.target.value); }}
+                                onBlur={() => setIsAddingUser(false)}
+                            >
+                                <option value="" disabled>Select user...</option>
+                                {USERS.filter((user) => !assignedIds.includes(user.id)).map((user) => (
                                     <option key={user.id} value={user.id}>{user.name}</option>
                                 ))}
                             </select>
-                        </label>
+                        ) : (
+                            <button type="button" className="add-user-button" onClick={() => setIsAddingUser(true)}>
+                                + Add User
+                            </button>
+                        )}
+                    </div>
+                        
                     </div>
                 </div>
 
