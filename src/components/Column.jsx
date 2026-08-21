@@ -1,14 +1,51 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import TaskCard from './TaskCard';
+import { COLUMN_COLORS } from '../columnsColors';
 
+function ColumnEditPopover({isFinal, onSetFinal, color, onColorChange, onClose}) {
+  const popoverRef = useRef(null);
 
+  useEffect(() => {
+    const handleCLickOutside = (event) => {
+      if (popoverRef.current && !popoverRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+    document.addEventListener("mousedown", handleCLickOutside);
+    return () => document.removeEventListener("mousedown", handleCLickOutside);
+  }, [onClose]);
 
-function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, onAddTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder, isFinal, onSetFinal, isSelectMode, selectedTaskIds, onToggleTaskSelection}) {
+  return (
+    <div className="column-edit-popover" ref={popoverRef}>
+      <label className="column-edit-toggle">
+        <input type="checkbox" checked={isFinal} onChange={onSetFinal} />
+        Completed
+      </label>
+      <div className="column-color-swatches">
+        {COLUMN_COLORS.map((swatch) => (
+          <button
+            key={swatch}
+            type="button"
+            className={`column-color-swatch ${color === swatch ? "selected" : ""}`}
+            style={{background: swatch}}
+            onClick={() => onColorChange(swatch)}
+          />
+        ))}
+      </div>
+      <button type="button" className="column-edit-cancel" onClick={onClose}>Cancel</button>
+    </div>
+  );
+}
+
+function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEditTask, onAddTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder, isFinal, onSetFinal, isSelectMode, selectedTaskIds, onToggleTaskSelection, onColorChange}) {
   
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
   const [dragOverId, setDragOverId] = useState(null);
   const [columnDragOverSide, setColumnDragOverSide] = useState(null);
+  const [isEditPopoverOpen, setIsEditPopoverOpen] = useState(false);
+
+  const columnColor = color || COLUMN_COLORS[0];
 
   const handleColumnDragStart = (event) => {
     event.dataTransfer.setData("application/column-id", columnId);
@@ -138,7 +175,6 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
     setDragOverId(null);
   };
 
-  // const isDoneColumn = columnId === "done";
 
   return (
     <div 
@@ -147,19 +183,25 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
       onDragLeave={handleContainerDragLeave}
       onDrop={handleContainerDrop}
     >
-      <button onClick={onDeleteColumn} className="column-delete-button">х</button>
-      <button
-          className="column-final-toggle"
-          onClick={onSetFinal}
-          title={isFinal ? "Final column" : "Mark as fina; column"}
-        >
-          {isFinal ? "★" : "☆"}
-        </button>
+      <div className="column-header-actions">
+        <button type="button" className="column-header-icon-button" onClick={() => setIsEditPopoverOpen((open) => !open)}>✎</button>
+        <button type="button" className="column-header-icon-button" onClick={onDeleteColumn}>x</button>
+      </div>
+      {isEditPopoverOpen && (
+        <ColumnEditPopover
+          isFinal={isFinal}
+          onSetFinal={onSetFinal}
+          color={columnColor}
+          onColorChange={onColorChange}
+          onClose={() => setIsEditPopoverOpen(false)}
+        />
+      )}
       <h2
         draggable={!isEditingTitle}
         onDragStart={handleColumnDragStart}
         onDragEnd={() => {onColumnDragEnd(); setColumnDragOverSide(null);}}
         >
+        <span className='count' style={{backgroundColor: columnColor, color: "#fff"}}>{tasks.length}</span>
         {isEditingTitle ? (
           <input 
             type="text"
@@ -172,10 +214,8 @@ function Column({title, columnId, tasks, onDelete, onDrop, onEdit, onEditTask, o
             autoFocus
           />
         ) : (
-          <span onClick={handleStartEditingTitle}>{title}</span>
+          <span onClick={handleStartEditingTitle} style={{color: columnColor}}>{title}</span>
         )}
-        <span className="count">{tasks.length}</span>
-        
       </h2>
       <div className="cards">
         {tasks.map((task) => (

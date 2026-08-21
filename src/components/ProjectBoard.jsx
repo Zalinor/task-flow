@@ -7,6 +7,7 @@ import TaskModal from './TaskModal';
 import TaskDetailModal from './TaskDetailModal';
 import FilterPanel from './FilterPanel';
 import {getDisplayPriority} from "../utils/task"
+import ConfirmDialog from './ConfirmDialog';
 import Report from './Report';
 
 import { unionIco, shareIco, ellipsisIco, userFilter, filter, selectIco } from '../icons';
@@ -50,13 +51,21 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
     localStorage.setItem(`project-${projectId}-columns`, JSON.stringify(columns));
   }, [columns, projectId]);
 
-  const handleRenameColumnn = (columnId, newTitle) => {
+  const handleRenameColumn = (columnId, newTitle) => {
     setColumns(
       columns.map((column) =>
         column.id === columnId ? {...column, title: newTitle} : column
       )
     )
   };
+
+  const handleSetColumnColor = (columnId, color) => {
+    setColumns(
+      columns.map((column) => 
+      column.id === columnId ? {...column, color} : column
+      ) 
+    );
+  }
 
   const handleAddColumn = () => {
     const newColumn = {
@@ -306,6 +315,23 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
 
   const [activeTab, setActiveTab] = useState("tasks");
 
+  const [columnPendingDeletionId, setColumnPendingDeletionId] = useState(null);
+
+  const handleRequestDeleteColumn = (columnId) => {
+    setColumnPendingDeletionId(columnId);
+  }
+
+  const handleConfirmDeleteColumn = () => {
+    handleDeleteColumn(columnPendingDeletionId);
+    setColumnPendingDeletionId(null);
+  }
+
+  const handleCancelDeleteColumn = () => {
+    setColumnPendingDeletionId(null);
+  };
+
+  const columnToDelete = columns.find((column) => column.id === columnPendingDeletionId) ?? null;
+
   return (
     <div className="project-board">
     <div className="project-header">
@@ -416,8 +442,10 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
           key={column.id}
           title={column.title} 
           columnId={column.id} 
+          color={column.color}
           isFinal={column.id === finalColumnId}
           onSetFinal={() => handleSetFinalColumn(column.id)}
+          onColorChange={(color) => handleSetColumnColor(column.id, color)}
           tasks={displayTasks.filter((task) => task.columnId === column.id)} 
           onDelete={handleDelete} 
           onDrop={handleMoveTask} 
@@ -429,7 +457,7 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
           onDragStart={setDraggedTaskId} 
           onDragEnd={() => setDraggedTaskId(null)}
           onDeleteColumn={() => handleDeleteColumn(column.id)}
-          onRenameColumn={handleRenameColumnn}
+          onRenameColumn={handleRenameColumn}
           draggedColumnId={draggedColumnId}
           onColumnDragStart={setDraggedColumnId}
           onColumnDragEnd={() => setDraggedColumnId(null)}
@@ -472,6 +500,15 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
           onAddComment={handleAddComment}
           onDelete={handleDelete}
           onEdit={handleEdit}
+        />
+      )}
+      {columnToDelete && (
+        <ConfirmDialog
+          title="Delete column?"
+          message={`This will pemanently delete "${columnToDelete.title}" and all of its tasks. This can't be undone`}
+          confirmLabel="Delete column"
+          onConfirm={handleConfirmDeleteColumn}
+          onCancel={handleCancelDeleteColumn}
         />
       )}
     </div>
