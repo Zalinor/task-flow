@@ -21,7 +21,7 @@ const PROJECT_ATTACHMENTS = [
 ];
 
 
-function ProjectBoard({projectId, projectName, activeUserId}) {
+function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
 
     const [columns, setColumns] = useState(() => {
         const saved = localStorage.getItem(`project-${projectId}-columns`);
@@ -68,11 +68,9 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
   }
 
   const handleAddColumn = () => {
-    const newColumn = {
-      id: crypto.randomUUID(),
-      title: "New Column",
-    };
+    const newColumn = { id: crypto.randomUUID(), title: "New Column" };
     setColumns([...columns, newColumn]);
+    onAddActivity(`created column "${newColumn.title}" in ${projectName}`);
   };
 
   const handleDeleteColumn = (columnId) => {
@@ -154,11 +152,14 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
     };
     setTasks([...tasks, newTask]);
     setAddTaskContext(null);
+    onAddActivity(`created task "${newTask.text}" in ${projectName}`);
   };
 
   // Removes a task by id
   const handleDelete = (id) => {
+    const task = tasks.find((t) => t.id === id);
     setTasks(tasks.filter((task) => task.id !== id));
+    if (task) onAddActivity(`deleted task "${task.text}" in {projectName}`);
   }
 
   const moveTaskToColumn = (task, newColumnId) => {
@@ -171,8 +172,18 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
   };
 
   const handleMoveTask = (taskId, newColumnId) => {
-    setTasks(tasks.map((task) => (task.id === taskId ? moveTaskToColumn(task, newColumnId) : task)));
-  };
+    const task = tasks.find((t) => t.id === taskId);
+    const targetColumn = columns.find((c) => c.id === newColumnId);
+    setTasks(tasks.map((t) => (t.id === taskId ? moveTaskToColumn(t, newColumnId) : t)));
+    if (task && targetColumn) {
+      const isMovingToFinal = finalColumnId !== null && newColumnId === finalColumnId;
+      onAddActivity(
+        isMovingToFinal
+          ? `completed task "${task.text}" in ${projectName}`
+          : `moved task "${task.text}" to ${targetColumn.title} in ${projectName}`
+      );
+    }
+};
 
   const [isSelectMode, setIsSelectMode] = useState(false)
   const [selectedTaskIds, setSelectedTaskIds] = useState(new Set());
@@ -276,6 +287,7 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
   };
 
   const handleUpdateTask = (taskData) => {
+    const previousTask = tasks.find((t) => t.id === taskData.id);
     setTasks(
       tasks.map((task) =>
         task.id === taskData.id 
@@ -284,10 +296,21 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
       )
     );
     setEditingTaskId(null);
+    if (previousTask) {
+      if (taskData.status === "Completed" && previousTask.status !== "Completed") {
+        onAddActivity(`completed task "${taskData.text}" in ${projectName}`);
+      } else if (task.Data.columnId !== previousTask.columnId) {
+        const targetColumn = columns.find((c) => c.id === taskData.columnId);
+        onAddActivity(`moved task "${taskData.text}" to ${targetColumn?.title ?? ""}`)
+      } else {
+        onAddActivity(`updated task "${taskData.text}" in ${projectName}`);
+      }
+    }
   };
 
   const handleAddComment = (taskId, text) => {
     const author = getUserById(activeUserId);
+    const task = tasks.find((t) => t.id === taskId);
     const newComment = {
       id: crypto.randomUUID(),
       author: author?.name ?? "Unknown",
@@ -301,7 +324,8 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
         : task
       )
     );
-  };
+    if (task) onAddActivity(`commented on task "${task.text}" in ${projectName}`);
+};
 
   const handleToggleAssigneeFilter = (value) => {
     setAssigneeFilter((prev) =>
@@ -322,9 +346,12 @@ function ProjectBoard({projectId, projectName, activeUserId}) {
   }
 
   const handleConfirmDeleteColumn = () => {
+    if (columnToDelete) {
+      onAddActivity(`deleted column "${columnToDelete.title}" in ${projectName}`);
+    }
     handleDeleteColumn(columnPendingDeletionId);
     setColumnPendingDeletionId(null);
-  }
+};
 
   const handleCancelDeleteColumn = () => {
     setColumnPendingDeletionId(null);

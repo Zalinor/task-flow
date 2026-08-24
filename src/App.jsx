@@ -3,6 +3,9 @@ import { USERS } from "./users";
 import Sidebar from "./components/Sidebar";
 import ProjectBoard from "./components/ProjectBoard";
 import ConfirmDialog from "./components/ConfirmDialog";
+import TopBar from "./components/TopBar";
+import RightPanel from "./components/RightPanel";
+import { loadActivityLog, saveActivityLog, createActivityEntry } from "./activityLog";
 import "./App.css";
 
 function migrateLegacyProject() {
@@ -64,13 +67,28 @@ function App () {
     setJustCreatedProjectId(newId);
   };
 
+  const [activityLog, setActivityLog] = useState(() => loadActivityLog());
+  const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
+  const [activeUserId, setActiveUserId] = useState(USERS[0].id);
+
+  useEffect(() => {
+    saveActivityLog(activityLog);
+  }, [activityLog]);
+
+  const handleAddActivity = (message) => {
+    setActivityLog((prev) => [createActivityEntry(activeUserId, message), ...prev].slice(0, 200));
+  };
 
   const handleRenameProject = (projectId, newName) => {
+    const project = projects.find((p) => p.id === projectId);
     setProjects(
       projects.map((project) => 
         project.id === projectId ? {...project, name: newName} : project
       )
     );
+    if (project && project.name !== newName) {
+      handleAddActivity(`renamed project "${project.name}" to "${newName}"`);
+    }
   };
 
   const [projectPendingDeletion, setProjectPendingDeletion] = useState(null);
@@ -103,40 +121,46 @@ function App () {
       );
     };
   const activeProject = projects.find((project) => project.id === activeProjectId) ?? projects[0];
-  
-  const [activeUserId, setActiveUserId] = useState(USERS[0].id);
 
   return (
-    <div className="app-shell">
-      <Sidebar
-        projects={projects}
-        activeProjectId={activeProject?.id ?? null}
-        justCreatedProjectId={justCreatedProjectId}
+    <>
+      <TopBar
+        projectName={activeProject?.name ?? ""}
         activeUserId={activeUserId}
         onSelectUser={setActiveUserId}
-        onSelectProject={setActiveProjectId}
-        onAddProject={handleAddProject}
-        onRenameProject={handleRenameProject}
-        onDeleteProject={handleRequestDeleteProject}
+        onToggleRightPanel={() => setIsRightPanelCollapsed((collapsed) => !collapsed)}
       />
-      {activeProject && (
-        <ProjectBoard
-          key={activeProject.id}
-          projectId={activeProject.id}
-          projectName={activeProject.name}
-          activeUserId={activeUserId}
+      <div className="app-shell">
+        <Sidebar
+          projects={projects}
+          activeProjectId={activeProject?.id ?? null}
+          justCreatedProjectId={justCreatedProjectId}
+          onSelectProject={setActiveProjectId}
+          onAddProject={handleAddProject}
+          onRenameProject={handleRenameProject}
+          onDeleteProject={handleRequestDeleteProject}
         />
-      )}
-      {projectToDelete && (
-        <ConfirmDialog
-          title="Delete project?"
-          message={`This will permanently delete "${projectToDelete.name}" and all of its tasks. This can't be undone.`}
-          confirmLabel="Delete project"
-          onConfirm={handleConfirmDeleteProject}
-          onCancel={handleCancelDeleteProject}
-        />
-      )}
-    </div>
+        {activeProject && (
+          <ProjectBoard
+            key={activeProject.id}
+            projectId={activeProject.id}
+            projectName={activeProject.name}
+            activeUserId={activeUserId}
+            onAddActivity={handleAddActivity}
+          />
+        )}
+        <RightPanel activityLog={activityLog} isCollapsed={isRightPanelCollapsed} />
+        {projectToDelete && (
+          <ConfirmDialog
+            title="Delete project?"
+            message={`This will permanently delete "${projectToDelete.name}" and all of its tasks. This can't be undone.`}
+            confirmLabel="Delete project"
+            onConfirm={handleConfirmDeleteProject}
+            onCancel={handleCancelDeleteProject}
+          />
+        )}
+      </div>
+    </>
   );
 }
 

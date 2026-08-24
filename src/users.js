@@ -5,11 +5,11 @@ import avatarSofia from './assets/avatars/sofiaHayes.jpg';
 import avatarVictor from './assets/avatars/victorAmaro.jpg';
 
 export const USERS = [
-    { id: "u1", name: "Ava Bennett", color: "#6c8cff", avatar: avatarAva },
-    { id: "u2", name: "Caleb Turner", color: "#f5a623", avatar: avatarCaleb },
-    { id: "u3", name: "Olivia Rhye", color: "#2ea043", avatar: avatarOlivia },
-    { id: "u4", name: "Sofia Hayes", color: "#e5484d", avatar: avatarSofia },
-    { id: "u5", name: "Victor Amaro", color: "#25989c", avatar: avatarVictor },
+    { id: "u1", name: "Ava Bennett", role: "UI/UX Designer", color: "#6c8cff", avatar: avatarAva },
+    { id: "u2", name: "Caleb Turner", role: "UI/UX Designer", color: "#f5a623", avatar: avatarCaleb },
+    { id: "u3", name: "Olivia Rhye", role: "3D Designer", color: "#2ea043", avatar: avatarOlivia },
+    { id: "u4", name: "Sofia Hayes", role: "Graphic Designer", color: "#e5484d", avatar: avatarSofia },
+    { id: "u5", name: "Victor Amaro", role: "Manager", color: "#25989c", avatar: avatarVictor },
 ];
 
 export function getUserById(userId) {

@@ -64,3 +64,26 @@ export const sendIco = (<svg width="16" height="16" viewBox="0 0 16 16" fill="no
 <path d="M12.4235 10.4467L13.5677 7.01378C14.5674 4.01486 15.0672 2.5154 14.2757 1.72388C13.4842 0.932377 11.9847 1.4322 8.98581 2.43184L5.55292 3.57613C3.1325 4.38294 1.92229 4.78634 1.57838 5.3779C1.25122 5.94066 1.25122 6.63571 1.57838 7.19845C1.92229 7.79005 3.1325 8.19345 5.55292 9.00025C5.94156 9.12978 6.13588 9.19458 6.2983 9.30332C6.4557 9.40865 6.59092 9.54392 6.69628 9.70132C6.80501 9.86372 6.86981 10.0581 6.99934 10.4467C7.80614 12.8671 8.20954 14.0773 8.80114 14.4212C9.36388 14.7484 10.0589 14.7484 10.6217 14.4212C11.2133 14.0773 11.6167 12.8671 12.4235 10.4467Z" stroke="#545454" stroke-width="1.25"/>
 <path d="M10.8078 5.89872C11.0041 5.70454 11.0058 5.38797 10.8116 5.19162C10.6175 4.99528 10.3009 4.99353 10.1046 5.18771L10.8078 5.89872ZM7.10843 9.55724L10.8078 5.89872L10.1046 5.18771L6.40527 8.84624L7.10843 9.55724Z" fill="#545454"/>
 </svg>);
+
+export const historyIco = (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9 4.5V9L12 10.5" stroke="#6C6C6C" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M9 16.5C13.1421 16.5 16.5 13.1421 16.5 9C16.5 4.85786 13.1421 1.5 9 1.5C4.85786 1.5 1.5 4.85786 1.5 9C1.5 10.5 1.9 11.9 2.6 13" stroke="#6C6C6C" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M1 10L2.6 13L5.6 12" stroke="#6C6C6C" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+export const bellIco = (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 7.5C4 4.5 6 2.5 9 2.5C12 2.5 14 4.5 14 7.5C14 12 15.5 13 15.5 13H2.5C2.5 13 4 12 4 7.5Z" stroke="#6C6C6C" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M7.5 15.5C7.7 16.1 8.3 16.5 9 16.5C9.7 16.5 10.3 16.1 10.5 15.5" stroke="#6C6C6C" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="14" cy="4" r="2.5" fill="#e5484d"/>
+  </svg>
+);
+
+export const layoutIco = (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1.5" y="2.5" width="15" height="13" rx="2" stroke="#6C6C6C" strokeWidth="1.4"/>
+    <path d="M12 2.5V15.5" stroke="#6C6C6C" strokeWidth="1.4"/>
+  </svg>
+);
