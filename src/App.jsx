@@ -124,12 +124,6 @@ function App () {
 
   return (
     <>
-      <TopBar
-        projectName={activeProject?.name ?? ""}
-        activeUserId={activeUserId}
-        onSelectUser={setActiveUserId}
-        onToggleRightPanel={() => setIsRightPanelCollapsed((collapsed) => !collapsed)}
-      />
       <div className="app-shell">
         <Sidebar
           projects={projects}
@@ -140,7 +134,14 @@ function App () {
           onRenameProject={handleRenameProject}
           onDeleteProject={handleRequestDeleteProject}
         />
-        {activeProject && (
+        <div className="app-body">
+          <TopBar
+            projectName={activeProject?.name ?? ""}
+            activeUserId={activeUserId}
+            onSelectUser={setActiveUserId}
+            onToggleRightPanel={() => setIsRightPanelCollapsed((collapsed) => !collapsed)}
+          />
+          {activeProject && (
           <ProjectBoard
             key={activeProject.id}
             projectId={activeProject.id}
@@ -148,7 +149,8 @@ function App () {
             activeUserId={activeUserId}
             onAddActivity={handleAddActivity}
           />
-        )}
+          )}
+        </div>
         <RightPanel activityLog={activityLog} isCollapsed={isRightPanelCollapsed} />
         {projectToDelete && (
           <ConfirmDialog

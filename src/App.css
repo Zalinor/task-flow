@@ -567,9 +567,41 @@ color: var(--text-h);
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
-  color: var(--text-h);
   cursor: pointer;
+}
+
+.column-edit-toggle input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 40px;
+  height: 22px;
+  background-color: #d1d5db;
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.column-edit-toggle input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.column-edit-toggle input[type="checkbox"]:checked {
+  background-color: #2563eb;
+}
+
+.column-edit-toggle input[type="checkbox"]:checked::before {
+  transform: translateX(18px);
 }
 
 .column-edit-toggle input {
@@ -1255,12 +1287,18 @@ label input, textarea {
   min-height: 100vh;
 }
 
+.app-body{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .sidebar {
-  width: 260px;
+  width: 280px;
   flex-shrink: 0;
   background: #fff;
   border-right: 1px solid #e2e8f0;
-  padding: 20px 16px;
+  padding: 0px 0px 0px 18px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -1547,19 +1585,22 @@ label input, textarea {
   border: none;
   background: transparent;
   font-size: 14px;
-  color: #334155;
+  color: #545454;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .sidebar-nav-item:hover {
   background: #f1f5f9;
 }
 
-.sidebar-section-title {
+/* .sidebar-section-title {
   font-size: 12px;
   font-weight: 600;
   color: #94a3b8;
   margin-bottom: 6px;
-}
+} */
 
 .sidebar-company {
   display: flex;
@@ -1568,6 +1609,7 @@ label input, textarea {
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 4px;
+  color: #030213;
 }
 
 .sidebar-company-stub {
@@ -1580,6 +1622,8 @@ label input, textarea {
 }
 
 .sidebar-project-row {
+  width: 210px;
+  height: 40px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1590,18 +1634,29 @@ label input, textarea {
 }
 
 .sidebar-project-row:hover {
-  background: #f1f5f9;
+  border: 1pt solid var(--border-task);
 }
 
 .sidebar-project-row.active {
-  background: #f1f5f9;
   font-weight: 600;
+  color: #3C53EB;
+  border: 1pt solid var(--border-task);
+
+}
+
+.sidebar-project-row.active .sidebar-project-name {
+  color: #3C53EB;
+}
+
+.sidebar-project-row.active path {
+  stroke: #3C53EB;
 }
 
 .sidebar-project-name {
   display: flex;
   align-items: center;
   gap: 6px;
+  color: #545454;
 }
 
 .sidebar-project-rename {
@@ -1768,7 +1823,7 @@ label input, textarea {
 }
 
 .top-bar {
-  height: 56px;
+  height: 80px;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -1778,13 +1833,19 @@ label input, textarea {
 }
 
 .top-bar-logo {
+  height: 80px;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 28px;
   white-space: nowrap;
+  gap: 9px;
+  display: flex;
+  align-items: center;
+  color: #030213;
 }
 
 .top-bar-logo-accent {
-  color: #6c8cff;
+  margin-left: -7px;
+  color: #3c53eb;
 }
 
 .top-bar-breadcrumb {
@@ -1868,15 +1929,14 @@ label input, textarea {
 }
 
 .sidebar-section-title-plain {
-  font-size: 12px;
-  font-weight: 600;
-  color: #94a3b8;
+  font-size: 15px;
+  font-weight: 300;
+  color: #818182;
   margin: 0 0 6px;
 }
 
 .sidebar-support-card {
   position: relative;
-  margin-top: auto;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 16px;
@@ -2009,3 +2069,9 @@ label input, textarea {
   color: #94a3b8;
   margin: 0;
 } 
+
+.activity-list {
+  max-height: 420px; 
+  overflow-y: auto;
+  padding-right: 6px; 
+}

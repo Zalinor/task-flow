@@ -159,7 +159,7 @@ function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
   const handleDelete = (id) => {
     const task = tasks.find((t) => t.id === id);
     setTasks(tasks.filter((task) => task.id !== id));
-    if (task) onAddActivity(`deleted task "${task.text}" in {projectName}`);
+    if (task) onAddActivity(`deleted task "${task.text}" in ${projectName}`);
   }
 
   const moveTaskToColumn = (task, newColumnId) => {
@@ -483,7 +483,7 @@ function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
           draggedTaskId={draggedTaskId} 
           onDragStart={setDraggedTaskId} 
           onDragEnd={() => setDraggedTaskId(null)}
-          onDeleteColumn={() => handleDeleteColumn(column.id)}
+          onDeleteColumn={() => handleRequestDeleteColumn(column.id)}
           onRenameColumn={handleRenameColumn}
           draggedColumnId={draggedColumnId}
           onColumnDragStart={setDraggedColumnId}

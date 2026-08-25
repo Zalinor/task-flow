@@ -3,10 +3,7 @@ import { historyIco, bellIco, layoutIco } from "../icons";
 
 function TopBar({ projectName, activeUserId, onSelectUser, onToggleRightPanel }) {
   return (
-    <header className="top-bar">
-      <div className="top-bar-logo">
-        <span className="top-bar-logo-mark">✳</span> bureau<span className="top-bar-logo-accent">pro+</span>
-      </div>
+    <div className="top-bar">
       <nav className="top-bar-breadcrumb">
         <span>Workspace</span>
         <span className="crumb-sep">/</span>
@@ -24,7 +21,7 @@ function TopBar({ projectName, activeUserId, onSelectUser, onToggleRightPanel })
         <button type="button" className="top-bar-icon-button" onClick={onToggleRightPanel}>{layoutIco}</button>
       </div>
       <UserSwitcher activeUserId={activeUserId} onSelectUser={onSelectUser} compact />
-    </header>
+    </div>
   );
 }
 

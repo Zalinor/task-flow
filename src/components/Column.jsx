@@ -19,6 +19,9 @@ function ColumnEditPopover({isFinal, onSetFinal, color, onColorChange, onClose})
     <div className="column-edit-popover" ref={popoverRef}>
       <label className="column-edit-toggle">
         <input type="checkbox" checked={isFinal} onChange={onSetFinal} />
+        <span className="toggle-track">
+          <span className="toggle-thumb" />
+        </span>
         Completed
       </label>
       <div className="column-color-swatches">

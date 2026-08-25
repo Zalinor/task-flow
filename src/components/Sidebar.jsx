@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { logoIco, homeIco, mailIco, reportsIco, settingsIco, chevronIco, kanbanIco } from "../icons";
 
 function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename, onDelete}) {
     const [isEditing, setIsEditing] = useState(shouldAutoEdit);
@@ -28,7 +29,7 @@ function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename,
             className={`sidebar-project-row ${isActive ? "active" : ""}`}
             onClick={() => onSelect(project.id)}   
         >
-            <span className="sidebar-project-icon">▢</span>
+            {kanbanIco}
             {isEditing ? (
                 <input 
                     type="text"
@@ -61,19 +62,22 @@ function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProje
     return (
         <aside className="sidebar">
             <div className="sidebar-section">
+                 <div className="top-bar-logo">
+                    <span className="top-bar-logo-mark">{logoIco}</span> bureau<span className="top-bar-logo-accent">pro+</span>
+                </div>
                 <p className="sidebar-section-title-plain">Main menu</p>
                 <nav className="sidebar-nav">
-                    <button type="button" className="sidebar-nav-item">🏠 Home</button>
-                    <button type="button" className="sidebar-nav-item">✉ Inbox</button>
-                    <button type="button" className="sidebar-nav-item">📊 Reports</button>
-                    <button type="button" className="sidebar-nav-item">⚙ Settings</button>
+                    <button type="button" className="sidebar-nav-item">{homeIco} Home</button>
+                    <button type="button" className="sidebar-nav-item">{mailIco} Inbox</button>
+                    <button type="button" className="sidebar-nav-item">{reportsIco} Reports</button>
+                    <button type="button" className="sidebar-nav-item">{settingsIco} Settings</button>
                 </nav>
             </div>
 
             <div className="sidebar-section">
-                <p className="sidebar-section-title">Workspace <span className="chevron">⌄</span></p>
+                <p className="sidebar-section-title-plain">Workspace <span className="chevron">{chevronIco}</span></p>
                 <p className="sidebar-company">
-                    <span className="sidebar-avatar sidebar-avatar-small">C</span>Company, Inc <span className="chevron">⌄</span>
+                    <span className="sidebar-avatar sidebar-avatar-small">C</span>Company, Inc <span className="chevron">{chevronIco}</span>
                 </p>
 
                 <div className="sidebar-projects">

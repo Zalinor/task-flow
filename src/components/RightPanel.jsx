@@ -30,6 +30,7 @@ function RightPanel({ activityLog, isCollapsed }) {
   return (
     <aside className="right-panel">
       <CollapsibleSection title="Activities">
+      <div className="activity-list">
         {activityLog.length === 0 && <p className="activity-empty">No activity yet</p>}
         {activityLog.map((entry) => {
           const user = getUserById(entry.userId);
@@ -45,6 +46,7 @@ function RightPanel({ activityLog, isCollapsed }) {
             </div>
           );
         })}
+        </div>
       </CollapsibleSection>
 
       <CollapsibleSection title="Team">
@@ -59,7 +61,6 @@ function RightPanel({ activityLog, isCollapsed }) {
             </div>
           ))}
         </div>
-        <button type="button" className="sidebar-add-project">+ Add</button>
       </CollapsibleSection>
     </aside>
   );
