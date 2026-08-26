@@ -1,3 +1,4 @@
+import UserSwitcher from "./UserSwitcher";
 import { useState } from "react";
 import { USERS, getUserById } from "../users";
 import UserAvatar from "./UserAvatar";
@@ -24,11 +25,12 @@ function CollapsibleSection({ title, children }) {
   );
 }
 
-function RightPanel({ activityLog, isCollapsed }) {
+function RightPanel({ activityLog, isCollapsed, activeUserId, onSelectUser }) {
   if (isCollapsed) return null;
 
   return (
     <aside className="right-panel">
+      <UserSwitcher activeUserId={activeUserId} onSelectUser={onSelectUser} compact />
       <CollapsibleSection title="Activities">
       <div className="activity-list">
         {activityLog.length === 0 && <p className="activity-empty">No activity yet</p>}

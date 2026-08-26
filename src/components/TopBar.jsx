@@ -1,7 +1,6 @@
-import UserSwitcher from "./UserSwitcher";
 import { historyIco, bellIco, layoutIco } from "../icons";
 
-function TopBar({ projectName, activeUserId, onSelectUser, onToggleRightPanel }) {
+function TopBar({ projectName, onToggleRightPanel }) {
   return (
     <div className="top-bar">
       <nav className="top-bar-breadcrumb">
@@ -20,7 +19,7 @@ function TopBar({ projectName, activeUserId, onSelectUser, onToggleRightPanel })
         <button type="button" className="top-bar-icon-button">{bellIco}</button>
         <button type="button" className="top-bar-icon-button" onClick={onToggleRightPanel}>{layoutIco}</button>
       </div>
-      <UserSwitcher activeUserId={activeUserId} onSelectUser={onSelectUser} compact />
+      
     </div>
   );
 }

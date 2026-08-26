@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import TaskCard from './TaskCard';
 import { COLUMN_COLORS } from '../columnsColors';
+import { pencilIco, crossIco } from '../icons';
 
 function ColumnEditPopover({isFinal, onSetFinal, color, onColorChange, onClose}) {
   const popoverRef = useRef(null);
@@ -186,9 +187,24 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
       onDragLeave={handleContainerDragLeave}
       onDrop={handleContainerDrop}
     >
-      <div className="column-header-actions">
-        <button type="button" className="column-header-icon-button" onClick={() => setIsEditPopoverOpen((open) => !open)}>✎</button>
-        <button type="button" className="column-header-icon-button" onClick={onDeleteColumn}>x</button>
+      <div className="column-header" style={{ '--column-color': columnColor}}>
+        <div className="column-header-actions">
+        <button 
+          type="button" 
+          className="column-header-icon-button" 
+          style={{ color: columnColor }}
+          onClick={() => setIsEditPopoverOpen((open) => !open)}
+          >
+            {pencilIco}
+          </button>
+        <button 
+          type="button" 
+          className="column-header-icon-button" 
+          style={{ color: columnColor }}
+          onClick={onDeleteColumn}
+        >
+          {crossIco}
+        </button>
       </div>
       {isEditPopoverOpen && (
         <ColumnEditPopover
@@ -220,7 +236,9 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
           <span onClick={handleStartEditingTitle} style={{color: columnColor}}>{title}</span>
         )}
       </h2>
-      <div className="cards">
+      </div>
+      <div className="card-container">
+        <div className="cards">
         {tasks.map((task) => (
           <div 
             key={task.id}
@@ -256,6 +274,8 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
         + Add
       </button>
     </div>
+    </div>
+      
   );
 }
 
