@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import TaskCard from './TaskCard';
 import { COLUMN_COLORS } from '../columnsColors';
-import { pencilIco, crossIco } from '../icons';
+import { pencilIco, crossIco, unionIco } from '../icons';
 
 function ColumnEditPopover({isFinal, onSetFinal, color, onColorChange, onClose}) {
   const popoverRef = useRef(null);
@@ -237,7 +237,7 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
         )}
       </h2>
       </div>
-      <div className="card-container">
+      <div className={`card-container ${tasks.length === 0 ? 'card-container--empty' : ''}`}>
         <div className="cards">
         {tasks.map((task) => (
           <div 
@@ -269,11 +269,13 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
           </div>
         ))}
         {dragOverId === "end" && <div className="drop-indicator"/>}
+        </div>
       </div>
-      <button className="add-task-in-column" onClick={() => onAddTask(columnId)}>
-        + Add
-      </button>
-    </div>
+      <div className="column-footer">
+        <button className="add-task-in-column" onClick={() => onAddTask(columnId)}>
+          {unionIco} Add
+        </button>
+      </div>
     </div>
       
   );

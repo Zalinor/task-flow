@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { logoIco, homeIco, mailIco, reportsIco, settingsIco, chevronIco, kanbanIco } from "../icons";
+import { logoIco, homeIco, mailIco, reportsIco, settingsIco, chevronIco, kanbanIco, headphonesIco } from "../icons";
 
 function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename, onDelete}) {
     const [isEditing, setIsEditing] = useState(shouldAutoEdit);
@@ -107,8 +107,7 @@ function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProje
             {isSupportCardVisible && (
                 <div className="sidebar-support-card">
                     <button type="button" className="sidebar-support-close" onClick={() => setIsSupportCardVisible(false)}>×</button>
-                    <p className="sidebar-support-icon">🎧</p>
-                    <p className="sidebar-support-title">Need support</p>
+                    <p className="sidebar-support-title">{headphonesIco} Need support</p>
                     <p className="sidebar-support-text">Contact with one of our expert to get support.</p>
                     <button type="button" className="sidebar-support-button">Call the expert</button>
                 </div>

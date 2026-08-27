@@ -17,7 +17,7 @@
   
   --sans: "Inter", sans-serif;
   --heading: "Inter", sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --button-font: "Inter", ;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
