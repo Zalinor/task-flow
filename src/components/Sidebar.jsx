@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { logoIco, homeIco, mailIco, reportsIco, settingsIco, chevronIco, kanbanIco, headphonesIco } from "../icons";
+import { logoIco, homeIco, mailIco, reportsIco, settingsIco, chevronIco, kanbanIco, headphonesIco, pencilIco, crossIco } from "../icons";
 
 function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename, onDelete}) {
     const [isEditing, setIsEditing] = useState(shouldAutoEdit);
@@ -47,11 +47,11 @@ function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename,
                 <span className="sidebar-project-name">
                     {project.name || "Untitled project"}
                     <button  type="button" className="sidebar-project-rename" onClick={handleStartEditing}>
-                        ✎
+                        {pencilIco}
                     </button>
                 </span>
             )}
-            <button type="button" className="sidebar-project-delete" onClick={handleDeleteClick}>🗑</button>
+            <button type="button" className="sidebar-project-delete" onClick={handleDeleteClick}>{crossIco}</button>
         </div>
     );
 }
@@ -65,6 +65,9 @@ function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProje
                  <div className="top-bar-logo">
                     <span className="top-bar-logo-mark">{logoIco}</span> bureau<span className="top-bar-logo-accent">pro+</span>
                 </div>
+            </div>
+
+            <div className="sidebar-section">
                 <p className="sidebar-section-title-plain">Main menu</p>
                 <nav className="sidebar-nav">
                     <button type="button" className="sidebar-nav-item">{homeIco} Home</button>
@@ -72,10 +75,7 @@ function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProje
                     <button type="button" className="sidebar-nav-item">{reportsIco} Reports</button>
                     <button type="button" className="sidebar-nav-item">{settingsIco} Settings</button>
                 </nav>
-            </div>
-
-            <div className="sidebar-section">
-                <p className="sidebar-section-title-plain">Workspace <span className="chevron">{chevronIco}</span></p>
+                <p className="sidebar-section-title-plain sidebar-workspace">Workspace <span className="chevron">{chevronIco}</span></p>
                 <p className="sidebar-company">
                     <span className="sidebar-avatar sidebar-avatar-small">C</span>Company, Inc <span className="chevron">{chevronIco}</span>
                 </p>
@@ -106,7 +106,7 @@ function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProje
 
             {isSupportCardVisible && (
                 <div className="sidebar-support-card">
-                    <button type="button" className="sidebar-support-close" onClick={() => setIsSupportCardVisible(false)}>×</button>
+                    <button type="button" className="sidebar-support-close" onClick={() => setIsSupportCardVisible(false)}>{crossIco}</button>
                     <p className="sidebar-support-title">{headphonesIco} Need support</p>
                     <p className="sidebar-support-text">Contact with one of our expert to get support.</p>
                     <button type="button" className="sidebar-support-button">Call the expert</button>

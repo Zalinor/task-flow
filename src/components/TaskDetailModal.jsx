@@ -1,24 +1,11 @@
 import { useState } from "react";
-import { USERS, normalizeAssignees } from "../users";
+import { USERS, normalizeAssignees, getUserById } from "../users";
 import UserAvatar from "./UserAvatar";
 import { sendIco } from "../icons"
 import TaskMenu from "./TaskMenu";
+import { formatDueDate, formatTimestamp } from "../utils/task";
 
-function formatDueDate(dueDate) {
-    if (!dueDate) return null; 
-    const [year, month, day] = dueDate.split("-");
-    return `${month}/${day}`;
-}
-
-function formatUpdatedAt(isoString) {
-    if (!isoString) return null;
-    const date = new Date(isoString);
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${month}/${day}`;
-}
-
-function TaskDetailModal({task, columns, finalColumnId, onClose, onSave, onAddComment, onDelete, onEdit}) {
+function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, onSave, onAddComment, onDelete, onEdit}) {
     const [stageId, setStageId] = useState(task.columnId);
     const [priority, setPriority] = useState(task.priority ?? "Medium");
     const [status, setStatus] = useState(task.status ?? "Open");
@@ -84,7 +71,7 @@ function TaskDetailModal({task, columns, finalColumnId, onClose, onSave, onAddCo
     }
 
     const formattedDueDate = formatDueDate(dueDate);
-    const formattedUpdatedAt = formatUpdatedAt(task.updatedAt);
+    const formattedUpdatedAt = formatTimestamp(task.updatedAt);
 
     const handleStartEditingTitle = () => {
         setDraftTitle(task.text);
@@ -188,19 +175,23 @@ function TaskDetailModal({task, columns, finalColumnId, onClose, onSave, onAddCo
                             <label>Comments</label>
                             <div className="comments-list">
                                 {comments.length === 0 && <p className="no-comments">No comments yet</p>}
-                                {comments.map((comment) => (
-                                    <div key={comment.id} className="comment">
-                                        <div className="comment-avatar"/>
-                                        <div>
-                                            <p className="comment-meta">
-                                                <strong>{comment.author}</strong>{formatUpdatedAt(comment.createdAt)}
-                                            </p>
-                                            <p className="comment-text">{comment.text}</p>
+                                {comments.map((comment) => {
+                                    const commentUser = getUserById(comment.authorId);
+                                    return (
+                                        <div key={comment.id} className="comment">
+                                            <UserAvatar user={commentUser} size={28} className="comment-avatar"/>
+                                            <div>
+                                                <p className="comment-meta">
+                                                    <strong>{comment.author}</strong> {formatTimestamp(comment.createdAt)}
+                                                </p>
+                                                <p className="comment-text">{comment.text}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                             <form onSubmit={handleSubmitComment} className="comment-from">
+                                <UserAvatar user={currentUser} size={32} />
                                 <input 
                                     type="text"
                                     placeholder="Write a comment"

@@ -75,9 +75,22 @@ function App () {
     saveActivityLog(activityLog);
   }, [activityLog]);
 
-  const handleAddActivity = (message) => {
-    setActivityLog((prev) => [createActivityEntry(activeUserId, message), ...prev].slice(0, 200));
+  const handleAddActivity = (activity) => {
+    setActivityLog((prev) => [createActivityEntry(activeUserId, activity), ...prev].slice(0, 200));
   };
+
+  const [highlightedTaskId, setHighlightedTaskId] = useState(null);
+
+  const handleNavigateToTask = (projectId, taskId) => {
+    if (projectId) setActiveProjectId(projectId);
+    setHighlightedTaskId(taskId ?? null);
+  };
+
+  useEffect(() => {
+    if (!highlightedTaskId) return;
+    const timeout = setTimeout(() => setHighlightedTaskId(null), 2500);
+    return () => clearTimeout(timeout);
+   }, [highlightedTaskId]);
 
   const handleRenameProject = (projectId, newName) => {
     const project = projects.find((p) => p.id === projectId);
@@ -87,7 +100,7 @@ function App () {
       )
     );
     if (project && project.name !== newName) {
-      handleAddActivity(`renamed project "${project.name}" to "${newName}"`);
+      handleAddActivity({prefix: "renamed project", linkText: `"${project.name}"`, suffix: ` to "${newName}"`, projectId: project.id});
     }
   };
 
@@ -148,10 +161,17 @@ function App () {
             projectName={activeProject.name}
             activeUserId={activeUserId}
             onAddActivity={handleAddActivity}
+            highlightedTaskId={highlightedTaskId}
           />
           )}
         </div>
-        <RightPanel activityLog={activityLog} isCollapsed={isRightPanelCollapsed} />
+        <RightPanel 
+          activityLog={activityLog}
+          isCollapsed={isRightPanelCollapsed}
+          activeUserId={activeUserId}
+          onSelectUser={setActiveUserId} 
+          onNavigateToTask={handleNavigateToTask} 
+        />
         {projectToDelete && (
           <ConfirmDialog
             title="Delete project?"

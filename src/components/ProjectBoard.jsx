@@ -21,7 +21,7 @@ const PROJECT_ATTACHMENTS = [
 ];
 
 
-function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
+function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddActivity, highlightedTaskId}) {
 
     const [columns, setColumns] = useState(() => {
         const saved = localStorage.getItem(`project-${projectId}-columns`);
@@ -70,7 +70,7 @@ function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
   const handleAddColumn = () => {
     const newColumn = { id: crypto.randomUUID(), title: "New Column" };
     setColumns([...columns, newColumn]);
-    onAddActivity(`created column "${newColumn.title}" in ${projectName}`);
+    onAddActivity({ prefix: "created column", linkText: `"${newColumn.title}"`, suffix: ` in ${projectName}`, projectId });
   };
 
   const handleDeleteColumn = (columnId) => {
@@ -152,14 +152,14 @@ function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
     };
     setTasks([...tasks, newTask]);
     setAddTaskContext(null);
-    onAddActivity(`created task "${newTask.text}" in ${projectName}`);
+    onAddActivity({ prefix: "created task", linkText: `"${newTask.text}"`, suffix: ` in ${projectName}`, taskId: newTask.id, projectId });
   };
 
   // Removes a task by id
   const handleDelete = (id) => {
     const task = tasks.find((t) => t.id === id);
     setTasks(tasks.filter((task) => task.id !== id));
-    if (task) onAddActivity(`deleted task "${task.text}" in ${projectName}`);
+    if (task) onAddActivity({ prefix: "deleted task", linkText: `"${task.text}"`, suffix: ` in ${projectName}`, projectId });
   }
 
   const moveTaskToColumn = (task, newColumnId) => {
@@ -177,11 +177,13 @@ function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
     setTasks(tasks.map((t) => (t.id === taskId ? moveTaskToColumn(t, newColumnId) : t)));
     if (task && targetColumn) {
       const isMovingToFinal = finalColumnId !== null && newColumnId === finalColumnId;
-      onAddActivity(
-        isMovingToFinal
-          ? `completed task "${task.text}" in ${projectName}`
-          : `moved task "${task.text}" to ${targetColumn.title} in ${projectName}`
-      );
+      onAddActivity({
+        prefix: isMovingToFinal ? "completed task" : "moved task",
+        linkText: `"${task.text}"`,
+        suffix: isMovingToFinal ? ` in ${projectName}` : ` to ${targetColumn.title} in ${projectName}`,
+        taskId,
+        projectId,
+      });
     }
 };
 
@@ -298,12 +300,12 @@ function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
     setEditingTaskId(null);
     if (previousTask) {
       if (taskData.status === "Completed" && previousTask.status !== "Completed") {
-        onAddActivity(`completed task "${taskData.text}" in ${projectName}`);
-      } else if (task.Data.columnId !== previousTask.columnId) {
+        onAddActivity({ prefix: "completed task", linkText: `"${taskData.text}"`, suffix: ` in ${projectName}`, taskId: taskData.id, projectId });
+      } else if (taskData.columnId !== previousTask.columnId) { // ← было task.Data.columnId
         const targetColumn = columns.find((c) => c.id === taskData.columnId);
-        onAddActivity(`moved task "${taskData.text}" to ${targetColumn?.title ?? ""}`)
+        onAddActivity({ prefix: "moved task", linkText: `"${taskData.text}"`, suffix: ` to ${targetColumn?.title ?? ""} in ${projectName}`, taskId: taskData.id, projectId });
       } else {
-        onAddActivity(`updated task "${taskData.text}" in ${projectName}`);
+        onAddActivity({ prefix: "updated task", linkText: `"${taskData.text}"`, suffix: ` in ${projectName}`, taskId: taskData.id, projectId });
       }
     }
   };
@@ -313,6 +315,7 @@ function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
     const task = tasks.find((t) => t.id === taskId);
     const newComment = {
       id: crypto.randomUUID(),
+      authorId: activeUserId,
       author: author?.name ?? "Unknown",
       text,
       createdAt: new Date().toISOString(),
@@ -324,7 +327,7 @@ function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
         : task
       )
     );
-    if (task) onAddActivity(`commented on task "${task.text}" in ${projectName}`);
+    if (task) onAddActivity({ prefix: "commented on task", linkText: `"${task.text}"`, suffix: ` in ${projectName}`, taskId, projectId });
 };
 
   const handleToggleAssigneeFilter = (value) => {
@@ -347,7 +350,7 @@ function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
 
   const handleConfirmDeleteColumn = () => {
     if (columnToDelete) {
-      onAddActivity(`deleted column "${columnToDelete.title}" in ${projectName}`);
+      onAddActivity({ prefix: "deleted column", linkText: `"${columnToDelete.title}"`, suffix: ` in ${projectName}`, projectId });
     }
     handleDeleteColumn(columnPendingDeletionId);
     setColumnPendingDeletionId(null);
@@ -492,6 +495,7 @@ function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
           isSelectMode={isSelectMode}
           selectedTaskIds={selectedTaskIds}
           onToggleTaskSelection={handleToggleTaskSelection}
+          highlightedTaskId={highlightedTaskId}
         />
       ))}
       <button onClick={handleAddColumn} className="add-column-button">
@@ -520,6 +524,7 @@ function ProjectBoard({projectId, projectName, activeUserId, onAddActivity}) {
       {editingTask && (
         <TaskDetailModal
           task={editingTask}
+          user={currentUser}
           columns={columns}
           finalColumnId={finalColumnId}
           onClose={() => setEditingTaskId(null)}

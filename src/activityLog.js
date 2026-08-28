@@ -7,11 +7,15 @@ export function saveActivityLog(entries) {
     localStorage.setItem("activityLog", JSON.stringify(entries));
 }
 
-export function createActivityEntry(userId, message) {
+export function createActivityEntry(userId, {prefix, linkText, suffix = "", taskId = null, projectId = null}) {
     return {
         id: crypto.randomUUID(),
         userId,
-        message,
+        prefix,
+        linkText,
+        suffix,
+        taskId,
+        projectId,
         createdAt: new Date().toISOString(),
     };
 }

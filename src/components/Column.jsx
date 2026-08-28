@@ -41,7 +41,7 @@ function ColumnEditPopover({isFinal, onSetFinal, color, onColorChange, onClose})
   );
 }
 
-function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEditTask, onAddTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder, isFinal, onSetFinal, isSelectMode, selectedTaskIds, onToggleTaskSelection, onColorChange}) {
+function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEditTask, onAddTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder, isFinal, onSetFinal, isSelectMode, selectedTaskIds, onToggleTaskSelection, onColorChange, highlightedTaskId}) {
   
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
@@ -265,6 +265,7 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
               draggedTaskId={draggedTaskId}
               onDragStart={onDragStart}
               onDragEnd={() => {onDragEnd(); setDragOverId(null)}}
+              isHighlighted={task.id === highlightedTaskId}
             />
           </div>
         ))}

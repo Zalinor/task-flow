@@ -1,9 +1,10 @@
 export const COLUMN_COLORS = [
-    "#7c6cff", // purple
-    "#3b82f6", // blue
-    "#f5a623", // orange
-    "#22c55e", // green
-    "#ec4899", // pink
-    "#111827", // black
-    "#9ca3af", // gray
+    "#7A5AF8", // purple
+    "#2E90FA", // blue
+    "#FDB022", // orange
+    "#7ADC09", // green
+    "#F925A0 ", // pink
+    "#CD21EF", // purple
+    "#030213", // black
+    "#9CA3AF", // gray
 ];

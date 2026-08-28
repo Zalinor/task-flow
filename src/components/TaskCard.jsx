@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { formatDueDate, getDisplayPriority } from "../utils/task";
 import TaskMenu from './TaskMenu';
 import AvatarStack from './AvatarStack';
 import { normalizeAssignees } from '../users';
 import { ellipsisIco, timerIco, userFilter } from '../icons';
-import { getDisplayPriority } from "../utils/task";
 import { getUserById, getInitials } from '../users';
 
 
@@ -14,13 +14,8 @@ const PRIORITY_CLASSES = {
   Frozen: "priority-frozen",
 };
 
-function formatDueDate(dueDate) {
-  if (!dueDate) return null;
-  const [year, month, day] = dueDate.split("-")
-  return `${month}/${day}`;
-}
 // A single task card. Recieves data via props from the parent (Column)
-function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isSelectMode, isSelected, onToggleSelect, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
+function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isHighlighted, isSelectMode, isSelected, onToggleSelect, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftText, setDraftText] = useState(text);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -60,7 +55,7 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isSe
 
   return ( 
     <div 
-      className={`card ${isSelectMode ? "card-select-mode" : ""} ${isSelected ? "card-selected" : ""}`}
+      className={`card ${isSelectMode ? "card-select-mode" : ""} ${isSelected ? "card-selected" : ""} ${isHighlighted ? "card-highlighted" : ""}`}
       draggable={!isEditing && !isSelectMode}
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}

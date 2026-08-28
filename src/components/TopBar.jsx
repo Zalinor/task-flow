@@ -16,7 +16,7 @@ function TopBar({ projectName, onToggleRightPanel }) {
       </div>
       <div className="top-bar-actions">
         <button type="button" className="top-bar-icon-button">{historyIco}</button>
-        <button type="button" className="top-bar-icon-button">{bellIco}</button>
+        <button type="button" className="top-bar-icon-button"><span className="icon-bell-wrap">{bellIco}</span></button>
         <button type="button" className="top-bar-icon-button" onClick={onToggleRightPanel}>{layoutIco}</button>
       </div>
       
