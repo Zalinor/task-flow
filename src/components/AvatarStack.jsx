@@ -1,7 +1,7 @@
 import { USERS } from "../users";
 import UserAvatar from "./UserAvatar";
 
-function AvatarStack({ userIds, size = 28, max = 3, emptyIcon = null}) {
+function AvatarStack({ userIds, size = 30, max = 3, emptyIcon = null}) {
     const users = userIds.map((id) => USERS.find((user) => user.id === id)).filter(Boolean);
 
     if (users.length === 0) {

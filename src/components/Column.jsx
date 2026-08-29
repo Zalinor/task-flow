@@ -3,7 +3,7 @@ import TaskCard from './TaskCard';
 import { COLUMN_COLORS } from '../columnsColors';
 import { pencilIco, crossIco, unionIco } from '../icons';
 
-function ColumnEditPopover({isFinal, onSetFinal, color, onColorChange, onClose}) {
+function ColumnEditPopover({isFinal, onSetFinal, color, onColorChange, onClose, position}) {
   const popoverRef = useRef(null);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ function ColumnEditPopover({isFinal, onSetFinal, color, onColorChange, onClose})
   }, [onClose]);
 
   return (
-    <div className="column-edit-popover" ref={popoverRef}>
+    <div className="column-edit-popover" ref={popoverRef} style={{ top: position.top, left: position.left, transform: "translate(-50%, -150%)" }}>
       <label className="column-edit-toggle">
         <input type="checkbox" checked={isFinal} onChange={onSetFinal} />
         <span className="toggle-track">
@@ -48,8 +48,18 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
   const [dragOverId, setDragOverId] = useState(null);
   const [columnDragOverSide, setColumnDragOverSide] = useState(null);
   const [isEditPopoverOpen, setIsEditPopoverOpen] = useState(false);
+  const [popoverPosition, setPopoverPosition] = useState(null);
+  const editButtonRef = useRef(null);
 
   const columnColor = color || COLUMN_COLORS[0];
+
+  const handleToggleEditPopover = () => {
+    if (!isEditPopoverOpen && editButtonRef.current) {
+      const rect = editButtonRef.current.getBoundingClientRect();
+      setPopoverPosition({top: rect.bottom - 8, left: rect.left + rect.width / 2})
+    }
+    setIsEditPopoverOpen((open) => !open);
+  };
 
   const handleColumnDragStart = (event) => {
     event.dataTransfer.setData("application/column-id", columnId);
@@ -145,7 +155,7 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
   };
 
   const handleSlotDragOver = (taskId) => (event) => {
-    if (draggedColumnId !== null) return;
+    if (draggedColumnId !== null || taskId === draggedTaskId) return;
     event.preventDefault();
     event.stopPropagation();
     const position = getPosition(event);
@@ -174,7 +184,7 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
     } else {
       const index = tasks.findIndex((task) => task.id === taskId);
       const nextTask = tasks[index + 1];
-      onReorder(draggedId, nextTask ? nextTask.id : null);
+      onReorder(draggedId, nextTask && nextTask.id !== draggedId ? nextTask.id : null);
     }
     setDragOverId(null);
   };
@@ -190,10 +200,11 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
       <div className="column-header" style={{ '--column-color': columnColor}}>
         <div className="column-header-actions">
         <button 
+          ref={editButtonRef}
           type="button" 
           className="column-header-icon-button" 
           style={{ color: columnColor }}
-          onClick={() => setIsEditPopoverOpen((open) => !open)}
+          onClick={handleToggleEditPopover}
           >
             {pencilIco}
           </button>
@@ -213,6 +224,7 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
           color={columnColor}
           onColorChange={onColorChange}
           onClose={() => setIsEditPopoverOpen(false)}
+          position={popoverPosition}
         />
       )}
       <h2

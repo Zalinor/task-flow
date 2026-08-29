@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { formatDueDate, getDisplayPriority } from "../utils/task";
 import TaskMenu from './TaskMenu';
 import AvatarStack from './AvatarStack';
 import { normalizeAssignees } from '../users';
 import { ellipsisIco, timerIco, userFilter } from '../icons';
-import { getUserById, getInitials } from '../users';
+import { getUserById } from '../users';
 
 
 const PRIORITY_CLASSES = {
@@ -21,6 +21,14 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isHi
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const assignedUser = getUserById(assignedTo);
   const assigneeIds = normalizeAssignees(assignedTo);
+  const cardRef = useRef(null);
+  const isDragging = id === draggedTaskId;
+
+  useEffect(() => {
+    if (isHighlighted && cardRef.current) {
+      cardRef.current.scrollIntoView({behavior: "smooth", block: "center"});
+    }
+  }, [isHighlighted]);
 
   // Switches the card into edit mode, resetting the draft to the current saved text
   const handleStartEditing = () => {
@@ -55,7 +63,8 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isHi
 
   return ( 
     <div 
-      className={`card ${isSelectMode ? "card-select-mode" : ""} ${isSelected ? "card-selected" : ""} ${isHighlighted ? "card-highlighted" : ""}`}
+      ref={cardRef}
+      className={`card ${isSelectMode ? "card-select-mode" : ""} ${isSelected ? "card-selected" : ""} ${isHighlighted ? "card-highlighted" : ""} ${isDragging ? "card-dragging" : ""}`}
       draggable={!isEditing && !isSelectMode}
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}

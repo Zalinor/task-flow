@@ -58,6 +58,8 @@ function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename,
 
 function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProject, onAddProject, onRenameProject, onDeleteProject}) {
     const [isSupportCardVisible, setIsSupportCardVisible] = useState(true);
+    const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(true);
+    const [isCompanyOpen, setIsCompanyOpen] = useState(true);
 
     return (
         <aside className="sidebar">
@@ -75,33 +77,50 @@ function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProje
                     <button type="button" className="sidebar-nav-item">{reportsIco} Reports</button>
                     <button type="button" className="sidebar-nav-item">{settingsIco} Settings</button>
                 </nav>
-                <p className="sidebar-section-title-plain sidebar-workspace">Workspace <span className="chevron">{chevronIco}</span></p>
-                <p className="sidebar-company">
-                    <span className="sidebar-avatar sidebar-avatar-small">C</span>Company, Inc <span className="chevron">{chevronIco}</span>
-                </p>
+                <button
+                    type="button"
+                    className="sidebar-section-title-plain sidebar-workspace sidebar-collapse-toggle"
+                    onClick={() => setIsWorkspaceOpen((open) => !open)}
+                >
+                    Workspace <span className={`chevron ${isWorkspaceOpen ? "" : "closed"}`}>{chevronIco}</span>
+                </button>
 
-                <div className="sidebar-projects">
-                    {projects.map((project) => (
-                        <ProjectListItem
-                            key={project.id}
-                            project={project}
-                            isActive={project.id === activeProjectId}
-                            shouldAutoEdit={project.id === justCreatedProjectId}
-                            onSelect={onSelectProject}
-                            onRename={onRenameProject}
-                            onDelete={onDeleteProject}
-                        />
-                    ))}
-                    <button type="button" className="sidebar-add-project" onClick={onAddProject}>
-                        + Add
-                    </button>
-                </div>
+                {isWorkspaceOpen && (
+                    <>
+                        <button
+                            type="button"
+                            className="sidebar-company sidebar-collapse-toggle"
+                            onClick={() => setIsCompanyOpen((open) => !open)}
+                        >
+                            <span className="sidebar-avatar sidebar-avatar-small">C</span>Company, Inc <span className={`chevron ${isCompanyOpen ? "" : "closed"}`}>{chevronIco}</span>
+                        </button>
 
-                <div className="sidebar-stub-list">
-                    <p className="sidebar-company-stub"><span className="sidebar-avatar sidebar-avatar-small">C</span> Company, Inc</p>
-                    <p className="sidebar-company-stub"><span className="sidebar-avatar sidebar-avatar-small">C</span> Company, Inc</p>
-                    <p className="sidebar-company-stub"><span className="sidebar-avatar sidebar-avatar-small">C</span> Company, Inc</p>
-                </div>
+                        {isCompanyOpen && (
+                            <div className="sidebar-projects">
+                                {projects.map((project) => (
+                                    <ProjectListItem
+                                        key={project.id}
+                                        project={project}
+                                        isActive={project.id === activeProjectId}
+                                        shouldAutoEdit={project.id === justCreatedProjectId}
+                                        onSelect={onSelectProject}
+                                        onRename={onRenameProject}
+                                        onDelete={onDeleteProject}
+                                    />
+                                ))}
+                                <button type="button" className="sidebar-add-project" onClick={onAddProject}>
+                                    + Add
+                                </button>
+                            </div>
+                        )}
+
+                        <div className="sidebar-stub-list">
+                            <p className="sidebar-company-stub"><span className="sidebar-avatar sidebar-avatar-small">C</span> Company, Inc</p>
+                            <p className="sidebar-company-stub"><span className="sidebar-avatar sidebar-avatar-small">C</span> Company, Inc</p>
+                            <p className="sidebar-company-stub"><span className="sidebar-avatar sidebar-avatar-small">C</span> Company, Inc</p>
+                        </div>
+                    </>
+                )}
             </div>
 
             {isSupportCardVisible && (

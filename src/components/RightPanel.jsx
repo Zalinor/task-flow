@@ -32,7 +32,7 @@ function CollapsibleSection({ title, icon, children }) {
     <div className="right-panel-section">
       <button type="button" className="right-panel-section-header" onClick={() => setIsOpen((open) => !open)}>
         <span className="section-header-title">{icon} {title}</span>
-       <span className={`chevron ${isOpen ? "open" : ""}`}>{chevronIco}</span>
+       <span className={`chevron ${isOpen ? "" : "closed"}`}>{chevronIco}</span>
       </button>
       {isOpen && <div className="right-panel-section-body">{children}</div>}
     </div>
@@ -52,7 +52,7 @@ function RightPanel({ activityLog, isCollapsed, activeUserId, onSelectUser, onNa
           const user = getUserById(entry.userId);
           return (
             <div key={entry.id} className="activity-row">
-              <UserAvatar user={user} size={28} />
+              <UserAvatar user={user} size={30} />
               <div>
                 <p className="activity-message">
                   <strong>{user?.name ?? "Someone"}</strong> {" "}
@@ -88,7 +88,7 @@ function RightPanel({ activityLog, isCollapsed, activeUserId, onSelectUser, onNa
         <div className="team-list">
           {USERS.map((user) => (
             <div key={user.id} className="team-list-row">
-              <UserAvatar user={user} size={32} />
+              <UserAvatar user={user} size={30} />
               <div>
                 <p className="team-list-name">{user.name}</p>
                 <p className="team-list-role">{user.role}</p>

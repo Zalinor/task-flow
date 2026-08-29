@@ -26,7 +26,7 @@ function AssigneeFilterButton({ selectedValues, onToggle, onClear}) {
     return (
         <div className="assignee-filter" ref={wrapperRef}>
             <button type="button" className="assignee-filter-button" onClick={()=> setIsOpen((open) => !open)}>
-                <AvatarStack userIds={USERS.map((user) => user.id)} size={28} max={3}/>
+                <AvatarStack userIds={USERS.map((user) => user.id)} size={30} max={3}/>
             </button>
             {isOpen && (
                 <div className="assignee-filter-dropdown">

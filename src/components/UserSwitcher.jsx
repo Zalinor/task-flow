@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { USERS, getInitials } from "../users";
+import { USERS } from "../users";
 import UserAvatar from "./UserAvatar";
 import { chevronIco } from "../icons";
 
@@ -26,15 +26,15 @@ function UserSwitcher({activeUserId, onSelectUser, compact = false}) {
 
     return (
         <div className={`user-switcher ${compact ? "user-switcher-compact" : "sidebar-workspace"}`} ref={wrapperRef}>
-                <UserAvatar user={activeUser} size={32} className="sidebar-avatar" />
+                <UserAvatar user={activeUser} size={40} className="sidebar-avatar" />
                 {compact ? (
                     <button type="button" className="user-switcher-compact-name" onClick={() => setIsOpen((open) => !open)}>
-                        {activeUser.name} <span className="chevron">⌄</span>
+                        {activeUser.name} <span className={`chevron ${isOpen ? "" : "closed"}`}>{chevronIco}</span>
                     </button>
                 ) : (
                     <div>
                         <button type="button" className="sidebar-workspace-name" onClick={() => setIsOpen((open) => !open)}>
-                        {activeUser.name} <span className="chevron">⌄</span></button>
+                        {activeUser.name} <span className={`chevron ${isOpen ? "" : "closed"}`}>{chevronIco}</span></button>
                         <p className="sidebar-syncing">Acting as {activeUser.name}</p>
                     </div>
                 )}

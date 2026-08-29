@@ -69,6 +69,7 @@ function App () {
 
   const [activityLog, setActivityLog] = useState(() => loadActivityLog());
   const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeUserId, setActiveUserId] = useState(USERS[0].id);
 
   useEffect(() => {
@@ -88,7 +89,7 @@ function App () {
 
   useEffect(() => {
     if (!highlightedTaskId) return;
-    const timeout = setTimeout(() => setHighlightedTaskId(null), 2500);
+    const timeout = setTimeout(() => setHighlightedTaskId(null), 1000);
     return () => clearTimeout(timeout);
    }, [highlightedTaskId]);
 
@@ -138,6 +139,7 @@ function App () {
   return (
     <>
       <div className="app-shell">
+      {!isSidebarCollapsed && (
         <Sidebar
           projects={projects}
           activeProjectId={activeProject?.id ?? null}
@@ -147,12 +149,15 @@ function App () {
           onRenameProject={handleRenameProject}
           onDeleteProject={handleRequestDeleteProject}
         />
+      )}
+        
         <div className="app-body">
           <TopBar
             projectName={activeProject?.name ?? ""}
             activeUserId={activeUserId}
             onSelectUser={setActiveUserId}
             onToggleRightPanel={() => setIsRightPanelCollapsed((collapsed) => !collapsed)}
+            onToggleSidebar={()=> setIsSidebarCollapsed((collapsed) => !collapsed)}
           />
           {activeProject && (
           <ProjectBoard
