@@ -83,7 +83,7 @@ function RightPanel({ activityLog, isCollapsed, activeUserId, onSelectUser, onNa
         })}
         </div>
       </CollapsibleSection>
-
+         <div className="sidebar-divider" />
       <CollapsibleSection title="Team" icon={peopleIco}>
         <div className="team-list">
           {USERS.map((user) => (

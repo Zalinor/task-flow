@@ -32,20 +32,19 @@ function AssigneeFilterButton({ selectedValues, onToggle, onClear}) {
                 <div className="assignee-filter-dropdown">
                     <button 
                         type="button"
-                        className={`assignee-filter-option ${selectedValues.length === 0 ? "active" : ""}`}
+                        className={`assignee-filter-option assignee-filter-all ${selectedValues.length === 0 ? "active" : ""}`}
                         onClick={onClear}
                     >
                         All assignees
                     </button>
-                    <label className="assignee-filter-option">
-                        <button 
-                            type="button"
-                            className={`assignee-filter-option ${selectedValues.includes("unassigned") ? "active" : ""}`} 
-                            onClick={() => onToggle("unassigned")}
-                        />
+                    <button 
+                        type="button"
+                        className={`assignee-filter-option ${selectedValues.includes("unassigned") ? "active" : ""}`}
+                        onClick={() => onToggle("unassigned")}
+                    >
                         Unassigned
                         {selectedValues.includes("unassigned") && <span className="assignee-filter-check">✓</span>}
-                    </label>
+                    </button>
                     {USERS.map((user) => (
                         <button
                             type="button"

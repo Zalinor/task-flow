@@ -144,6 +144,7 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
     onDrop(taskId, columnId);
     onReorder(taskId, null);
     setDragOverId(null);
+    onDragEnd();
   };
 
   // Determines before/after based on cursor position within the slot, then figures out
@@ -187,6 +188,7 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
       onReorder(draggedId, nextTask && nextTask.id !== draggedId ? nextTask.id : null);
     }
     setDragOverId(null);
+    onDragEnd();
   };
 
 

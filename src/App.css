@@ -796,19 +796,19 @@
     font-size: 12px;
     color: #9E9E9E;
     font-weight: normal;
-    margin-top: 15px;
   }
+
   .count {
-  display: inline-flex;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  font-size: 16px;
-  line-height: 1;
-  margin-right: 10px;
-  align-items: center;
-  justify-content: center;
-}
+    display: inline-flex;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 16px;
+    line-height: 1;
+    margin-right: 10px;
+    align-items: center;
+    justify-content: center;
+  }
 
 
   .drop-indicator {
@@ -1362,6 +1362,7 @@
   }
 
   .sidebar {
+    position: relative;
     width: 280px;
     flex-shrink: 0;
     background: #fff;
@@ -1436,39 +1437,50 @@
     left: 0;
     margin-top: 4px;
     background: #fff;
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-    border: 1px solid #e2e8f0;
-    padding: 6px;
+    border: 1px solid var(--border-task);
+    padding: 8px;
     display: flex;
     flex-direction: column;
     gap: 2px;
-    width: 220px;
+    width: 240px;
     z-index: 30;
+    font-family: var(--sans);
   }
 
   .assignee-filter-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px;
-    border: none;
-    background: transparent;
-    border-radius: 8px;
-    font-size: 14px;
-    text-align: left;
-    cursor: pointer;
-    width: 100%;
-  }
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-h);
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  font-family: var(--sans);
+}
 
-  .assignee-filter-option:hover {
-    background: #f1f5f9;
-  }
+.assignee-filter-option:hover {
+  background: var(--bg);
+}
 
-  .assignee-filter-option.active {
-    background: #eef2ff;
-    font-weight: 600;
-  }
+.assignee-filter-option.active {
+  background: #eef2ff;
+  color: #3C53EB;
+  font-weight: 600;
+}
+
+.assignee-filter-all {
+  margin-bottom: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-task);
+  border-radius: 0;
+}
 
   .assignee-filter-check {
     margin-left: auto;
@@ -1560,36 +1572,41 @@
     left: 0;
     margin-top: 8px;
     background: #fff;
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-    border: 1px solid #e2e8f0;
-    padding: 6px;
+    border: 1px solid var(--border-task);
+    padding: 8px;
     display: flex;
     flex-direction: column;
     gap: 2px;
-    width: 220px;
+    width: 240px;
     z-index: 30;
+    font-family: var(--sans);
   }
 
   .user-switcher-option {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px;
+    gap: 10px;
+    padding: 10px 12px;
     border: none;
     background: transparent;
     border-radius: 8px;
     font-size: 14px;
+    color: var(--text-h);
     text-align: left;
     cursor: pointer;
+    width: 100%;
+    font-family: var(--sans);
   }
 
   .user-switcher-option:hover {
-    background: #f1f5f9;
+    background: var(--bg);
   }
 
   .user-switcher-option.active {
     background: #eef2ff;
+    color: #3C53EB;
     font-weight: 600;
   }
 
@@ -1765,6 +1782,20 @@
     align-items: center;
     gap: 6px;
     color: #545454;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .sidebar-project-name-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .sidebar-project-name span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .sidebar-project-rename {
@@ -1952,6 +1983,7 @@
   }
 
   .top-bar-logo {
+    width: 250px;
     height: 80px;
     font-weight: 700;
     font-size: 28px;
@@ -1960,6 +1992,7 @@
     display: flex;
     align-items: center;
     color: #030213;
+    border-bottom: 1pt solid #ECECF2;
   }
 
   .top-bar-logo-accent {
@@ -2134,11 +2167,7 @@
     background: #fff;
     border-left: 1px solid #e2e8f0;
     overflow-y: auto;
-    padding: 0px 16px 20px 16px;
-  }
-
-  .right-panel-section {
-    margin-bottom: 20px;
+    padding: 0px 16px 0px 16px;
   }
 
   .right-panel-section-header {
@@ -2272,6 +2301,184 @@
   transition: 0.3s;
 }
 
+.sidebar-divider {
+  width: 100%;
+  height: 1px;
+  background: #ECECF2;
+  flex-shrink: 0;
+  margin: 15px 0;
+}
+
+.datetime-picker {
+  position: fixed;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+  border: 0.5pt solid var(--border-task);
+  padding: 16px;
+  z-index: 200;
+  width: 300px;
+  font-family: var(--sans);
+}
+
+.datetime-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--modal-text);
+  margin-bottom: 12px;
+}
+
+.datetime-picker-header button {
+  border: none;
+  background: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text-h);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.datetime-picker-header button:hover {
+  background: var(--bg);
+}
+
+.datetime-picker-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 12px;
+  color: #9E9E9E;
+  margin-bottom: 4px;
+}
+
+.datetime-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.datetime-picker-day {
+  border: none;
+  background: none;
+  padding: 8px 0;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text-h);
+}
+
+.datetime-picker-day:hover {
+  background: var(--bg);
+}
+
+.datetime-picker-day.outside {
+  color: #D0D0D8;
+}
+
+.datetime-picker-day.selected {
+  background: var(--button-bg);
+  color: #fff;
+  font-weight: 600;
+}
+
+.datetime-picker-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-task);
+}
+
+.datetime-picker-time input[type="number"] {
+  padding: 8px;
+  border-radius: 8px;
+  border: 0.5pt solid var(--border-task);
+  font-size: 14px;
+  font-family: var(--sans);
+  color: var(--text-h);
+  flex: 1;
+  width: 0;
+  text-align: center;
+}
+
+.datetime-picker-time input[type="number"]::-webkit-inner-spin-button,
+.datetime-picker-time input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.ampm-toggle {
+  display: flex;
+  border: 0.5pt solid var(--border-task);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ampm-toggle button {
+  border: none;
+  background: #fff;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: var(--sans);
+  cursor: pointer;
+  color: var(--text-h);
+}
+
+.ampm-toggle button.active {
+  background: var(--button-bg);
+  color: #fff;
+}
+
+.datetime-picker-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.datetime-picker-actions button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--sans);
+  cursor: pointer;
+}
+
+.datetime-picker-cancel {
+  background: #fff;
+  border: 0.5pt solid var(--border-task);
+  color: var(--text-h);
+}
+
+.datetime-picker-apply {
+  background: var(--button-bg);
+  border: none;
+  color: #fff;
+}
+
+.due-date-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px;
+  border-radius: 8px;
+  border: 0.5pt solid var(--border-task);
+  color: #9E9E9E;
+  background: #f7f7f8;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 14px;
+  text-align: left;
+  width: 100%;
+}
+
+.due-date-trigger.has-value {
+  color: var(--text-h);
+}
 
 @media (max-width: 1440px) {
   .sidebar {

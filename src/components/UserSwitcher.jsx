@@ -47,7 +47,7 @@ function UserSwitcher({activeUserId, onSelectUser, compact = false}) {
                                 className={`user-switcher-option ${user.id === activeUserId ? "active" : ""}`}
                                 onClick={() => handleSelect(user.id)}
                             >
-                                <UserAvatar user={user} size={22} className="sidebar-avatar-small" />
+                                <UserAvatar user={user} size={28} />
                                 {user.name}
                             </button>
                         ))}

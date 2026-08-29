@@ -3,11 +3,16 @@ export function getDisplayPriority(task) {
 }
 
 export function formatDueDate(dueDate) {
-    if (!dueDate) return null; 
-    const date = new Date(`${dueDate}T00:00:00`);
+    if (!dueDate) return null;
+    const hasTime = dueDate.includes("T");
+    const date = hasTime ? new Date(dueDate) : new Date(`${dueDate}T00:00:00`);
     const weekday = date.toLocaleDateString(undefined, {weekday: "short"});
     const month = date.toLocaleDateString(undefined, {month: "short"});
-    return `${weekday}, ${month}. ${date.getDate()}`;
+    if (!hasTime) {
+        return `${weekday}, ${month}. ${date.getDate()}`;
+    }
+    const time = date.toLocaleTimeString(undefined, {hour: "numeric", minute: "2-digit"});
+    return `${weekday}, ${month}. ${date.getDate()} · ${time}`;
 }
 
 export function formatTimestamp(isoString) {

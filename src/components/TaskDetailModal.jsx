@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { USERS, normalizeAssignees, getUserById } from "../users";
 import UserAvatar from "./UserAvatar";
-import { sendIco } from "../icons"
+import { sendIco, pencilIco } from "../icons"
 import TaskMenu from "./TaskMenu";
+import DateTimePicker from "./DateTimePicker";
 import { formatDueDate, formatTimestamp } from "../utils/task";
 
 function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, onSave, onAddComment, onDelete, onEdit}) {
@@ -15,7 +16,28 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [draftTitle, setDraftTitle] = useState(task.text);
     const [isEditingDescription, setIsEditingDescription] = useState(false);
-    const [isEditingDueDate, setIsEditingDueDate] = useState(false);
+    const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+    const [datePickerPosition, setDatePickerPosition] = useState(null);
+    const dueDateFieldRef = useRef(null);
+
+    const handleOpenDatePicker = () => {
+        if (dueDateFieldRef.current) {
+            const rect = dueDateFieldRef.current.getBoundingClientRect();
+            const estimatedHeight = 430;
+            const openUpward = rect.top - estimatedHeight - 8 > 0;
+            setDatePickerPosition({
+                top: openUpward ? rect.top - 8 : rect.bottom + 8,
+                left: rect.left + rect.width / 2,
+                openUpward,
+            });
+        }
+        setIsDatePickerOpen(true);
+    };
+
+    const handleApplyDate = (value) => {
+        setDueDate(value);
+        setIsDatePickerOpen(false);
+    };
 
     const [assignedIds, setAssignedIds] = useState(normalizeAssignees(task.assignedTo));
     const [isAddingUser, setIsAddingUser] = useState(false);
@@ -128,7 +150,7 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                     className="pencil-button"
                                     onClick={() => setIsEditingDescription((open) => !open)}
                                 >
-                                ✎
+                                {pencilIco}
                                 </button>
                             </label>
                             {isEditingDescription ? (
@@ -143,28 +165,11 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                             )}
                         </div>
 
-                        <div className="task-detail-field">
-                            <label>
-                                Due Date
-                                <button
-                                    type="button"
-                                    className="pencil-button"
-                                    onClick={() => setIsEditingDueDate((open) => !open)}
-                                >
-                                    ✎
-                                    </button>
-                            </label>
-                            {isEditingDueDate ? (
-                                <input 
-                                    type="date"
-                                    value={dueDate}
-                                    onChange={(event) => setDueDate(event.target.value)}
-                                    onBlur={() => setIsEditingDueDate(false)}
-                                    autoFocus    
-                                />
-                            ) : (
-                                <p>{formattedDueDate ?? "No due date"}</p>
-                            )}
+                        <div className="task-detail-field" ref={dueDateFieldRef}>
+                            <label>Due Date</label>
+                            <p onClick={handleOpenDatePicker} style={{cursor: "pointer"}}>
+                                {formattedDueDate ?? "No due date"}
+                            </p>
                         </div>
 
                         <p className="task-detail-updated">
@@ -276,6 +281,14 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                     <button type="button" onClick={onClose}>Cancel</button>
                     <button type="button" onClick={handleSave}>Save Changes</button>
                 </div>
+                {isDatePickerOpen && datePickerPosition && (
+                    <DateTimePicker
+                        value={dueDate}
+                        position={datePickerPosition}
+                        onClose={() => setIsDatePickerOpen(false)}
+                        onApply={handleApplyDate}
+                    />
+                )}
             </div>
         </div>
     );

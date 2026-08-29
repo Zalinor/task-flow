@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { calendarIco } from "../icons";
+import DateTimePicker from "./DateTimePicker";
+import { formatDueDate } from "../utils/task";
 
 function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = null}) {
 
@@ -8,6 +11,28 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
     const [priority, setPriority] = useState("Medium");
     const [status, setStatus] = useState("Open");
     const [dueDate, setDueDate] = useState("");
+    const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+    const [datePickerPosition, setDatePickerPosition] = useState(null);
+    const dueDateButtonRef = useRef(null);
+
+    const handleOpenDatePicker = () => {
+        if (dueDateButtonRef.current) {
+            const rect = dueDateButtonRef.current.getBoundingClientRect();
+            const estimatedHeight = 430;
+            const openUpward = rect.top - estimatedHeight - 8 > 0;
+            setDatePickerPosition({
+                top: openUpward ? rect.top - 8 : rect.bottom + 8,
+                left: rect.left + rect.width / 2,
+                openUpward,
+            });
+        }
+        setIsDatePickerOpen(true);
+    };
+
+    const handleApplyDate = (value) => {
+        setDueDate(value);
+        setDatePickerPosition(false);
+    }
 
     const handleStageChange = (event) => {
         const newStageId = event.target.value;
@@ -59,17 +84,17 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                             placeholder="Enter task title"
                             autoFocus
                          />
-                    </label>
-                {columns.length > 0 &&(
-                    <label>
-                        Stage
-                        <select value={stageId} onChange={handleStageChange}>
-                            {columns.map((column) => (
-                                <option key={column.id} value={column.id}>{column.title}</option>
-                            ))}
-                        </select>
-                    </label>
-                )}
+                        </label>
+                        {columns.length > 0 &&(
+                            <label>
+                                Stage
+                                <select value={stageId} onChange={handleStageChange}>
+                                    {columns.map((column) => (
+                                        <option key={column.id} value={column.id}>{column.title}</option>
+                                    ))}
+                                </select>
+                            </label>
+                        )}
                     </div>
                     
 
@@ -103,12 +128,15 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                     
                     <div className="modal-row">
                         <label>
-                        Due Date
-                        <input 
-                            type="date"
-                            value={dueDate}
-                            onChange={(event) => setDueDate(event.target.value)}
-                        />
+                            Due Date
+                            <button
+                                type="button"
+                                ref={dueDateButtonRef}
+                                className={`due-date-trigger ${dueDate ? "has-value" : ""}`}
+                                onClick={handleOpenDatePicker}
+                            >
+                                {calendarIco} {dueDate ? formatDueDate(dueDate) : "Pick a date (optional)"}
+                            </button>
                         </label>
                     </div>
                     
@@ -117,6 +145,14 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                         <button type="button" onClick={onClose}>Cancel</button>
                         <button type="submit">Add Task</button>
                     </div>
+                    {isDatePickerOpen && datePickerPosition && (
+                        <DateTimePicker
+                            value={dueDate}
+                            position={datePickerPosition}
+                            onClose={() => setIsDatePickerOpen(false)}
+                            onApply={handleApplyDate}
+                        />
+                    )}
                 </form>
             </div>
         </div>

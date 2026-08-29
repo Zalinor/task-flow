@@ -45,7 +45,7 @@ function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename,
                 />
             ) : (
                 <span className="sidebar-project-name">
-                    {project.name || "Untitled project"}
+                    <span className="sidebar-project-name-text">{project.name || "Untitled project"}</span>
                     <button  type="button" className="sidebar-project-rename" onClick={handleStartEditing}>
                         {pencilIco}
                     </button>
