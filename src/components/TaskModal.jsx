@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
-import { calendarIco } from "../icons";
+import { calendarIco, crossIco, ellipsisIco } from "../icons";
 import DateTimePicker from "./DateTimePicker";
+import AssignedUserSelect from "./AssigneeUserSelect";
+import CustomSelect from "./CustomSelect";
 import { formatDueDate } from "../utils/task";
 
 function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = null}) {
@@ -11,9 +13,37 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
     const [priority, setPriority] = useState("Medium");
     const [status, setStatus] = useState("Open");
     const [dueDate, setDueDate] = useState("");
+    const [assignedIds, setAssignedIds] = useState([]);
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
     const [datePickerPosition, setDatePickerPosition] = useState(null);
     const dueDateButtonRef = useRef(null);
+    const availableColumns = columns.filter((column) => column.id !== finalColumnId);
+    
+    const [subtasks, setSubtasks] = useState([]);
+    const [subtaskDraft, setSubtaskDraft] = useState("");
+
+    const handleAddSubtask = () => {
+        const trimmed = subtaskDraft.trim();
+        if (trimmed === "") return;
+        setSubtasks((prev) => [...prev, { id: crypto.randomUUID(), text: trimmed, completed: false }]);
+        setSubtaskDraft("");
+    };
+
+    const handleRemoveSubtask = (subtaskId) => {
+        setSubtasks((prev) => prev.filter((subtask) => subtask.id !== subtaskId));
+    };
+
+    const handleToggleSubtaskDraft = (subtaskId) => {
+        setSubtasks((prev) => prev.map((subtask) =>
+            subtask.id === subtaskId ? { ...subtask, completed: !subtask.completed } : subtask
+        ));
+    };
+
+    const handleToggleAssignee = (userId) => {
+        setAssignedIds((prev) => 
+            prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
+        )
+    }
 
     const handleOpenDatePicker = () => {
         if (dueDateButtonRef.current) {
@@ -34,16 +64,14 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
         setDatePickerPosition(false);
     }
 
-    const handleStageChange = (event) => {
-        const newStageId = event.target.value;
+    const handleStageChange = (newStageId) => {
         setStageId(newStageId);
         if (finalColumnId && newStageId === finalColumnId) {
             setStatus("Completed");
         }
     }
 
-    const handleStatusChange = (event) => {
-        const newStatus = event.target.value;
+    const handleStatusChange = (newStatus) => {
         setStatus(newStatus);
         if (newStatus === "Completed" && finalColumnId) {
             setStageId(finalColumnId);
@@ -62,6 +90,8 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
             priority,
             status,
             dueDate,
+            assignedTo: assignedIds,
+            subtasks,
         });
     };
 
@@ -70,11 +100,15 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
             <div className="modal" onClick={(event) => event.stopPropagation()}>
                 <div className="modal-header">
                     <h3>Add New Task</h3>
-                    <button onClick={onClose}>x</button>
+                    <div className="modal-header-buttons">
+                        <button className="modal-header-button">{ellipsisIco}</button>  
+                        <button className="modal-header-button" onClick={onClose}>{crossIco}</button>
+                    </div>
+                    
                 </div>
-                <p className="modal-subtitle">Fill in the details to create a new task"</p>
+                <p className="modal-subtitle">Fill in the details to create a new task</p>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className="task-modal-form">
                     <div className="modal-row">
                         <label>
                         Title*
@@ -85,14 +119,14 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                             autoFocus
                          />
                         </label>
-                        {columns.length > 0 &&(
+                        {availableColumns.length > 0 &&(
                             <label>
                                 Stage
-                                <select value={stageId} onChange={handleStageChange}>
-                                    {columns.map((column) => (
-                                        <option key={column.id} value={column.id}>{column.title}</option>
-                                    ))}
-                                </select>
+                                <CustomSelect
+                                    value={stageId}
+                                    onChange={handleStageChange}
+                                    options={availableColumns.map((column) => ({ value: column.id, label: column.title }))}
+                                />
                             </label>
                         )}
                     </div>
@@ -109,21 +143,63 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                     <div className="modal-row">
                         <label>
                         Priority
-                        <select value={priority} onChange={(event) => setPriority(event.target.value)}>
-                                <option value="High">High</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Low">Low</option>
-                            </select>
+                        <CustomSelect
+                            value={priority}
+                            onChange={setPriority}
+                            options={[
+                                { value: "High", label: "High" },
+                                { value: "Medium", label: "Medium" },
+                                { value: "Low", label: "Low" },
+                            ]}
+                        />
                         </label>
 
                         <label >
                         Status
-                            <select value={status} onChange={handleStatusChange}>
-                                <option value="Open">Open</option>
-                                <option value="In Review">In Review</option>
-                                <option value="Frozen">Frozen</option>
-                            </select>
+                            <CustomSelect
+                                value={status}
+                                onChange={handleStatusChange}
+                                options={[
+                                    { value: "Open", label: "Open" },
+                                    { value: "In Review", label: "In Review" },
+                                    { value: "Frozen", label: "Frozen" },
+                                ]}
+                            />
                         </label>
+                    </div>
+
+                    <div className="subtasks-section">
+                        <label>Subtasks</label>
+                        {subtasks.length > 0 && (
+                            <div className="subtasks-list">
+                                {subtasks.map((subtask) => (
+                                    <div key={subtask.id} className="subtask-row">
+                                        <input
+                                            type="checkbox"
+                                            checked={subtask.completed}
+                                            onChange={() => handleToggleSubtaskDraft(subtask.id)}
+                                        />
+                                        <span className={subtask.completed ? "subtask-done-text" : ""}>{subtask.text}</span>
+                                        <button type="button" className="subtask-remove" onClick={() => handleRemoveSubtask(subtask.id)}>x</button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="subtask-input-row">
+                            <input
+                                type="text"
+                                placeholder="Add a subtask"
+                                value={subtaskDraft}
+                                onChange={(event) => setSubtaskDraft(event.target.value)}
+                                onKeyDown={(event) => {
+                                    if (event.key === "Enter") {
+                                        event.preventDefault();
+                                        handleAddSubtask();
+                                    }
+                                }}
+                            />
+                            <button type="button" className="subtask-add-button" onClick={handleAddSubtask}>+ Add</button>
+                        </div>
                     </div>
                     
                     <div className="modal-row">
@@ -138,12 +214,16 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                                 {calendarIco} {dueDate ? formatDueDate(dueDate) : "Pick a date (optional)"}
                             </button>
                         </label>
+                        <label>
+                            Assigned
+                            <AssignedUserSelect assignedIds={assignedIds} onToggle={handleToggleAssignee}/>
+                        </label>
                     </div>
                     
 
                     <div className="modal-actions">
                         <button type="button" onClick={onClose}>Cancel</button>
-                        <button type="submit">Add Task</button>
+                        <button type="submit" disabled={title.trim() === ""}>Add Task</button>
                     </div>
                     {isDatePickerOpen && datePickerPosition && (
                         <DateTimePicker

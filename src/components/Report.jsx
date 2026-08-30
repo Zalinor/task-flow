@@ -1,5 +1,5 @@
 import {useMemo} from "react";
-import { totalTaskIco, pendingIco, completedIco, overdueIco, frozenIco, docIco } from '../icons';
+import { totalTaskIco, pendingIco, completedIco, overdueIco, frozenIco, docIco, pencilIco } from '../icons';
 
 function Report({tasks, description, attachments}) {
     const stats = useMemo(() => {
@@ -65,11 +65,11 @@ function Report({tasks, description, attachments}) {
             <div className="report-bottom">
                 {/* Static for now  */}
                 <div className="report-panel">
-                    <h3>Decription <button type="button" className="pencil-button">✎</button></h3>
+                    <h3>Decription <button type="button" className="pencil-button">{pencilIco}</button></h3>
                     <p>{description}</p>
                 </div>
                 <div className="report-panel">
-                    <h3>Attachments <button type="button" className="pencil-button">✎</button></h3>
+                    <h3>Attachments <button type="button" className="pencil-button">{pencilIco}</button></h3>
                     <ul className="attachments-list">
                         {attachments.map((file) => (
                             <li key={file.name}>

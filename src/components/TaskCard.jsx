@@ -3,7 +3,7 @@ import { formatDueDate, getDisplayPriority } from "../utils/task";
 import TaskMenu from './TaskMenu';
 import AvatarStack from './AvatarStack';
 import { normalizeAssignees } from '../users';
-import { ellipsisIco, timerIco, userFilter } from '../icons';
+import { ellipsisIco, timerIco, userFilter, chevronIco } from '../icons';
 import { getUserById } from '../users';
 
 
@@ -14,15 +14,15 @@ const PRIORITY_CLASSES = {
   Frozen: "priority-frozen",
 };
 
-// A single task card. Recieves data via props from the parent (Column)
-function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isHighlighted, isSelectMode, isSelected, onToggleSelect, onDelete, onEdit, onEditRequest, draggedTaskId, onDragStart, onDragEnd}) {
+function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, isDone, isHighlighted, isSelectMode, isSelected, onToggleSelect, onDelete, onEdit, onOpenTask, onToggleSubtask, draggedTaskId, onDragStart, onDragEnd}) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftText, setDraftText] = useState(text);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const assignedUser = getUserById(assignedTo);
+  const [isSubtasksOpen, setIsSubtasksOpen] = useState(false);
   const assigneeIds = normalizeAssignees(assignedTo);
   const cardRef = useRef(null);
   const isDragging = id === draggedTaskId;
+  const subtaskList = subtasks ?? [];
 
   useEffect(() => {
     if (isHighlighted && cardRef.current) {
@@ -30,36 +30,36 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isHi
     }
   }, [isHighlighted]);
 
-  // Switches the card into edit mode, resetting the draft to the current saved text
   const handleStartEditing = () => {
     setDraftText(text);
     setIsEditing(true);
   };
 
-  // Saves the edited text (if it actually changed) and exits edit mode
   const handleFinishEditing = () => {
     const trimmed = draftText.trim();
     if (trimmed !== "" && trimmed !== text) {
-      onEdit(id, trimmed); // tell App to update this task's text
+      onEdit(id, trimmed);
     }
     setIsEditing(false);
   };
 
-  // Fires when the user starts dragging this card
-  // We store the task id in the drag event so the drop target can read it later
   const handleDragStart = (event) => {
     event.dataTransfer.setData("text/plain", id);
     onDragStart(id);
   }
 
   const handleCardClick = () => {
-    if (isSelectMode) {
-      onToggleSelect(id);
-    }
+      if (isEditing) return;
+      if (isSelectMode) {
+        onToggleSelect(id);
+      } else {
+        onOpenTask();
+      }
   };
 
   const formattedDate = formatDueDate(dueDate);
   const priorityClass = PRIORITY_CLASSES[getDisplayPriority({priority, status})] ?? "priority-medium";
+  const completedCount = subtaskList.filter((subtask) => subtask.completed).length;
 
   return ( 
     <div 
@@ -81,7 +81,6 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isHi
         />
       )}
       {isEditing ? (
-        // Edit mode: an input bound to the draft text
         <input
           type="text"
           value={draftText}
@@ -93,9 +92,13 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isHi
           autoFocus
         />
       ) : (
-        <span onClick={isSelectMode ? undefined : handleStartEditing} className={isDone ? "task-done-text" : ""}>
+        <span
+          onClick={isSelectMode ? undefined : (event) => { event.stopPropagation(); handleStartEditing(); }}
+          className={`card-title ${isDone ? "task-done-text" : ""}`}
+        >
           {isDone && <span className="done-check">✓</span>}
-          {text} <span className={`priority-badge ${priorityClass}`}>{getDisplayPriority({priority, status})}</span> 
+          <span className="card-title-text">{text}</span>
+          <span className={`priority-badge ${priorityClass}`}>{getDisplayPriority({priority, status})}</span>
         </span>
       )}
       {!isSelectMode && (
@@ -105,16 +108,43 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, isDone, isHi
             </button>
             {isMenuOpen && (
               <TaskMenu
-                onEdit={() => {setIsMenuOpen(false); onEditRequest();}}
+                showEdit={false}
                 onDelete={() => {setIsMenuOpen(false); onDelete();}}
                 onClose={() => setIsMenuOpen(false)}
               />
             )}
         </div>
       )}
-      
-      
     </div>
+
+    {subtaskList.length > 0 && (
+      <div className="card-subtasks">
+        <button
+          type="button"
+          className="card-subtasks-toggle"
+          onClick={(event) => { event.stopPropagation(); setIsSubtasksOpen((open) => !open); }}
+        >
+          Subtasks
+          <span className="subtasks-count-badge">{completedCount} of {subtaskList.length}</span>
+          <span className={`chevron ${isSubtasksOpen ? "" : "closed"}`}>{chevronIco}</span>
+        </button>
+        {isSubtasksOpen && (
+          <div className="card-subtasks-list" onClick={(event) => event.stopPropagation()}>
+            {subtaskList.map((subtask) => (
+              <label key={subtask.id} className="card-subtask-row">
+                <input
+                  type="checkbox"
+                  checked={subtask.completed}
+                  onChange={() => onToggleSubtask(subtask.id)}
+                />
+                <span className={subtask.completed ? "subtask-done-text" : ""}>{subtask.text}</span>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+    )}
+
     <div className="card-low-layer">
       <span>{timerIco}{formattedDate ? `Due ${formattedDate}` : "No due date"}</span>
       <AvatarStack userIds={assigneeIds} size={28} max={3} emptyIcon={userFilter} />

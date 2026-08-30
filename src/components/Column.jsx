@@ -41,7 +41,7 @@ function ColumnEditPopover({isFinal, onSetFinal, color, onColorChange, onClose, 
   );
 }
 
-function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEditTask, onAddTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder, isFinal, onSetFinal, isSelectMode, selectedTaskIds, onToggleTaskSelection, onColorChange, highlightedTaskId}) {
+function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onOpenTask, onAddTask, onReorder, draggedTaskId, onDragStart, onDragEnd, onDeleteColumn, onRenameColumn, draggedColumnId, onColumnDragStart, onColumnDragEnd, onColumnReorder, isFinal, onSetFinal, isSelectMode, selectedTaskIds, onToggleTaskSelection, onColorChange, highlightedTaskId, onToggleSubtask}) {
   
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
@@ -269,13 +269,15 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onEdit
               status={task.status}
               assignedTo={task.assignedTo}
               dueDate={task.dueDate}
+              subtasks={task.subtasks}
               isDone={isFinal}
               isSelectMode={isSelectMode}
               isSelected={selectedTaskIds.has(task.id)}
               onToggleSelect={onToggleTaskSelection}
               onDelete={() => onDelete(task.id)}
               onEdit={onEdit}
-              onEditRequest={() => onEditTask(task.id)}
+              onOpenTask={() => onOpenTask(task.id)}
+              onToggleSubtask={(subtaskId) => onToggleSubtask(task.id, subtaskId)}
               draggedTaskId={draggedTaskId}
               onDragStart={onDragStart}
               onDragEnd={() => {onDragEnd(); setDragOverId(null)}}

@@ -8,6 +8,7 @@ import TaskDetailModal from './TaskDetailModal';
 import FilterPanel from './FilterPanel';
 import {getDisplayPriority} from "../utils/task"
 import ConfirmDialog from './ConfirmDialog';
+import CustomSelect from './CustomSelect';
 import Report from './Report';
 
 import { unionIco, shareIco, ellipsisIco, userFilter, filter, selectIco } from '../icons';
@@ -195,23 +196,46 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
     setSelectedTaskIds(new Set());
  };
 
- const handleToggleTaskSelection = (taskId) => {
-  setSelectedTaskIds((prev) => {
-    const next = new Set(prev);
-    if (next.has(taskId)) {
-      next.delete(taskId);
-    } else {
-      next.add(taskId);
-    }
-    return next;
-  });
- };
+  const handleToggleTaskSelection = (taskId) => {
+    setSelectedTaskIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(taskId)) {
+        next.delete(taskId);
+      } else {
+        next.add(taskId);
+      }
+      return next;
+    });
+  };
 
- const handleDeleteSelected = () => {
-  setTasks((prevTasks) => prevTasks.filter((task) => !selectedTaskIds.has(task.id)));
-  setSelectedTaskIds(new Set());
-  setIsSelectMode(false);
- };
+  const handleDeleteSelected = () => {
+    setTasks((prevTasks) => prevTasks.filter((task) => !selectedTaskIds.has(task.id)));
+    setSelectedTaskIds(new Set());
+    setIsSelectMode(false);
+  };
+
+  const [isBulkDeleteConfirmOpen, setIsBulkDeleteConfirmOpen] = useState(false);
+
+  const handleRequestDeleteSelected = () => {
+    if (selectedTaskIds.size === 0) return;
+    setIsBulkDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDeleteSelected = () => {
+    handleDeleteSelected();
+    setIsBulkDeleteConfirmOpen(false);
+  };
+
+  const visibleTaskIds = displayTasks.map((task) => task.id);
+  const allVisibleSelected = visibleTaskIds.length > 0 && visibleTaskIds.every((id) => selectedTaskIds.has(id));
+
+  const handleToggleSelectAllVisible = () => {
+    if (allVisibleSelected) {
+      setSelectedTaskIds(new Set());
+    } else {
+      setSelectedTaskIds(new Set(visibleTaskIds));
+    }
+  };
 
  const handleMoveSeleted = (targetColumnId) => {
   setTasks((prevTasks) =>
@@ -281,11 +305,39 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
 
   // Task editing
   const [editingTaskId, setEditingTaskId] = useState(null);
+  const [taskPendingDeletionId, setTaskPendingDeletionId] = useState(null);
 
   const editingTask = tasks.find((task) => task.id === editingTaskId) ?? null;
+  const taskToDelete = tasks.find((task) => task.id === taskPendingDeletionId) ?? null;
 
-  const handleEditTaskRequest = (taskId) => {
-    setEditingTaskId(taskId);
+  const handleOpenTask = (taskId) => {
+      setEditingTaskId(taskId);
+  };
+
+  const handleRequestDeleteTask = (taskId) => {
+      setTaskPendingDeletionId(taskId);
+  };
+
+  const handleConfirmDeleteTask = () => {
+      handleDelete(taskPendingDeletionId);
+      if (editingTaskId === taskPendingDeletionId) setEditingTaskId(null);
+      setTaskPendingDeletionId(null);
+  };
+
+  const handleCancelDeleteTask = () => {
+      setTaskPendingDeletionId(null);
+  };
+
+  const handleToggleSubtask = (taskId, subtaskId) => {
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => {
+          if (task.id !== taskId) return task;
+          const updatedSubtasks = (task.subtasks ?? []).map((subtask) =>
+            subtask.id === subtaskId ? { ...subtask, completed: !subtask.completed } : subtask
+          );
+          return { ...task, subtasks: updatedSubtasks };
+        })
+      );
   };
 
   const handleUpdateTask = (taskData) => {
@@ -436,24 +488,23 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
         
         {isSelectMode && (
           <div className="selection-bar">
+            <button type="button" className="selection-select-all" onClick={handleToggleSelectAllVisible}>
+              {allVisibleSelected ? "Deselect all" : "Select all"}
+            </button>
             <span className="selection-count">{selectedTaskIds.size} selected</span>
-            <select 
-              className="selection-move-select"
-              value=""
-              onChange={(event) => {
-                if (event.target.value) handleMoveSeleted(event.target.value);
-              }}
-              disabled={selectedTaskIds.size === 0}
-              >
-                <option value="" disabled>Move to...</option>
-                {columns.map((column) => (
-                  <option key={column.id} value={column.id}>{column.title}</option>
-                ))}
-              </select>
+            <div className="selection-move-wrapper">
+              <CustomSelect
+                value=""
+                placeholder="Move to..."
+                disabled={selectedTaskIds.size === 0}
+                onChange={(colId) => handleMoveSeleted(colId)}
+                options={columns.map((column) => ({ value: column.id, label: column.title }))}
+              />
+            </div>
               <button
                 type="button"
                 className="selection-delete-button"
-                onClick={handleDeleteSelected}
+                onClick={handleRequestDeleteSelected}
                 disabled={selectedTaskIds.size === 0}
               >
                 Delete
@@ -477,10 +528,11 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
           onSetFinal={() => handleSetFinalColumn(column.id)}
           onColorChange={(color) => handleSetColumnColor(column.id, color)}
           tasks={displayTasks.filter((task) => task.columnId === column.id)} 
-          onDelete={handleDelete} 
           onDrop={handleMoveTask} 
           onEdit={handleEdit}
-          onEditTask={handleEditTaskRequest}
+          onOpenTask={handleOpenTask}
+          onDelete={handleRequestDeleteTask}
+          onToggleSubtask={handleToggleSubtask}
           onAddTask={(columnId) => setAddTaskContext({columnId})}
           onReorder={handleReorder} 
           draggedTaskId={draggedTaskId} 
@@ -522,17 +574,26 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
       />
       )}
       {editingTask && (
-        <TaskDetailModal
-          task={editingTask}
-          user={currentUser}
-          columns={columns}
-          finalColumnId={finalColumnId}
-          onClose={() => setEditingTaskId(null)}
-          onSave={handleUpdateTask}
-          onAddComment={handleAddComment}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-        />
+      <TaskDetailModal
+        task={editingTask}
+        currentUser={getUserById(activeUserId)}
+        columns={columns}
+        finalColumnId={finalColumnId}
+        onClose={() => setEditingTaskId(null)}
+        onSave={handleUpdateTask}
+        onAddComment={handleAddComment}
+        onDelete={handleRequestDeleteTask}
+        onEdit={handleEdit}
+      />
+      )}
+      {taskToDelete && (
+          <ConfirmDialog
+            title="Delete task?"
+            message={`This will permanently delete "${taskToDelete.text}". This can't be undone.`}
+            confirmLabel="Delete task"
+            onConfirm={handleConfirmDeleteTask}
+            onCancel={handleCancelDeleteTask}
+          />
       )}
       {columnToDelete && (
         <ConfirmDialog
@@ -541,6 +602,15 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
           confirmLabel="Delete column"
           onConfirm={handleConfirmDeleteColumn}
           onCancel={handleCancelDeleteColumn}
+        />
+      )}
+      {isBulkDeleteConfirmOpen && (
+        <ConfirmDialog
+          title="Delete selected tasks?"
+          message={`This will permanently delete ${selectedTaskIds.size} selected task${selectedTaskIds.size === 1 ? "" : "s"}. This can't be undone.`}
+          confirmLabel="Delete tasks"
+          onConfirm={handleConfirmDeleteSelected}
+          onCancel={() => setIsBulkDeleteConfirmOpen(false)}
         />
       )}
     </div>
