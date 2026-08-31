@@ -1,10 +1,16 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { USERS, normalizeAssignees, getUserById } from "../users";
 import UserAvatar from "./UserAvatar";
-import { sendIco, pencilIco } from "../icons"
+import { sendIco, pencilIco, crossIco } from "../icons"
 import DateTimePicker from "./DateTimePicker";
 import { formatDueDate, formatTimestamp } from "../utils/task";
 import CustomSelect from "./CustomSelect";
+
+function autoResizeTextarea(element) {
+    if (!element) return;
+    element.style.height = "auto";
+    element.style.height = `${element.scrollHeight}px`;
+}
 
 function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, onSave, onAddComment, onDelete, onEdit}) {
     
@@ -19,9 +25,19 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [draftTitle, setDraftTitle] = useState(task.text);
     const [isEditingDescription, setIsEditingDescription] = useState(false);
+    const titleTextareaRef = useRef(null);
+    const descriptionTextareaRef = useRef(null);
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
     const [datePickerPosition, setDatePickerPosition] = useState(null);
     const dueDateFieldRef = useRef(null);
+
+    useEffect(() => {
+        if (isEditingTitle) autoResizeTextarea(titleTextareaRef.current);
+    }, [isEditingTitle]);
+
+    useEffect(() => {
+        if (isEditingDescription) autoResizeTextarea(descriptionTextareaRef.current);
+    }, [isEditingDescription]);
 
     const handleOpenDatePicker = () => {
         if (dueDateFieldRef.current) {
@@ -128,30 +144,35 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal task-detail-modal" onClick={(event) => event.stopPropagation()}>
-                <div className="modal-header">
-                    {isEditingTitle ? (
-                        <input
-                            type="text"
-                            className="task-detail-title-input"
-                            value={draftTitle}
-                            onChange={(event) => setDraftTitle(event.target.value)}
-                            onBlur={handleFinishEditingTitle}
-                            onKeyDown={(event) => {
-                                if (event.key === "Enter") event.target.blur();
-                            }}
-                            autoFocus
-                        />
-                    ) : (
-                        <h3 onClick={handleStartEditingTitle}>{task.text}</h3>
-                    )}
+                <div className="modal-header task-detail-header">
                     <div className="modal-header-actions-group">
                         <button type="button" className="task-detail-delete-button" onClick={() => onDelete(task.id)}>Delete</button>
-                        <button onClick={onClose}>x</button>
+                        <button className="modal-header-button" onClick={onClose}>{crossIco}</button>
                     </div>
                 </div>
 
                 <div className="task-detail-body">
                     <div className="task-detail-left">
+                        <div className="task-detail-field">
+                            {isEditingTitle ? (
+                                <textarea
+                                    ref={titleTextareaRef}
+                                    className="task-detail-title-input"
+                                    value={draftTitle}
+                                    maxLength={255}
+                                    onChange={(event) => { setDraftTitle(event.target.value); autoResizeTextarea(event.target); }}
+                                    onBlur={handleFinishEditingTitle}
+                                    onKeyDown={(event) => {
+                                        if (event.key === "Enter") { event.preventDefault(); event.target.blur(); }
+                                    }}
+                                    autoFocus
+                                    rows={1}
+                                />
+                            ) : (
+                                <h3 className="task-detail-title-text" onClick={handleStartEditingTitle}>{task.text}</h3>
+                            )}
+                        </div>
+
                         <div className="task-detail-field">
                             <label>
                                 Description
@@ -165,8 +186,9 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                             </label>
                             {isEditingDescription ? (
                                 <textarea
+                                    ref={descriptionTextareaRef}
                                     value={description}
-                                    onChange={(event) => setDescription(event.target.value)}
+                                    onChange={(event) => { setDescription(event.target.value); autoResizeTextarea(event.target); }}
                                     onBlur={() => setIsEditingDescription(false)}
                                     autoFocus
                                 />
@@ -206,12 +228,15 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                 <div className="subtasks-list">
                                     {subtasks.map((subtask) => (
                                         <div key={subtask.id} className="subtask-row">
-                                            <input
-                                                type="checkbox"
-                                                checked={subtask.completed}
-                                                onChange={() => handleToggleSubtask(subtask.id)}
-                                            />
-                                            <span className={subtask.completed ? "subtask-done-text" : ""}>{subtask.text}</span>
+                                            <label className="subtask-row-label">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={subtask.completed}
+                                                    onChange={() => handleToggleSubtask(subtask.id)}
+                                                />
+                                                <span className="checkmark"></span>
+                                                <span className={`subtask-row-text ${subtask.completed ? "subtask-done-text" : ""}`}>{subtask.text}</span>
+                                            </label>
                                             <button type="button" className="subtask-remove" onClick={() => handleRemoveSubtask(subtask.id)}>x</button>
                                         </div>
                                     ))}
@@ -221,6 +246,7 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                 <input
                                     type="text"
                                     placeholder="Add a subtask"
+                                    maxLength={255}
                                     value={subtaskDraft}
                                     onChange={(event) => setSubtaskDraft(event.target.value)}
                                     onKeyDown={(event) => {

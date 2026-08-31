@@ -116,6 +116,7 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                             value={title}
                             onChange={(event) => setTitle(event.target.value)}
                             placeholder="Enter task title"
+                            maxLength={255}
                             autoFocus
                          />
                         </label>
@@ -166,40 +167,6 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                                 ]}
                             />
                         </label>
-                    </div>
-
-                    <div className="subtasks-section">
-                        <label>Subtasks</label>
-                        {subtasks.length > 0 && (
-                            <div className="subtasks-list">
-                                {subtasks.map((subtask) => (
-                                    <div key={subtask.id} className="subtask-row">
-                                        <input
-                                            type="checkbox"
-                                            checked={subtask.completed}
-                                            onChange={() => handleToggleSubtaskDraft(subtask.id)}
-                                        />
-                                        <span className={subtask.completed ? "subtask-done-text" : ""}>{subtask.text}</span>
-                                        <button type="button" className="subtask-remove" onClick={() => handleRemoveSubtask(subtask.id)}>x</button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        <div className="subtask-input-row">
-                            <input
-                                type="text"
-                                placeholder="Add a subtask"
-                                value={subtaskDraft}
-                                onChange={(event) => setSubtaskDraft(event.target.value)}
-                                onKeyDown={(event) => {
-                                    if (event.key === "Enter") {
-                                        event.preventDefault();
-                                        handleAddSubtask();
-                                    }
-                                }}
-                            />
-                            <button type="button" className="subtask-add-button" onClick={handleAddSubtask}>+ Add</button>
-                        </div>
                     </div>
                     
                     <div className="modal-row">

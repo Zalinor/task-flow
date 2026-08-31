@@ -320,21 +320,23 @@
     font-size: 12px;
     font-weight: 600;
     margin-left: 6px;
+    height: 24px;
+    flex-shrink: 0;
   }
 
   .priority-high {
-    background-color: #fdebec;
-    color: #e5484d;
+    background-color: #FFF5F4;
+    color: #E92215;
   }
 
   .priority-medium {
-    background-color: #fdf3e7;
-    color: #d97706;
+    background-color: #FFF6ED;
+    color: #EB7101;
   }
 
   .priority-low {
-    background-color: #e9f0ff;
-    color: #3b82f6;
+    background-color: #F5ECFE;
+    color: #7C5DFF;
   }
 
   .priority-frozen {
@@ -731,22 +733,23 @@
 
   /* Task card */
   .card {
-    height: auto;
+    min-height: 96px;
     background-color: var(--task-bg);
     border-radius: 8px;
     padding: 10px 12px;
-    cursor: grab;
+    cursor: pointer;
     font-size: 18px;
     font-weight: 600;
-    border: 0.5pt solid var(--border-task);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     color: var(--task-text);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    border: 0.5pt solid var(--border-task);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
     outline: 2px solid #3c53eb00;
     outline-offset: 1px;
     transition: 0.3s;
+    gap: 4px;
   }
 
   .card-dragging {
@@ -773,19 +776,27 @@
     cursor: grabbing;
   }
 
-  .card button {
+  .card-delete-button {
     background: none;
     border: none;
-    color: #8a8a9a;
+    color: #9E9E9E;
     cursor: pointer;
-    font-size: 14px;
-    padding: 2px 6px;
+    padding: 4px;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
 
-  .card button:hover {
-    color: #ff6b6b;
-    background-color: #40405a;
+  .card-delete-button:hover {
+    color: #e5484d;
+    background: #fdebec;
+  }
+
+  .card-delete-button svg {
+    width: 12px;
+    height: 12px;
   }
 
   .card-high-layer{
@@ -815,12 +826,11 @@
     gap: 6px;
     min-width: 0;
     flex: 1;
-  }
+} 
 
   .card-title-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
     min-width: 0;
   }
 
@@ -836,8 +846,8 @@
   }
 
   .task-detail-description-text {
-    max-height: 160px;
-    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 
   .task-detail-left textarea {
@@ -1194,10 +1204,11 @@
     gap: 6px;
   }
 
-    .task-detail-field textarea {
-    width: 90%;
-    height: 130px;
+  .task-detail-field textarea {
+    width: 100%;
+    min-height: 60px;
     resize: none;
+    overflow: hidden;
   }
 
   .task-detail-field p {
@@ -1213,8 +1224,24 @@
     border-radius: 6px;
     padding: 4px 8px;
     font-family: var(--sans);
-    flex: 1;
-    color: white;
+    color: var(--modal-text);
+    width: 100%;
+    resize: none;
+    overflow: hidden;
+    line-height: 1.3;
+  }
+
+  .task-detail-title-text {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    cursor: pointer;
+    word-break: break-word;
+    color: var(--modal-text);
+  }
+
+  .task-detail-header {
+    justify-content: flex-end;
   }
 
   .task-detail-input {
@@ -2723,8 +2750,20 @@
   color: var(--text-h);
 }
 
-.subtask-row span {
+.subtask-row-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.subtask-row-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding-top: 1px;
 }
 
 .subtask-done-text {
@@ -2769,7 +2808,7 @@
 }
 
 .card-subtasks {
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .card-subtasks-toggle {
@@ -2779,20 +2818,30 @@
   border: none;
   background: none;
   padding: 0;
-  font-size: 12px;
+  color: #030213;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--text-h);
   cursor: pointer;
   font-family: var(--sans);
 }
 
+.card-subtasks-toggle .chevron {
+  margin-left: 0;
+}
+
 .subtasks-count-badge {
-  background: var(--bg);
-  border-radius: 10px;
-  padding: 1px 8px;
+  width: auto;
+  height: 24px;
+  border: 1pt solid #D1D3DA;
+  border-radius: 12px;
+  background: #F7F7F8;
+  padding: 2px 8px;
   font-size: 11px;
   font-weight: 600;
   color: var(--text-h);
+  width: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .card-subtasks-list {
@@ -2801,17 +2850,99 @@
   flex-direction: column;
   gap: 4px;
   padding: 8px;
+  margin-bottom: 4px;
   background: var(--bg);
   border-radius: 8px;
 }
 
-.card-subtask-row {
+.card-subtasks-list,
+.subtask-row {
+  user-select: none;
+  border: 0.5pt solid var(--border-task);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  outline: 2px solid #3c53eb00;
+  outline-offset: 1px;
+}
+
+
+.card-subtasks-list input[type=checkbox],
+.subtask-row input[type=checkbox]{
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+} 
+
+.card-subtasks-list input:checked ~ .checkmark,
+.subtask-row input:checked ~ .checkmark {
+  background-color: #030213;
+  border-color: #030213;
+}
+.card-subtasks-list input:checked ~ .checkmark::after,
+.subtask-row input:checked ~ .checkmark::after{
+  display: none;
+}
+
+.card-subtasks-list input:checked ~ .checkmark::before,
+.subtask-row input:checked ~ .checkmark::before{
+  content: "";
+  width: 14px;
+  height: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.card-subtasks-list input:checked ~ .text,
+.subtask-row input:checked ~ .text{
+  color: #98a2b3;
+  text-decoration: line-through;
+}
+
+.checkmark {
+  width: 16px;
+  height: 16px;
+  border-radius: 2.67px;
+  border: 1.5px solid #d0d5dd;
+  background-color: #ffffff;
   display: flex;
   align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.checkmark::after {
+  content: "";
+  width: 4px;
+  height: 4px;
+  background-color: #030213;
+  border-radius: 50%;
+  display: block;
+  transition: opacity 0.2s ease;
+}
+
+
+.text {
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.card-subtask-row {
+  display: flex;
+  align-items: flex-start;
   gap: 8px;
   font-size: 13px;
-  color: var(--text-h);
+  color: #030213;
   cursor: pointer;
+}
+
+.card-subtask-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .modal-header-actions-group {
@@ -2822,9 +2953,9 @@
 
 .task-detail-delete-button {
   background: none;
-  border: none;
+  border: 1pt solid #E7E7E7;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 400;
   color: #e5484d;
   cursor: pointer;
   padding: 4px 10px;

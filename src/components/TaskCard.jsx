@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { formatDueDate, getDisplayPriority } from "../utils/task";
-import TaskMenu from './TaskMenu';
 import AvatarStack from './AvatarStack';
 import { normalizeAssignees } from '../users';
-import { ellipsisIco, timerIco, userFilter, chevronIco } from '../icons';
+import { ellipsisIco, timerIco, userFilter, chevronIco, crossIco } from '../icons';
 import { getUserById } from '../users';
 
 
@@ -17,7 +16,6 @@ const PRIORITY_CLASSES = {
 function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, isDone, isHighlighted, isSelectMode, isSelected, onToggleSelect, onDelete, onEdit, onOpenTask, onToggleSubtask, draggedTaskId, onDragStart, onDragEnd}) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftText, setDraftText] = useState(text);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSubtasksOpen, setIsSubtasksOpen] = useState(false);
   const assigneeIds = normalizeAssignees(assignedTo);
   const cardRef = useRef(null);
@@ -86,6 +84,7 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
           value={draftText}
           onChange={(event) => setDraftText(event.target.value)}
           onBlur={handleFinishEditing} 
+          maxLength={255}
           onKeyDown={(event) => {
             if (event.key === "Enter") event.target.blur(); 
           }}
@@ -102,18 +101,13 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
         </span>
       )}
       {!isSelectMode && (
-        <div className="task-menu-wrapper">
-          <button onClick={(event) => {event.stopPropagation(); setIsMenuOpen((open) => !open)}}>
-            {ellipsisIco}
-            </button>
-            {isMenuOpen && (
-              <TaskMenu
-                showEdit={false}
-                onDelete={() => {setIsMenuOpen(false); onDelete();}}
-                onClose={() => setIsMenuOpen(false)}
-              />
-            )}
-        </div>
+          <button
+            type="button"
+            className="card-delete-button"
+            onClick={(event) => { event.stopPropagation(); onDelete(); }}
+          >
+            {crossIco}
+          </button>
       )}
     </div>
 
@@ -133,12 +127,13 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
             {subtaskList.map((subtask) => (
               <label key={subtask.id} className="card-subtask-row">
                 <input
-                  type="checkbox"
-                  checked={subtask.completed}
-                  onChange={() => onToggleSubtask(subtask.id)}
+                    type="checkbox"
+                    checked={subtask.completed}
+                    onChange={() => onToggleSubtask(subtask.id)}
                 />
-                <span className={subtask.completed ? "subtask-done-text" : ""}>{subtask.text}</span>
-              </label>
+                <span className="checkmark"></span>
+                <span className={`card-subtask-text ${subtask.completed ? "subtask-done-text" : ""}`}>{subtask.text}</span>
+            </label>
             ))}
           </div>
         )}
@@ -146,8 +141,8 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
     )}
 
     <div className="card-low-layer">
-      <span>{timerIco}{formattedDate ? `Due ${formattedDate}` : "No due date"}</span>
-      <AvatarStack userIds={assigneeIds} size={28} max={3} emptyIcon={userFilter} />
+      <span>{timerIco}{formattedDate ? `${formattedDate}` : "No due date"}</span>
+      <AvatarStack userIds={assigneeIds} size={30} max={3} emptyIcon={userFilter} />
     </div>
     </div>
   );
