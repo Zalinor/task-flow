@@ -78,6 +78,17 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
           onClick={(event) => event.stopPropagation()}  
         />
       )}
+      <span className={`priority-badge ${priorityClass}`}>{getDisplayPriority({priority, status})}</span>
+      {!isSelectMode && (
+          <button
+            type="button"
+            className="card-delete-button"
+            onClick={(event) => { event.stopPropagation(); onDelete(); }}
+          >
+            {crossIco}
+          </button>
+      )}
+    </div>
       {isEditing ? (
         <input
           type="text"
@@ -97,20 +108,8 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
         >
           {isDone && <span className="done-check">✓</span>}
           <span className="card-title-text">{text}</span>
-          <span className={`priority-badge ${priorityClass}`}>{getDisplayPriority({priority, status})}</span>
         </span>
       )}
-      {!isSelectMode && (
-          <button
-            type="button"
-            className="card-delete-button"
-            onClick={(event) => { event.stopPropagation(); onDelete(); }}
-          >
-            {crossIco}
-          </button>
-      )}
-    </div>
-
     {subtaskList.length > 0 && (
       <div className="card-subtasks">
         <button

@@ -196,6 +196,50 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                 <p className="task-detail-description-text">{description || "No description"}</p>
                             )}
                         </div>
+                        <div className="subtask-container">
+                            <div className="task-detail-subtasks">
+                                <div className="subtask-input-row">
+                                    <button type="button" className="subtask-add-button" onClick={handleAddSubtask}>Add Subtask</button>
+                                    <input
+                                        type="text"
+                                        placeholder="Add a subtask"
+                                        maxLength={255}
+                                        value={subtaskDraft}
+                                        onChange={(event) => setSubtaskDraft(event.target.value)}
+                                        onKeyDown={(event) => {
+                                            if (event.key === "Enter") {
+                                                event.preventDefault();
+                                                handleAddSubtask();
+                                            }
+                                        }}
+                                    />
+                                </div>
+                                <label className="">
+                                    Subtasks
+                                    {subtasks.length > 0 && (
+                                        <span className="subtasks-progress">{subtasks.filter((s) => s.completed).length} of {subtasks.length}</span>
+                                    )}
+                                </label>
+                                {subtasks.length > 0 && (
+                                    <div className="subtasks-list">
+                                        {subtasks.map((subtask) => (
+                                            <div key={subtask.id} className="subtask-row">
+                                                <label className="subtask-row-label">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={subtask.completed}
+                                                        onChange={() => handleToggleSubtask(subtask.id)}
+                                                    />
+                                                    <span className="checkmark"></span>
+                                                    <span className={`subtask-row-text ${subtask.completed ? "subtask-done-text" : ""}`}>{subtask.text}</span>
+                                                </label>
+                                                <button type="button" className="subtask-remove" onClick={() => handleRemoveSubtask(subtask.id)}>{crossIco}</button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
 
                         <div className="task-detail-field" ref={dueDateFieldRef}>
                             <label>
@@ -217,49 +261,6 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                             Updated {formattedUpdatedAt ?? "-"}
                         </p>
 
-                        <div className="task-detail-subtasks">
-                            <label>
-                                Subtasks
-                                {subtasks.length > 0 && (
-                                    <span className="subtasks-progress">{subtasks.filter((s) => s.completed).length} of {subtasks.length}</span>
-                                )}
-                            </label>
-                            {subtasks.length > 0 && (
-                                <div className="subtasks-list">
-                                    {subtasks.map((subtask) => (
-                                        <div key={subtask.id} className="subtask-row">
-                                            <label className="subtask-row-label">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={subtask.completed}
-                                                    onChange={() => handleToggleSubtask(subtask.id)}
-                                                />
-                                                <span className="checkmark"></span>
-                                                <span className={`subtask-row-text ${subtask.completed ? "subtask-done-text" : ""}`}>{subtask.text}</span>
-                                            </label>
-                                            <button type="button" className="subtask-remove" onClick={() => handleRemoveSubtask(subtask.id)}>x</button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                            <div className="subtask-input-row">
-                                <input
-                                    type="text"
-                                    placeholder="Add a subtask"
-                                    maxLength={255}
-                                    value={subtaskDraft}
-                                    onChange={(event) => setSubtaskDraft(event.target.value)}
-                                    onKeyDown={(event) => {
-                                        if (event.key === "Enter") {
-                                            event.preventDefault();
-                                            handleAddSubtask();
-                                        }
-                                    }}
-                                />
-                                <button type="button" className="subtask-add-button" onClick={handleAddSubtask}>+ Add</button>
-                            </div>
-                        </div>
-
                         <div className="task-detail-comments">
                             <label>Comments</label>
                             <div className="comments-list">
@@ -268,10 +269,11 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                     const commentUser = getUserById(comment.authorId);
                                     return (
                                         <div key={comment.id} className="comment">
-                                            <UserAvatar user={commentUser} size={28} className="comment-avatar" />
+                                            <UserAvatar user={commentUser} size={30} className="comment-avatar" />
                                             <div>
                                                 <p className="comment-meta">
-                                                    <strong>{comment.author}</strong> {formatTimestamp(comment.createdAt)}
+                                                    <strong>{comment.author}</strong> 
+                                                    <span>{formatTimestamp(comment.createdAt)}</span>
                                                 </p>
                                                 <p className="comment-text">{comment.text}</p>
                                             </div>
@@ -280,7 +282,6 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                 })}
                             </div>
                             <form onSubmit={handleSubmitComment} className="comment-from">
-                                <UserAvatar user={currentUser} size={32} />
                                 <input
                                     type="text"
                                     placeholder="Write a comment"
@@ -342,7 +343,7 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                     <div key={userId} className="assigned-row">
                                         <UserAvatar user={user} size={28} />
                                         <span>{user.name}</span>
-                                        <button type="button" className="assigned-remove" onClick={() => handleRemoveAssignee(userId)}>x</button>
+                                        <button type="button" className="assigned-remove" onClick={() => handleRemoveAssignee(userId)}>{crossIco}</button>
                                     </div>
                                 );
                             })}

@@ -239,6 +239,7 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onOpen
           <input 
             type="text"
             value={draftTitle}
+            maxLength={30}
             onChange={(event) => setDraftTitle(event.target.value)}
             onBlur={handleFinishEditingTitle}
             onKeyDown={(event) => {
@@ -247,7 +248,7 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onOpen
             autoFocus
           />
         ) : (
-          <span onClick={handleStartEditingTitle} style={{color: columnColor}}>{title}</span>
+          <span className="column-title" onClick={handleStartEditingTitle} style={{color: columnColor}}>{title}</span>
         )}
       </h2>
       </div>
