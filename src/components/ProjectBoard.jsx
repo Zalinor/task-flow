@@ -71,7 +71,7 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
   const handleAddColumn = () => {
     const newColumn = { id: crypto.randomUUID(), title: "New Column" };
     setColumns([...columns, newColumn]);
-    onAddActivity({ prefix: "created column", linkText: `"${newColumn.title}"`, suffix: ` in ${projectName}`, projectId });
+    onAddActivity({ prefix: "created column", linkText: `${newColumn.title}`, suffix: ` in ${projectName}`, projectId });
   };
 
   const handleDeleteColumn = (columnId) => {
@@ -153,14 +153,14 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
     };
     setTasks([...tasks, newTask]);
     setAddTaskContext(null);
-    onAddActivity({ prefix: "created task", linkText: `"${newTask.text}"`, suffix: ` in ${projectName}`, taskId: newTask.id, projectId });
+    onAddActivity({ prefix: "created task", linkText: `${newTask.text}`, suffix: ` in ${projectName}`, taskId: newTask.id, projectId });
   };
 
   // Removes a task by id
   const handleDelete = (id) => {
     const task = tasks.find((t) => t.id === id);
     setTasks(tasks.filter((task) => task.id !== id));
-    if (task) onAddActivity({ prefix: "deleted task", linkText: `"${task.text}"`, suffix: ` in ${projectName}`, projectId });
+    if (task) onAddActivity({ prefix: "deleted task", linkText: `${task.text}`, suffix: ` in ${projectName}`, projectId });
   }
 
   const moveTaskToColumn = (task, newColumnId) => {
@@ -180,7 +180,7 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
       const isMovingToFinal = finalColumnId !== null && newColumnId === finalColumnId;
       onAddActivity({
         prefix: isMovingToFinal ? "completed task" : "moved task",
-        linkText: `"${task.text}"`,
+        linkText: `${task.text}`,
         suffix: isMovingToFinal ? ` in ${projectName}` : ` to ${targetColumn.title} in ${projectName}`,
         taskId,
         projectId,
@@ -352,12 +352,12 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
     setEditingTaskId(null);
     if (previousTask) {
       if (taskData.status === "Completed" && previousTask.status !== "Completed") {
-        onAddActivity({ prefix: "completed task", linkText: `"${taskData.text}"`, suffix: ` in ${projectName}`, taskId: taskData.id, projectId });
+        onAddActivity({ prefix: "completed task", linkText: `${taskData.text}`, suffix: ` in ${projectName}`, taskId: taskData.id, projectId });
       } else if (taskData.columnId !== previousTask.columnId) { // ← было task.Data.columnId
         const targetColumn = columns.find((c) => c.id === taskData.columnId);
-        onAddActivity({ prefix: "moved task", linkText: `"${taskData.text}"`, suffix: ` to ${targetColumn?.title ?? ""} in ${projectName}`, taskId: taskData.id, projectId });
+        onAddActivity({ prefix: "moved task", linkText: `${taskData.text}`, suffix: ` to ${targetColumn?.title ?? ""} in ${projectName}`, taskId: taskData.id, projectId });
       } else {
-        onAddActivity({ prefix: "updated task", linkText: `"${taskData.text}"`, suffix: ` in ${projectName}`, taskId: taskData.id, projectId });
+        onAddActivity({ prefix: "updated task", linkText: `${taskData.text}`, suffix: ` in ${projectName}`, taskId: taskData.id, projectId });
       }
     }
   };
@@ -379,7 +379,7 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
         : task
       )
     );
-    if (task) onAddActivity({ prefix: "commented on task", linkText: `"${task.text}"`, suffix: ` in ${projectName}`, taskId, projectId });
+    if (task) onAddActivity({ prefix: "commented on task", linkText: `${task.text}`, suffix: ` in ${projectName}`, taskId, projectId });
 };
 
   const handleToggleAssigneeFilter = (value) => {
@@ -402,7 +402,7 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
 
   const handleConfirmDeleteColumn = () => {
     if (columnToDelete) {
-      onAddActivity({ prefix: "deleted column", linkText: `"${columnToDelete.title}"`, suffix: ` in ${projectName}`, projectId });
+      onAddActivity({ prefix: "deleted column", linkText: `${columnToDelete.title}`, suffix: ` in ${projectName}`, projectId });
     }
     handleDeleteColumn(columnPendingDeletionId);
     setColumnPendingDeletionId(null);

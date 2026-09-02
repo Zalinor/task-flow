@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { USERS, normalizeAssignees, getUserById } from "../users";
 import UserAvatar from "./UserAvatar";
-import { sendIco, pencilIco, crossIco } from "../icons"
+import { sendIco, pencilIco, crossIco, ellipsisIco, subtaskRemove, unionIco, addUserUnionIco } from "../icons"
 import DateTimePicker from "./DateTimePicker";
+import TaskDetailMenu from "./TaskDetailMenu";
 import { formatDueDate, formatTimestamp } from "../utils/task";
 import CustomSelect from "./CustomSelect";
 
@@ -30,6 +31,7 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
     const [datePickerPosition, setDatePickerPosition] = useState(null);
     const dueDateFieldRef = useRef(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         if (isEditingTitle) autoResizeTextarea(titleTextareaRef.current);
@@ -146,7 +148,21 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
             <div className="modal task-detail-modal" onClick={(event) => event.stopPropagation()}>
                 <div className="modal-header task-detail-header">
                     <div className="modal-header-actions-group">
-                        <button type="button" className="task-detail-delete-button" onClick={() => onDelete(task.id)}>Delete</button>
+                        <div className="task-detail-menu-wrapper">
+                            <button
+                                type="button"
+                                className={`task-detail-delete-button ${isMenuOpen ? "active" : ""}`}
+                                onClick={() => setIsMenuOpen((open) => !open)}
+                            >
+                                {ellipsisIco}
+                            </button>
+                            {isMenuOpen && (
+                                <TaskDetailMenu
+                                    onDelete={() => { setIsMenuOpen(false); onDelete(task.id); }}
+                                    onClose={() => setIsMenuOpen(false)}
+                                />
+                            )}
+                        </div>
                         <button className="modal-header-button" onClick={onClose}>{crossIco}</button>
                     </div>
                 </div>
@@ -173,16 +189,13 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                             )}
                         </div>
 
+                            <p className="task-detail-updated">
+                            Updated {formattedUpdatedAt ?? "-"}
+                        </p>
+
                         <div className="task-detail-field">
                             <label>
                                 Description
-                                <button
-                                    type="button"
-                                    className="pencil-button"
-                                    onClick={() => setIsEditingDescription((open) => !open)}
-                                >
-                                    {pencilIco}
-                                </button>
                             </label>
                             {isEditingDescription ? (
                                 <textarea
@@ -192,28 +205,22 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                     onBlur={() => setIsEditingDescription(false)}
                                     autoFocus
                                 />
+                                
                             ) : (
-                                <p className="task-detail-description-text">{description || "No description"}</p>
+                                <p className="task-detail-description-text">{description || "No description"}
+                                <button
+                                    type="button"
+                                    className="pencil-button"
+                                    onClick={() => setIsEditingDescription((open) => !open)}
+                                >
+                                    {pencilIco}
+                                </button>
+                                </p>
+                                
                             )}
                         </div>
                         <div className="subtask-container">
                             <div className="task-detail-subtasks">
-                                <div className="subtask-input-row">
-                                    <button type="button" className="subtask-add-button" onClick={handleAddSubtask}>Add Subtask</button>
-                                    <input
-                                        type="text"
-                                        placeholder="Add a subtask"
-                                        maxLength={255}
-                                        value={subtaskDraft}
-                                        onChange={(event) => setSubtaskDraft(event.target.value)}
-                                        onKeyDown={(event) => {
-                                            if (event.key === "Enter") {
-                                                event.preventDefault();
-                                                handleAddSubtask();
-                                            }
-                                        }}
-                                    />
-                                </div>
                                 <label className="">
                                     Subtasks
                                     {subtasks.length > 0 && (
@@ -233,33 +240,29 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                                     <span className="checkmark"></span>
                                                     <span className={`subtask-row-text ${subtask.completed ? "subtask-done-text" : ""}`}>{subtask.text}</span>
                                                 </label>
-                                                <button type="button" className="subtask-remove" onClick={() => handleRemoveSubtask(subtask.id)}>{crossIco}</button>
+                                                <button type="button" className="subtask-remove" onClick={() => handleRemoveSubtask(subtask.id)}>{subtaskRemove}</button>
                                             </div>
                                         ))}
                                     </div>
                                 )}
+                                <div className="subtask-input-row">
+                                    <input
+                                        type="text"
+                                        placeholder="Enter subtask title"
+                                        maxLength={255}
+                                        value={subtaskDraft}
+                                        onChange={(event) => setSubtaskDraft(event.target.value)}
+                                        onKeyDown={(event) => {
+                                            if (event.key === "Enter") {
+                                                event.preventDefault();
+                                                handleAddSubtask();
+                                            }
+                                        }}
+                                    />
+                                    <button type="button" className="subtask-add-button" onClick={handleAddSubtask}>{unionIco} Add</button>
+                                </div>
                             </div>
                         </div>
-
-                        <div className="task-detail-field" ref={dueDateFieldRef}>
-                            <label>
-                                Due Date
-                                <button
-                                    type="button"
-                                    className="pencil-button"
-                                    onClick={handleOpenDatePicker}
-                                >
-                                    {pencilIco}
-                                </button>
-                            </label>
-                            <p onClick={handleOpenDatePicker} style={{cursor: "pointer"}}>
-                                {formattedDueDate ?? "No due date"}
-                            </p>
-                        </div>
-
-                        <p className="task-detail-updated">
-                            Updated {formattedUpdatedAt ?? "-"}
-                        </p>
 
                         <div className="task-detail-comments">
                             <label>Comments</label>
@@ -270,7 +273,7 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                     return (
                                         <div key={comment.id} className="comment">
                                             <UserAvatar user={commentUser} size={30} className="comment-avatar" />
-                                            <div>
+                                            <div className="comment-body">
                                                 <p className="comment-meta">
                                                     <strong>{comment.author}</strong> 
                                                     <span>{formatTimestamp(comment.createdAt)}</span>
@@ -282,6 +285,7 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                 })}
                             </div>
                             <form onSubmit={handleSubmitComment} className="comment-from">
+                                <UserAvatar user={currentUser} size={30} className="comment-avatar" />
                                 <input
                                     type="text"
                                     placeholder="Write a comment"
@@ -333,6 +337,21 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                 ]}
                             />
                         </label>
+                        <div className="task-detail-field" ref={dueDateFieldRef}>
+                            <label>
+                                Due Date
+                            </label>
+                            <p onClick={handleOpenDatePicker} style={{cursor: "pointer"}}>
+                                {formattedDueDate ?? "No due date"}
+                                <button
+                                    type="button"
+                                    className="pencil-button"
+                                    onClick={handleOpenDatePicker}
+                                >
+                                    {pencilIco}
+                                </button>
+                            </p>
+                        </div>
                         <div className="assigned-section">
                             <label>Assigned</label>
                             {assignedIds.length === 0 && <p className="assigned-empty">Unassigned</p>}
@@ -361,7 +380,7 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                 </select>
                             ) : (
                                 <button type="button" className="add-user-button" onClick={() => setIsAddingUser(true)}>
-                                    + Add User
+                                    {addUserUnionIco} Add User
                                 </button>
                             )}
                         </div>
@@ -370,7 +389,7 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
 
                 <div className="modal-actions">
                     <button type="button" onClick={onClose}>Cancel</button>
-                    <button type="button" onClick={handleSave}>Save Changes</button>
+                    <button type="submit" onClick={handleSave}>Save Changes</button>
                 </div>
                 {isDatePickerOpen && datePickerPosition && (
                     <DateTimePicker

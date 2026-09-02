@@ -183,7 +183,17 @@
     }
   }
 
-  /* Base page setup — dark background, readable default text */
+  .comments-list::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .comments-list, .task-detail-left, .activity-list, .card-container {
+    scrollbar-width: thin;
+    scrollbar-color: #545454 #F1F2F4;
+  }
+
   body {
     margin: 0;
     background-color: var(--bg);
@@ -732,8 +742,8 @@
   }
 
   .add-column-button{
-    width: 46px;
-    height: 46px;
+    min-width: 46px;
+    min-height: 46px;
     background-color: var(--task-bg);
     border: 0.5pt solid var(--border-task);
     border-radius: 8px;
@@ -862,6 +872,7 @@
     min-width: 0;
     font-size: 16px;
     font-weight: 500;
+    line-height: 20px;
   }
 
   .task-detail-readonly-value {
@@ -878,6 +889,7 @@
   .task-detail-description-text {
     white-space: pre-wrap;
     word-break: break-word;
+    line-height: 20px;
   }
 
   .task-detail-left textarea {
@@ -1003,7 +1015,7 @@
   .modal label {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 10px;
     font-size: 18px;
     font-weight: 600;
     color: var(--modal-text);
@@ -1063,6 +1075,24 @@
     outline: none;
     border-color: #6c8cff;
   }
+  
+  .custom-select-trigger.open {
+    border-color: #6c8cff;
+  }
+
+  .custom-select-trigger .chevron {
+    flex-shrink: 0;
+  }
+
+  .custom-select-value {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1;
+    font-weight: 400;
+  }
 
   .custom-select-dropdown {
     position: absolute;
@@ -1085,6 +1115,8 @@
   .custom-select-option {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     padding: 10px 12px;
     border: none;
     background: transparent;
@@ -1095,6 +1127,19 @@
     cursor: pointer;
     width: 100%;
     font-family: var(--sans);
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .custom-select-option-label {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .custom-select-check {
+    color: #3C53EB;
+    font-weight: 700;
+    flex-shrink: 0;
   }
 
   .custom-select-option:hover {
@@ -1121,11 +1166,11 @@
   .modal textarea {
     font-family: var(--sans);
     font-size: 14px;
-    font-weight: normal;
-    padding: 10px 10px;
     border-radius: 8px;
     border: 0.5pt solid var(--border-task);
     color: var(--text-h);
+    min-height: 40px;
+    padding: 0 10px;
   }
 
   .modal input:focus,
@@ -1136,6 +1181,7 @@
   }
 
   .modal textarea {
+    padding: 10px;
     resize: none;
     min-height: 70px;
     font-family: var(--sans);
@@ -1161,7 +1207,7 @@
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    margin-top: 8px;
+    margin-top: 20px;
   }
 
   .modal-actions button {
@@ -1178,10 +1224,18 @@
     color: var(--text-h);
   }
 
+  .modal-actions button[type="button"]:hover {
+    background: #F7F7F8 ;
+  }
+
   .modal-actions button[type="submit"] {
     background: var(--button-bg);
     border: none;
     color: white;
+  }
+
+  .modal-actions button[type="submit"]:hover {
+    background: #1C1B2B;
   }
 
   .modal-actions button[type="submit"]:disabled {
@@ -1189,21 +1243,71 @@
     cursor: not-allowed;
   }
 
+  .modal-submit-button {
+    background: #030213;
+  }
+
   .task-detail-modal {
     width: 960px;
-    height: 805px;
+    height: 746x;
     padding: 28px;
   }
 
   .task-detail-menu-wrapper {
     position: relative;
-    margin-left: auto;
-    margin-right: 8px;
+  }
+
+  .task-detail-delete-button.active {
+    border-color: #3C53EB;
+    color: #3C53EB;
+  }
+  .task-detail-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border-task);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px;
+    min-width: 160px;
+    z-index: 20;
+    font-family: var(--sans);
+  }
+
+  .task-detail-menu-item {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--text-h);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 400;
+    cursor: pointer;
+  }
+
+  .task-detail-menu-item:hover:not(:disabled) {
+    background: #f0f0f2;
+  }
+
+  .task-detail-menu-item:disabled {
+    color: #C6C6C6;
+    cursor: not-allowed;
+  }
+
+  .task-detail-menu-item-delete {
+    font-weight: 400;
   }
 
   .task-detail-body {
     display: flex;
-    margin-top: 16px;
   }
 
   .task-detail-left {
@@ -1218,8 +1322,6 @@
   .task-detail-left:not(:last-child) {
     padding-right: 20px;
     border-right: 1px solid var(--border-task);
-    margin-bottom: 20px;
-    padding-bottom: 20px;
   }
 
   .task-detail-right {
@@ -1239,6 +1341,14 @@
     font-weight: 500;
   }
 
+  .task-detail-right label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
   .task-detail-field textarea {
     width: 100%;
     min-height: 60px;
@@ -1247,16 +1357,20 @@
   }
 
   .task-detail-field p {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
     font-size: 14px;
-    font-weight: 300;
-    color: #82858D;
+    font-weight: 400;
+    color: #6C6C6C;
   }
 
-  .task-detail-title-input {
+  .task-detail-title-input:focus:not(:placeholder-shown) {
     font-size: 24px;
     font-weight: 600;
-    border: 0.5pt solid var(--border-task);
+    border: 1pt solid #3C53EB;
     border-radius: 6px;
+    background: none;
     padding: 4px 8px;
     font-family: var(--sans);
     color: var(--modal-text);
@@ -1273,6 +1387,11 @@
     cursor: pointer;
     word-break: break-word;
     color: var(--modal-text);
+    letter-spacing: -0.2px;
+  }
+
+  .task-detail-title-text:hover {
+    background: #F7F7F8;
   }
 
   .task-detail-header {
@@ -1280,8 +1399,14 @@
   }
 
   .task-detail-input {
-    background-color: var(--bg);
-    width: 100%;
+    width: 444px;
+    height: 40px;
+    padding: 0 16px;
+    font-family: var(--sans);
+    font-size: 14px;
+    background: #f7f7f8;
+    color: var(--text-h);
+    font-weight: 300;
   }
 
   .task-done-text {
@@ -1340,14 +1465,14 @@
 
   .task-detail-updated {
     font-size: 14px;
-    color: #82858D;
-    font-weight: 300;
+    color: #818189;
+    font-weight: 400;
   }
 
   .task-detail-comments {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
   
   .task-detail-comments label {
@@ -1366,6 +1491,8 @@
   .comment {
     display: flex;
     gap: 8px;
+    width: 100%;
+    flex-direction: row;
   }
 
   .comment-avatar {
@@ -1375,27 +1502,36 @@
     background-color: #ECECF0;
   }
 
+  .comment-body {
+    width: 100%;
+  }
+
   .comment-meta {
     font-size: 14px;
     color: #9E9E9E;
-    margin: 0 0 2px;
-    font-weight: 300;
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    padding-right : 16px;
   }
   
   .comment-meta span {
     font-size: 12px;
-    color: #5B5B5B;
+    color: #9EA2AD;
   }
 
   .comment-meta strong {
-    color: black;
+    color: #030213;
     margin-right: 4px;
+    font-weight: 542;
   }
 
   .comment-text {
     font-size: 12px;
     color: #6C6C6C;
-    font-weight: 300;
+    font-weight: 400;
+    line-height: 16px;
+    padding-right: 10px;
   }
 
   .no-comments {
@@ -1776,6 +1912,10 @@
     gap: 8px;
     font-size: 14px;
     font-weight: normal;
+    border: 0.5pt solid var(--border-task);
+    border-radius: 8px;
+    height: 40px;
+    padding: 0px 8px;
   }
 
   .assigned-row span {
@@ -1797,21 +1937,36 @@
   }
 
   .add-user-button {
+    width: 100%;
+    height: 40px;
     background: none;
     border: none;
-    color: var(--button-bg);
+    border-radius: 8px;
+    color: #030213;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
+    font-family: var(--sans);
     text-align: left;
-    padding: 0;
-    font-weight: 600;
+    padding: 8px;
+    font-weight: 500;
+    gap: 4px;
+  }
+
+  .add-user-button svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .add-user-button:hover {
+    background: #F7F7F8;
   }
 
   .comment-from {
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 8px;
-    margin-top: 32px;
+    margin-top: 8px;
   }
 
   .comment-form input {
@@ -1823,16 +1978,27 @@
   .comment-send-button {
     display: flex;
     align-items: center;
+    padding-left: 16px;
     gap: 6px;
-    padding: 0 16px;
     border-radius: 8px;
-    border: none;
-    background: var(--button-bg);
-    color: #fff;
-    font-size: 14px;
+    background: white;
+    border: 0.5pt solid var(--border-task);
+    color: #030213;
     cursor: pointer;
     width: 86px;
     height: 40px;
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  .comment-send-button:hover {
+    background: #F7F7F8;
+  }
+
+  .comment-send-button svg {
+    height: 14px;
+    width: 14px;
   }
 
   .user-switcher {
@@ -2283,15 +2449,15 @@
   .top-bar-breadcrumb {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     font-size: 13px;
     color: #94a3b8;
     white-space: nowrap;
   }
 
   .crumb-current {
-    color: var(--text-h);
-    font-weight: 600;
+    color: #030213;
+    font-weight: 400;
   }
 
   .top-bar-search {
@@ -2336,6 +2502,15 @@
     cursor: pointer;
   }
 
+  .top-bar-text {
+    font-size: 12px;
+    font-weight: 400;
+    color: #818189;
+    height: auto;
+    display: flex;
+    align-items: center;
+  }
+
   .top-bar-icon-button:hover {
     background: var(--bg);
   }
@@ -2348,6 +2523,13 @@
     transform: scale(0.8);
   }
   
+  .icon-layout-wrap svg {
+    transform: scale(0.9);
+    height: auto;
+    display: flex;
+    align-items: center;
+  }
+
   .user-switcher-compact {
     display: flex;
     justify-content: flex-start;
@@ -2502,6 +2684,7 @@
     color: var(--text-h);
     margin: 0;
     color: #030213;
+    line-height: 20px;
   }
 
   .activity-message button {
@@ -2775,8 +2958,8 @@
 
 .subtasks-section label,
 .task-detail-subtasks label {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
   color: var(--modal-text);
   gap: 8px;
   display: flex;
@@ -2834,6 +3017,7 @@
   padding-top: 1px;
   font-size: 14px;
   font-weight: 400;
+  line-height: 20px;
 }
 
 .subtask-done-text {
@@ -2847,7 +3031,8 @@
   color: #9E9E9E;
   cursor: pointer;
   font-size: 16px;
-  opacity: 0;
+  margin-top: 4px;
+  opacity: 1;
 }
 
 .subtask-row:hover .subtask-remove {
@@ -2866,25 +3051,42 @@
 
 .subtask-input-row input {
   flex: 1;
-  padding: 8px 10px;
+  padding: 8px 16px;
   border-radius: 8px;
   border: 0.5pt solid var(--border-task);
   font-family: var(--sans);
   font-size: 14px;
   background: #f7f7f8;
   color: var(--text-h);
+  font-weight: 300;
 }
 
 .subtask-add-button {
-  padding: 8px 14px;
+  width: 77px;
+  height: 40px;
+  font-weight: 500;
   border-radius: 8px;
-  border: none;
-  background: var(--button-bg);
-  color: #fff;
-  font-size: 13px;
+  background: white;
+  border: 0.5pt solid var(--border-task);
+  color: #030213;
+  font-size: 14px;
   cursor: pointer;
   font-family: var(--sans);
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.subtask-add-button:hover {
+  background: #F7F7F8;
+}
+
+.subtask-add-button svg {
+  fill: #030213;
+  width: 12px;
+  height: 12px;
 }
 
 .card-subtasks-toggle {
@@ -3026,12 +3228,14 @@
   font-size: 14px;
   font-weight: 400;
   color: #030213;
+  line-height: 20px;
 }
 
 .modal-header-actions-group {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 20px;
 }
 
 .task-detail-delete-button {
@@ -3039,12 +3243,14 @@
   border: 1pt solid #E7E7E7;
   font-size: 14px;
   font-weight: 400;
-  color: #e5484d;
   cursor: pointer;
   padding: 4px 10px;
   border-radius: 6px;
   font-family: var(--sans);
   height: 30px;
+  width: 30px;
+  display: flex;
+  align-items: center;
 }
 
 .task-detail-delete-button:hover {

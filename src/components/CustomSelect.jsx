@@ -30,8 +30,14 @@ function CustomSelect({ value, onChange, options, placeholder = "", disabled = f
 
     return (
         <div className="custom-select" ref={wrapperRef}>
-            <button type="button" className={`custom-select-trigger ${disabled ? "disabled" : ""}`} onClick={handleToggle}>
-                <span className={selectedOption ? "" : "custom-select-placeholder"}>{selectedOption ? selectedOption.label : placeholder}</span>
+            <button
+                type="button"
+                className={`custom-select-trigger ${disabled ? "disabled" : ""} ${isOpen ? "open" : ""}`}
+                onClick={handleToggle}
+            >
+                <span className={`custom-select-value ${selectedOption ? "" : "custom-select-placeholder"}`}>
+                    {selectedOption ? selectedOption.label : placeholder}
+                </span>
                 <span className={`chevron ${isOpen ? "" : "closed"}`}>{chevronIco}</span>
             </button>
             {isOpen && (
@@ -43,7 +49,8 @@ function CustomSelect({ value, onChange, options, placeholder = "", disabled = f
                             className={`custom-select-option ${option.value === value ? "active" : ""}`}
                             onClick={() => handleSelect(option.value)}
                         >
-                            {option.label}
+                            <span className="custom-select-option-label">{option.label}</span>
+                            {option.value === value && <span className="custom-select-check">✓</span>}
                         </button>
                     ))}
                 </div>

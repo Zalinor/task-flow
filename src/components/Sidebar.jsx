@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { homeIco, mailIco, reportsIco, settingsIco, chevronIco, kanbanIco, headphonesIco, pencilIco, crossIco } from "../icons";
+import { homeIco, mailIco, reportsIco, settingsIco, chevronIco, kanbanIco, headphonesIco, pencilIco, crossIco, logoIco } from "../icons";
 
 function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename, onDelete}) {
     const [isEditing, setIsEditing] = useState(shouldAutoEdit);
@@ -65,7 +65,7 @@ function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProje
         <aside className="sidebar">
             <div className="sidebar-section">
                  <div className="top-bar-logo">
-                    <span className="top-bar-logo-mark"></span> bureau<span className="top-bar-logo-accent">pro+</span>
+                    {logoIco}
                 </div>
             </div>
 

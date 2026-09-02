@@ -3,11 +3,11 @@ import { historyIco, bellIco, layoutIco, layoutRightIco } from "../icons";
 function TopBar({ projectName, onToggleRightPanel, onToggleSidebar }) {
   return (
     <div className="top-bar">
-      <button type="button" className="top-bar-icon-button" onClick={onToggleSidebar}>{layoutIco}</button>
       <nav className="top-bar-breadcrumb">
-        <span>Workspace</span>
+        <button type="button" className="top-bar-icon-button" onClick={onToggleSidebar}><span className="icon-layout-wrap">{layoutIco}</span></button>
+        <span className="top-bar-text">Workspace</span>
         <span className="crumb-sep">/</span>
-        <span>Company, Inc</span>
+        <span className="top-bar-text">Company, Inc</span>
         <span className="crumb-sep">/</span>
         <span className="crumb-current">{projectName}</span>
       </nav>
@@ -18,7 +18,7 @@ function TopBar({ projectName, onToggleRightPanel, onToggleSidebar }) {
       <div className="top-bar-actions">
         <button type="button" className="top-bar-icon-button">{historyIco}</button>
         <button type="button" className="top-bar-icon-button"><span className="icon-bell-wrap">{bellIco}</span></button>
-        <button type="button" className="top-bar-icon-button" onClick={onToggleRightPanel}>{layoutRightIco}</button>
+        <button type="button" className="top-bar-icon-button" onClick={onToggleRightPanel}><span className="icon-layout-wrap">{layoutRightIco}</span></button>
       </div>
       
     </div>

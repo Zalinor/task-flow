@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { formatDueDate, getDisplayPriority } from "../utils/task";
 import AvatarStack from './AvatarStack';
 import { normalizeAssignees } from '../users';
-import { ellipsisIco, timerIco, userFilter, chevronIco, crossIco } from '../icons';
+import { ellipsisIco, timerIco, userFilter, chevronIco, crossIco, userIco } from '../icons';
 import { getUserById } from '../users';
 
 
@@ -141,7 +141,7 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
 
     <div className="card-low-layer">
       <span>{timerIco}{formattedDate ? `${formattedDate}` : "No due date"}</span>
-      <AvatarStack userIds={assigneeIds} size={30} max={3} emptyIcon={userFilter} />
+      <AvatarStack userIds={assigneeIds} size={30} max={3} emptyIcon={userIco} />
     </div>
     </div>
   );
