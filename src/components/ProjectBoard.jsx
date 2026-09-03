@@ -459,7 +459,7 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
               className={`select-button ${isSelectMode ? "active" : ""}`}
               onClick={handleToggleSelectMode}
             >
-              {selectIco} {isSelectMode ? "Cancel" : "Select"}
+              {selectIco} {isSelectMode ? "Select" : "Select"}
             </button>
           <div className="filter-wrapper">
             <button className="filter-button" onClick={() => setIsFilterPanelOpen((open) => !open)}>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { homeIco, mailIco, reportsIco, settingsIco, chevronIco, kanbanIco, headphonesIco, pencilIco, crossIco, logoIco } from "../icons";
+import { homeIco, mailIco, reportsIco, settingsIco, chevronIco, kanbanIco, headphonesIco, pencilIco, crossIco, logoIco, unionIco } from "../icons";
 
 function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename, onDelete}) {
     const [isEditing, setIsEditing] = useState(shouldAutoEdit);
@@ -110,7 +110,7 @@ function Sidebar({projects, activeProjectId, justCreatedProjectId, onSelectProje
                                     />
                                 ))}
                                 <button type="button" className="sidebar-add-project" onClick={onAddProject}>
-                                    + Add
+                                    {unionIco} Add
                                 </button>
                             </div>
                         )}

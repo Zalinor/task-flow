@@ -2290,9 +2290,24 @@
     padding: 6px 8px;
     border: none;
     background: transparent;
-    color: #64748b;
+    color: #030213;
     font-size: 14px;
     font-family: var(--sans);
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    width: 100%;
+    height: 32px;
+  }
+
+  .sidebar-add-project:hover {
+    background: #F7F7F8;
+    border-radius: 6px;
+  }
+
+  .sidebar-add-project svg {
+    width: 10px;
+    height: 10px;
   }
 
   .sidebar-footer {
@@ -2572,6 +2587,7 @@
     height: auto;
     display: flex;
     align-items: center;
+    line-height: 20px;
   }
 
   .top-bar-icon-button:hover {
@@ -2639,6 +2655,7 @@
     display: flex;
     flex-direction: column;
     bottom: 40px;
+    display: none;
   }
 
   .sidebar-support-close {
@@ -2668,6 +2685,7 @@
   .sidebar-support-text {
     font-size: 12px;
     color: #59595a;
+    line-height: 20px;
   }
 
   .sidebar-support-button {
@@ -2782,12 +2800,14 @@
     font-weight: 500;
     color: #030213;
     margin: 0;
+    line-height: 18px;
   }
 
   .team-list-role {
     font-size: 12px;
     color: #818189;
     margin: 0;
+    line-height: 18px;
   } 
 
   .activity-list {
@@ -3447,7 +3467,7 @@
     width: 240px;
   }
   .sidebar-project-row {
-    width: 100%;
+    width: 90%;
   }
 }
 
