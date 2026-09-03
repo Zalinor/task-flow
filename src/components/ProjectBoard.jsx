@@ -11,7 +11,7 @@ import ConfirmDialog from './ConfirmDialog';
 import CustomSelect from './CustomSelect';
 import Report from './Report';
 
-import { unionIco, shareIco, ellipsisIco, userFilter, filter, selectIco } from '../icons';
+import { unionIco, shareIco, ellipsisIco, userFilter, filter, selectIco, trashBinIco } from '../icons';
 import '../App.css';
 
 
@@ -511,7 +511,7 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
                 onClick={handleRequestDeleteSelected}
                 disabled={selectedTaskIds.size === 0}
               >
-                Delete
+                {trashBinIco}
               </button>
           </div>
         )}
