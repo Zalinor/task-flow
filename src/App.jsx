@@ -70,6 +70,7 @@ function App () {
   const [activityLog, setActivityLog] = useState(() => loadActivityLog());
   const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeUserId, setActiveUserId] = useState(USERS[0].id);
 
   useEffect(() => {
@@ -157,7 +158,9 @@ function App () {
             activeUserId={activeUserId}
             onSelectUser={setActiveUserId}
             onToggleRightPanel={() => setIsRightPanelCollapsed((collapsed) => !collapsed)}
-            onToggleSidebar={()=> setIsSidebarCollapsed((collapsed) => !collapsed)}
+            onToggleSidebar={() => setIsSidebarCollapsed((collapsed) => !collapsed)}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
           />
           {activeProject && (
           <ProjectBoard
@@ -167,6 +170,7 @@ function App () {
             activeUserId={activeUserId}
             onAddActivity={handleAddActivity}
             highlightedTaskId={highlightedTaskId}
+            searchQuery={searchQuery}
           />
           )}
         </div>

@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { formatDueDate, getDisplayPriority } from "../utils/task";
+import { formatDueDate, getDisplayPriority, autoResizeTextarea } from "../utils/task";
 import AvatarStack from './AvatarStack';
 import { normalizeAssignees } from '../users';
-import { ellipsisIco, timerIco, userFilter, chevronIco, crossIco, userIco } from '../icons';
+import { ellipsisIco, timerIco, userFilter, chevronIco, subtaskRemove, userIco, pencilIco } from '../icons';
 import { getUserById } from '../users';
 
 
@@ -19,8 +19,13 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
   const [isSubtasksOpen, setIsSubtasksOpen] = useState(false);
   const assigneeIds = normalizeAssignees(assignedTo);
   const cardRef = useRef(null);
+  const titleTextareaRef = useRef(null);
   const isDragging = id === draggedTaskId;
   const subtaskList = subtasks ?? [];
+
+  useEffect(() => {
+    if (isEditing) autoResizeTextarea(titleTextareaRef.current);
+  }, [isEditing]);
 
   useEffect(() => {
     if (isHighlighted && cardRef.current) {
@@ -85,29 +90,37 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
             className="card-delete-button"
             onClick={(event) => { event.stopPropagation(); onDelete(); }}
           >
-            {crossIco}
+            {subtaskRemove}
           </button>
       )}
     </div>
       {isEditing ? (
-        <input
-          type="text"
+        <textarea
+          ref={titleTextareaRef}
+          className="card-title-textarea"
           value={draftText}
-          onChange={(event) => setDraftText(event.target.value)}
-          onBlur={handleFinishEditing} 
+          onChange={(event) => { setDraftText(event.target.value); autoResizeTextarea(event.target); }}
+          onBlur={handleFinishEditing}
           maxLength={255}
           onKeyDown={(event) => {
-            if (event.key === "Enter") event.target.blur(); 
+            if (event.key === "Enter") { event.preventDefault(); event.target.blur(); }
           }}
+          onClick={(event) => event.stopPropagation()}
           autoFocus
+          rows={1}
         />
       ) : (
-        <span
-          onClick={isSelectMode ? undefined : (event) => { event.stopPropagation(); handleStartEditing(); }}
-          className={`card-title ${isDone ? "task-done-text" : ""}`}
-        >
-          {isDone && <span className="done-check">✓</span>}
+        <span className={`card-title ${isDone ? "task-done-text" : ""}`}>
           <span className="card-title-text">{text}</span>
+          {!isSelectMode && (
+            <button
+              type="button"
+              className="card-title-edit-button"
+              onClick={(event) => { event.stopPropagation(); handleStartEditing(); }}
+            >
+              {pencilIco}
+            </button>
+          )}
         </span>
       )}
     {subtaskList.length > 0 && (
@@ -122,17 +135,24 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
           <span className={`chevron ${isSubtasksOpen ? "" : "closed"}`}>{chevronIco}</span>
         </button>
         {isSubtasksOpen && (
-          <div className="card-subtasks-list" onClick={(event) => event.stopPropagation()}>
+          <div className="card-subtasks-list">
             {subtaskList.map((subtask) => (
-              <label key={subtask.id} className="card-subtask-row">
-                <input
-                    type="checkbox"
-                    checked={subtask.completed}
-                    onChange={() => onToggleSubtask(subtask.id)}
-                />
-                <span className="checkmark"></span>
-                <span className={`card-subtask-text ${subtask.completed ? "subtask-done-text" : ""}`}>{subtask.text}</span>
-            </label>
+              <div key={subtask.id} className="card-subtask-row">
+                <label className="card-subtask-checkbox-label" onClick={(event) => event.stopPropagation()}>
+                  <input
+                      type="checkbox"
+                      checked={subtask.completed}
+                      onChange={() => onToggleSubtask(subtask.id)}
+                  />
+                  <span className="checkmark"></span>
+                </label>
+                <span
+                  className={`card-subtask-text ${subtask.completed ? "subtask-done-text" : ""}`}
+                  onClick={(event) => { event.stopPropagation(); onOpenTask(); }}
+                >
+                  {subtask.text}
+                </span>
+              </div>
             ))}
           </div>
         )}

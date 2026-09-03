@@ -4,14 +4,8 @@ import UserAvatar from "./UserAvatar";
 import { sendIco, pencilIco, crossIco, ellipsisIco, subtaskRemove, unionIco, addUserUnionIco } from "../icons"
 import DateTimePicker from "./DateTimePicker";
 import TaskDetailMenu from "./TaskDetailMenu";
-import { formatDueDate, formatTimestamp } from "../utils/task";
+import { formatDueDate, formatTimestamp, autoResizeTextarea } from "../utils/task";
 import CustomSelect from "./CustomSelect";
-
-function autoResizeTextarea(element) {
-    if (!element) return;
-    element.style.height = "auto";
-    element.style.height = `${element.scrollHeight}px`;
-}
 
 function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, onSave, onAddComment, onDelete, onEdit}) {
     
@@ -22,6 +16,9 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
     const [dueDate, setDueDate] = useState(task.dueDate ?? "");
     const [subtasks, setSubtasks] = useState(task.subtasks ?? []);
     const [subtaskDraft, setSubtaskDraft] = useState("");
+    const [editingSubtaskId, setEditingSubtaskId] = useState(null);
+    const [editingSubtaskDraft, setEditingSubtaskDraft] = useState("");
+    const editingSubtaskRef = useRef(null);
 
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [draftTitle, setDraftTitle] = useState(task.text);
@@ -32,6 +29,23 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
     const [datePickerPosition, setDatePickerPosition] = useState(null);
     const dueDateFieldRef = useRef(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    useEffect(() => {
+        if (editingSubtaskId !== null) autoResizeTextarea(editingSubtaskRef.current);
+    }, [editingSubtaskId]);
+
+    const handleStartEditSubtask = (subtask) => {
+        setEditingSubtaskDraft(subtask.text);
+        setEditingSubtaskId(subtask.id);
+    };
+
+    const handleFinishEditSubtask = () => {
+        const trimmed = editingSubtaskDraft.trim();
+        if (trimmed !== "") {
+            setSubtasks((prev) => prev.map((s) => (s.id === editingSubtaskId ? { ...s, text: trimmed } : s)));
+        }
+        setEditingSubtaskId(null);
+    };
 
     useEffect(() => {
         if (isEditingTitle) autoResizeTextarea(titleTextareaRef.current);
@@ -205,18 +219,13 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                     onBlur={() => setIsEditingDescription(false)}
                                     autoFocus
                                 />
-                                
                             ) : (
-                                <p className="task-detail-description-text">{description || "No description"}
-                                <button
-                                    type="button"
-                                    className="pencil-button"
-                                    onClick={() => setIsEditingDescription((open) => !open)}
+                                <p
+                                    className="task-detail-description-text task-detail-editable-text"
+                                    onClick={() => setIsEditingDescription(true)}
                                 >
-                                    {pencilIco}
-                                </button>
+                                    {description || "No description"}
                                 </p>
-                                
                             )}
                         </div>
                         <div className="subtask-container">
@@ -231,15 +240,36 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                     <div className="subtasks-list">
                                         {subtasks.map((subtask) => (
                                             <div key={subtask.id} className="subtask-row">
-                                                <label className="subtask-row-label">
+                                                <label className="subtask-checkbox-label">
                                                     <input
                                                         type="checkbox"
                                                         checked={subtask.completed}
                                                         onChange={() => handleToggleSubtask(subtask.id)}
                                                     />
                                                     <span className="checkmark"></span>
-                                                    <span className={`subtask-row-text ${subtask.completed ? "subtask-done-text" : ""}`}>{subtask.text}</span>
                                                 </label>
+                                                {editingSubtaskId === subtask.id ? (
+                                                    <textarea
+                                                        ref={editingSubtaskRef}
+                                                        className="subtask-row-textarea"
+                                                        value={editingSubtaskDraft}
+                                                        maxLength={255}
+                                                        onChange={(event) => { setEditingSubtaskDraft(event.target.value); autoResizeTextarea(event.target); }}
+                                                        onBlur={handleFinishEditSubtask}
+                                                        onKeyDown={(event) => {
+                                                            if (event.key === "Enter") { event.preventDefault(); event.target.blur(); }
+                                                        }}
+                                                        autoFocus
+                                                        rows={1}
+                                                    />
+                                                ) : (
+                                                    <span
+                                                        className={`subtask-row-text task-detail-editable-text ${subtask.completed ? "subtask-done-text" : ""}`}
+                                                        onClick={() => handleStartEditSubtask(subtask)}
+                                                    >
+                                                        {subtask.text}
+                                                    </span>
+                                                )}
                                                 <button type="button" className="subtask-remove" onClick={() => handleRemoveSubtask(subtask.id)}>{subtaskRemove}</button>
                                             </div>
                                         ))}
@@ -367,17 +397,12 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                                 );
                             })}
                             {isAddingUser ? (
-                                <select
-                                    autoFocus
+                                <CustomSelect
                                     value=""
-                                    onChange={(event) => { if (event.target.value) handleAddAssignee(event.target.value); }}
-                                    onBlur={() => setIsAddingUser(false)}
-                                >
-                                    <option value="" disabled>Select user...</option>
-                                    {USERS.filter((user) => !assignedIds.includes(user.id)).map((user) => (
-                                        <option key={user.id} value={user.id}>{user.name}</option>
-                                    ))}
-                                </select>
+                                    placeholder="Select user..."
+                                    onChange={(userId) => { handleAddAssignee(userId); setIsAddingUser(false); }}
+                                    options={USERS.filter((user) => !assignedIds.includes(user.id)).map((user) => ({ value: user.id, label: user.name }))}
+                                />
                             ) : (
                                 <button type="button" className="add-user-button" onClick={() => setIsAddingUser(true)}>
                                     {addUserUnionIco} Add User

@@ -1,6 +1,8 @@
-import { historyIco, bellIco, layoutIco, layoutRightIco } from "../icons";
+import { useRef } from "react";
+import { historyIco, bellIco, layoutIco, layoutRightIco, searchIcon } from "../icons";
 
-function TopBar({ projectName, onToggleRightPanel, onToggleSidebar }) {
+function TopBar({ projectName, activeUserId, onSelectUser, onToggleRightPanel, onToggleSidebar, searchQuery, onSearchChange }) {
+    const searchInputRef = useRef(null);
   return (
     <div className="top-bar">
       <nav className="top-bar-breadcrumb">
@@ -12,8 +14,21 @@ function TopBar({ projectName, onToggleRightPanel, onToggleSidebar }) {
         <span className="crumb-current">{projectName}</span>
       </nav>
       <div className="top-bar-search">
-        <input type="text" placeholder="Search" readOnly />
-        <span className="top-bar-search-shortcut">/</span>
+        <span className="top-bar-search-icon">{searchIcon}</span>
+        <input
+          ref={searchInputRef}
+          type="text"
+          placeholder="Search"
+          value={searchQuery}
+          onChange={(event) => onSearchChange(event.target.value)}
+        />
+        <button
+          type="button"
+          className="top-bar-search-shortcut"
+          onClick={() => searchInputRef.current?.focus()}
+        >
+          /
+        </button>
       </div>
       <div className="top-bar-actions">
         <button type="button" className="top-bar-icon-button">{historyIco}</button>

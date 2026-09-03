@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { chevronIco } from "../icons";
+import { chevronIco, checkmarkIco } from "../icons";
 
 function CustomSelect({ value, onChange, options, placeholder = "", disabled = false }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -38,7 +38,7 @@ function CustomSelect({ value, onChange, options, placeholder = "", disabled = f
                 <span className={`custom-select-value ${selectedOption ? "" : "custom-select-placeholder"}`}>
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
-                <span className={`chevron ${isOpen ? "" : "closed"}`}>{chevronIco}</span>
+                <span className={`chevron`}>{chevronIco}</span>
             </button>
             {isOpen && (
                 <div className="custom-select-dropdown">
@@ -50,7 +50,7 @@ function CustomSelect({ value, onChange, options, placeholder = "", disabled = f
                             onClick={() => handleSelect(option.value)}
                         >
                             <span className="custom-select-option-label">{option.label}</span>
-                            {option.value === value && <span className="custom-select-check">✓</span>}
+                            {option.value === value && <span className="custom-select-check">{checkmarkIco}</span>}
                         </button>
                     ))}
                 </div>

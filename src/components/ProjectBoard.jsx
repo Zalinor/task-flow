@@ -22,7 +22,7 @@ const PROJECT_ATTACHMENTS = [
 ];
 
 
-function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddActivity, highlightedTaskId}) {
+function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddActivity, highlightedTaskId, searchQuery}) {
 
     const [columns, setColumns] = useState(() => {
         const saved = localStorage.getItem(`project-${projectId}-columns`);
@@ -105,19 +105,23 @@ function ProjectBoard({projectId, projectName, currentUser, activeUserId, onAddA
   };
 
   const taskMatchesFilters = (task) => {
-    if (statusFilter !== "All" && task.status !== statusFilter) {
-      return false;
-    }
-    if (priorityFilter !== "All" && getDisplayPriority(task) !== priorityFilter) {
-      return false;
-    }
-    if (assigneeFilter.length > 0) {
-      const assignees = task.assignedTo ?? [];
-      const matchesUnassigned = assigneeFilter.includes("unassigned") && assignees.length === 0;
-      const matchesUser = assignees.some((userId) => assigneeFilter.includes(userId));
-      if (!matchesUnassigned && !matchesUser) return false;
-    }
-    return true;
+      if (statusFilter !== "All" && task.status !== statusFilter) {
+        return false;
+      }
+      if (priorityFilter !== "All" && getDisplayPriority(task) !== priorityFilter) {
+        return false;
+      }
+      if (assigneeFilter.length > 0) {
+        const assignees = task.assignedTo ?? [];
+        const matchesUnassigned = assigneeFilter.includes("unassigned") && assignees.length === 0;
+        const matchesUser = assignees.some((userId) => assigneeFilter.includes(userId));
+        if (!matchesUnassigned && !matchesUser) return false;
+      }
+      if (searchQuery && searchQuery.trim() !== "") {
+        const query = searchQuery.trim().toLowerCase();
+        if (!task.text.toLowerCase().includes(query)) return false;
+      }
+      return true;
   };
 
   const filteredTasks = tasks.filter(taskMatchesFilters);

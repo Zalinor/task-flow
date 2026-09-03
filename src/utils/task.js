@@ -23,3 +23,9 @@ export function formatTimestamp(isoString) {
     const time = date.toLocaleTimeString(undefined, {hour: "numeric", minute: "2-digit"});
     return `${weekday}, ${month}. ${date.getDate()} · ${time}`;
 }
+
+export function autoResizeTextarea(element) {
+    if (!element) return;
+    element.style.height = "auto";
+    element.style.height = `${element.scrollHeight}px`
+}

@@ -35,6 +35,7 @@ function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename,
                     type="text"
                     className="sidebar-project-input"
                     value={draftName}
+                    maxLength={80}
                     onChange={(event) => setDraftName(event.target.value)}
                     onBlur={handleFinishEditing}
                     onKeyDown={(event) => {
