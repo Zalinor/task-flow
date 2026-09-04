@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import CustomSelect from "./CustomSelect";
 
 const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -37,7 +38,9 @@ function buildValue(date, hour, minute, ampm) {
     return `${y}-${m}-${d}T${pad(h24)}:${pad(minute)}`;
 }
 
-function DateTimePicker({value, onClose, onApply, position}) {
+const VIEWPORT_MARGIN = 8;
+
+function DateTimePicker({value, onClose, onApply, anchorRef}) {
     const initial = parseValue(value);
     const [selectedDate, setSelectedDate] = useState(initial.date);
     const [hour, setHour] = useState(initial.hour);
@@ -46,6 +49,43 @@ function DateTimePicker({value, onClose, onApply, position}) {
     const [viewYear, setViewYear] = useState(initial.viewYear);
     const [viewMonth, setViewMonth] = useState(initial.viewMonth);
     const popoverRef = useRef(null);
+
+    const [position, setPosition] = useState(null);
+
+    const recalcPosition = () => {
+        if (!anchorRef?.current || !popoverRef.current) return;
+        const anchorRect = anchorRef.current.getBoundingClientRect();
+        const popoverHeight = popoverRef.current.offsetHeight;
+        const popoverWidth = popoverRef.current.offsetWidth;
+
+        const spaceBelow = window.innerHeight - anchorRect.bottom;
+        const spaceAbove = anchorRect.top;
+
+        const openUpward = spaceBelow < popoverHeight + VIEWPORT_MARGIN && spaceAbove > spaceBelow;
+
+        let left = anchorRect.left + anchorRect.width / 2;
+        const halfWidth = popoverWidth / 2;
+        left = Math.min(Math.max(left, halfWidth + VIEWPORT_MARGIN), window.innerWidth - halfWidth - VIEWPORT_MARGIN);
+
+        setPosition({
+            top: openUpward ? anchorRect.top - VIEWPORT_MARGIN : anchorRect.bottom + VIEWPORT_MARGIN,
+            left,
+            openUpward,
+        });
+    };
+
+    useLayoutEffect(() => {
+        recalcPosition();
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener("resize", recalcPosition);
+        window.addEventListener("scroll", recalcPosition, true);
+        return () => {
+            window.removeEventListener("resize", recalcPosition);
+            window.removeEventListener("scroll", recalcPosition, true);
+        };
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -107,16 +147,20 @@ function DateTimePicker({value, onClose, onApply, position}) {
         onApply(buildValue(selectedDate, hour, minute, ampm));
     };
 
+    useLayoutEffect(() => {
+        recalcPosition();
+    }, [selectedDate]);
+
+    const style = position
+        ? {
+              top: position.top,
+              left: position.left,
+              transform: position.openUpward ? "translate(-50%, -100%)" : "translate(-50%, 0)",
+          }
+        : { top: 0, left: 0, visibility: "hidden" }; 
+
     return (
-        <div
-            className="datetime-picker"
-            ref={popoverRef}
-            style={{
-                top: position.top,
-                left: position.left,
-                transform: position.openUpward ? "translate(-50%, -100%)" : "translate(-50%, 0)",
-            }}
-        >
+        <div className="datetime-picker" ref={popoverRef} style={style}>
             <div className="datetime-picker-header">
                 <button type="button" onClick={handlePrevMonth}>‹</button>
                 <span>{MONTH_NAMES[viewMonth]} {viewYear}</span>
@@ -138,33 +182,23 @@ function DateTimePicker({value, onClose, onApply, position}) {
                 ))}
             </div>
             <div className="datetime-picker-time">
-                <input
-                    type="number"
-                    min="1"
-                    max="12"
-                    placeholder="--"
-                    value={hour ?? ""}
-                    onChange={(event) => {
-                        const val = event.target.value;
-                        if (val === "") { setHour(null); return; }
-                        const num = Math.max(1, Math.min(12, Number(val)));
-                        setHour(num);
-                    }}
-                />
+                <div className="datetime-picker-time-select">
+                    <CustomSelect
+                        value={hour === null ? "" : String(hour)}
+                        placeholder="--"
+                        onChange={(val) => setHour(Number(val))}
+                        options={Array.from({ length: 12 }, (_, i) => i + 1).map((h) => ({ value: String(h), label: String(h) }))}
+                    />
+                </div>
                 <span>:</span>
-                <input
-                    type="number"
-                    min="0"
-                    max="59"
-                    placeholder="--"
-                    value={minute === null ? "" : pad(minute)}
-                    onChange={(event) => {
-                        const val = event.target.value;
-                        if (val === "") { setMinute(null); return; }
-                        const num = Math.max(0, Math.min(59, Number(val)));
-                        setMinute(num);
-                    }}
-                />
+                <div className="datetime-picker-time-select">
+                    <CustomSelect
+                        value={minute === null ? "" : pad(minute)}
+                        placeholder="--"
+                        onChange={(val) => setMinute(Number(val))}
+                        options={Array.from({ length: 60 }, (_, i) => i).map((m) => ({ value: pad(m), label: pad(m) }))}
+                    />
+                </div>
                 <div className="ampm-toggle">
                     <button type="button" className={ampm === "AM" ? "active" : ""} onClick={() => setAmpm("AM")}>AM</button>
                     <button type="button" className={ampm === "PM" ? "active" : ""} onClick={() => setAmpm("PM")}>PM</button>

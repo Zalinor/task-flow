@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { USERS } from "../users";
 import UserAvatar from "./UserAvatar";
 import AvatarStack from "./AvatarStack";
-import { chevronIco, userFilter } from "../icons";
+import { chevronIco, userFilter, checkmarkIco } from "../icons";
 
 function AssignedUserSelect({ assignedIds, onToggle }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +40,7 @@ function AssignedUserSelect({ assignedIds, onToggle }) {
     return (
         <div className="assignee-filter" ref={wrapperRef}>
             <button type="button" ref={triggerRef} className="assignee-user-button" onClick={handleToggleOpen}>
-                <AvatarStack userIds={assignedIds} size={30} max={3} emptyIcon={userFilter} />
+                <AvatarStack userIds={assignedIds} size={30} max={3} emptyIcon={<img src={userFilter} alt="User filter" className="avatar-icon" />} />
                 {assignedIds.length === 0 && <span className="assignee-placeholder">User</span>}
                 <span className={`chevron ${isOpen ? "" : "closed"}`}>{chevronIco}</span>
             </button>
@@ -63,7 +63,7 @@ function AssignedUserSelect({ assignedIds, onToggle }) {
                         >
                             <UserAvatar user={user} size={22} />
                             {user.name}
-                            {assignedIds.includes(user.id) && <span className="assignee-filter-check">✓</span>}
+                            {assignedIds.includes(user.id) && <span className="assignee-filter-check">{checkmarkIco}</span>}
                         </button>
                     ))}
                 </div>

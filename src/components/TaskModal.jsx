@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { calendarIco, crossIco, ellipsisIco } from "../icons";
+import { calendarIco, crossIco } from "../icons";
 import DateTimePicker from "./DateTimePicker";
 import AssignedUserSelect from "./AssigneeUserSelect";
 import CustomSelect from "./CustomSelect";
@@ -15,7 +15,6 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
     const [dueDate, setDueDate] = useState("");
     const [assignedIds, setAssignedIds] = useState([]);
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-    const [datePickerPosition, setDatePickerPosition] = useState(null);
     const dueDateButtonRef = useRef(null);
     const availableColumns = columns.filter((column) => column.id !== finalColumnId);
     
@@ -46,22 +45,12 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
     }
 
     const handleOpenDatePicker = () => {
-        if (dueDateButtonRef.current) {
-            const rect = dueDateButtonRef.current.getBoundingClientRect();
-            const estimatedHeight = 430;
-            const openUpward = rect.top - estimatedHeight - 8 > 0;
-            setDatePickerPosition({
-                top: openUpward ? rect.top - 8 : rect.bottom + 8,
-                left: rect.left + rect.width / 2,
-                openUpward,
-            });
-        }
         setIsDatePickerOpen(true);
     };
 
     const handleApplyDate = (value) => {
         setDueDate(value);
-        setDatePickerPosition(false);
+        setIsDatePickerOpen(false);
     }
 
     const handleStageChange = (newStageId) => {
@@ -101,7 +90,6 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                 <div className="modal-header">
                     <h3>Add New Task</h3>
                     <div className="modal-header-buttons">
-                        <button className="modal-header-button">{ellipsisIco}</button>  
                         <button className="modal-header-button" onClick={onClose}>{crossIco}</button>
                     </div>
                     
@@ -111,8 +99,12 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                 <form onSubmit={handleSubmit} className="task-modal-form">
                     <div className="modal-row">
                         <label>
-                        Title*
+                            <div className="modal-title">
+                               Title<span>*</span> 
+                            </div>
+                        
                         <input type="text"
+                            className="task-modal-title-input"
                             value={title}
                             onChange={(event) => setTitle(event.target.value)}
                             placeholder="Enter task title"
@@ -137,6 +129,7 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                         Description
                         <textarea
                             value={description}
+                            className="task-modal-textarea"
                             onChange={(event) => setDescription(event.target.value)}
                             placeholder="Enter task description (optional)"
                         /> 
@@ -192,10 +185,10 @@ function TaskModal({columns, finalColumnId, onClose, onSubmit, initialStageId = 
                         <button type="button" onClick={onClose}>Cancel</button>
                         <button type="submit" disabled={title.trim() === ""}>Add Task</button>
                     </div>
-                    {isDatePickerOpen && datePickerPosition && (
+                    {isDatePickerOpen && (
                         <DateTimePicker
                             value={dueDate}
-                            position={datePickerPosition}
+                            anchorRef={dueDateButtonRef}
                             onClose={() => setIsDatePickerOpen(false)}
                             onApply={handleApplyDate}
                         />

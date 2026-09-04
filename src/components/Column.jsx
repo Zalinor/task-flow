@@ -238,6 +238,7 @@ function Column({title, columnId, color, tasks, onDelete, onDrop, onEdit, onOpen
         {isEditingTitle ? (
           <input 
             type="text"
+            className="column-title-input"
             value={draftTitle}
             maxLength={30}
             onChange={(event) => setDraftTitle(event.target.value)}

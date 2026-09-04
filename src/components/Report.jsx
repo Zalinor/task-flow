@@ -33,13 +33,6 @@ function Report({tasks, description, attachments}) {
                     </div>
                 </div>
                 <div className="report-card">
-                    <span className="report-card-icon report-icon-pending">{pendingIco}</span>
-                    <div>
-                        <p className="report-card-label">Pending</p>
-                        <p className="report-card-value report-value-pending">{stats.pending}</p>
-                    </div>
-                </div>
-                <div className="report-card">
                     <span className="report-card-icon report-icon-completed">{completedIco}</span>
                     <div>
                         <p className="report-card-label">Completed</p>

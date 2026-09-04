@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { chevronIco, checkmarkIco } from "../icons";
 
 function CustomSelect({ value, onChange, options, placeholder = "", disabled = false }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [dropUp, setDropUp] = useState(false);
     const wrapperRef = useRef(null);
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -14,6 +16,31 @@ function CustomSelect({ value, onChange, options, placeholder = "", disabled = f
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isOpen]);
+
+    const recalcPosition = () => {
+        if (!wrapperRef.current || !dropdownRef.current) return;
+        const triggerRect = wrapperRef.current.getBoundingClientRect();
+        const dropdownHeight = dropdownRef.current.offsetHeight;
+        const spaceBelow = window.innerHeight - triggerRect.bottom;
+        const spaceAbove = triggerRect.top;
+
+        setDropUp(spaceBelow < dropdownHeight && spaceAbove > spaceBelow);
+    };
+
+    useLayoutEffect(() => {
+        if (!isOpen) return;
+        recalcPosition();
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        window.addEventListener("resize", recalcPosition);
+        window.addEventListener("scroll", recalcPosition, true);
+        return () => {
+            window.removeEventListener("resize", recalcPosition);
+            window.removeEventListener("scroll", recalcPosition, true);
+        };
     }, [isOpen]);
 
     const selectedOption = options.find((option) => option.value === value);
@@ -38,10 +65,13 @@ function CustomSelect({ value, onChange, options, placeholder = "", disabled = f
                 <span className={`custom-select-value ${selectedOption ? "" : "custom-select-placeholder"}`}>
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
-                <span className={`chevron`}>{chevronIco}</span>
+                <span className="chevron">{chevronIco}</span>
             </button>
             {isOpen && (
-                <div className="custom-select-dropdown">
+                <div
+                    ref={dropdownRef}
+                    className={`custom-select-dropdown ${dropUp ? "custom-select-dropdown--up" : ""}`}
+                >
                     {options.map((option) => (
                         <button
                             type="button"

@@ -163,7 +163,7 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
 
     <div className="card-low-layer">
       <span>{timerIco}{formattedDate ? `${formattedDate}` : "No due date"}</span>
-      <AvatarStack userIds={assigneeIds} size={30} max={3} emptyIcon={userIco} />
+      <AvatarStack userIds={assigneeIds} size={30} max={3} emptyIcon={<img src={userFilter} alt="User filter" className="avatar-icon" />} />
     </div>
     </div>
   );

@@ -17,8 +17,8 @@ import '../App.css';
 
 const PROJECT_DESCRIPTION = "info about project.";
 const PROJECT_ATTACHMENTS = [
-  {name: "Client_Proporsal.xls", meta: "Today - 4 MB"},
-  {name: "PRD.docx", meta: "Yesterday - Google Docs"},
+  {name: "Client_Proporsal.xls", meta: "Today · 4 MB"},
+  {name: "PRD.docx", meta: "Yesterday · Google Docs"},
 ];
 
 

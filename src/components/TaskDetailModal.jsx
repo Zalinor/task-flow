@@ -27,7 +27,6 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
     const titleTextareaRef = useRef(null);
     const descriptionTextareaRef = useRef(null);
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-    const [datePickerPosition, setDatePickerPosition] = useState(null);
     const dueDateFieldRef = useRef(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -57,16 +56,6 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
     }, [isEditingDescription]);
 
     const handleOpenDatePicker = () => {
-        if (dueDateFieldRef.current) {
-            const rect = dueDateFieldRef.current.getBoundingClientRect();
-            const estimatedHeight = 430;
-            const openUpward = rect.top - estimatedHeight - 8 > 0;
-            setDatePickerPosition({
-                top: openUpward ? rect.top - 8 : rect.bottom + 8,
-                left: rect.left + rect.width / 2,
-                openUpward,
-            });
-        }
         setIsDatePickerOpen(true);
     };
 
@@ -422,10 +411,10 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                     <button type="button" onClick={onClose}>Cancel</button>
                     <button type="submit" onClick={handleSave}>Save Changes</button>
                 </div>
-                {isDatePickerOpen && datePickerPosition && (
+                {isDatePickerOpen && (
                     <DateTimePicker
                         value={dueDate}
-                        position={datePickerPosition}
+                        anchorRef={dueDateFieldRef}
                         onClose={() => setIsDatePickerOpen(false)}
                         onApply={handleApplyDate}
                     />

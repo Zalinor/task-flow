@@ -47,12 +47,17 @@ function ProjectListItem({project, isActive, shouldAutoEdit, onSelect, onRename,
             ) : (
                 <span className="sidebar-project-name">
                     <span className="sidebar-project-name-text">{project.name || "Untitled project"}</span>
-                    <button  type="button" className="sidebar-project-rename" onClick={handleStartEditing}>
+                    <div className="sidebar-rename-buttons">
+                        <button  type="button" className="sidebar-project-rename" onClick={handleStartEditing}>
                         {pencilIco}
                     </button>
+                    <button type="button" className="sidebar-project-delete" onClick={handleDeleteClick}>{crossIco}</button>
+                    </div>
+                    
+                    
                 </span>
             )}
-            <button type="button" className="sidebar-project-delete" onClick={handleDeleteClick}>{crossIco}</button>
+            
         </div>
     );
 }

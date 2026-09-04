@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { USERS } from "../users";
 import UserAvatar from "./UserAvatar";
 import AvatarStack from "./AvatarStack";
+import { checkmarkIco } from "../icons";
 
 function AssigneeFilterButton({ selectedValues, onToggle, onClear}) {
     const [isOpen, setIsOpen] = useState(false);
@@ -43,7 +44,7 @@ function AssigneeFilterButton({ selectedValues, onToggle, onClear}) {
                         onClick={() => onToggle("unassigned")}
                     >
                         Unassigned
-                        {selectedValues.includes("unassigned") && <span className="assignee-filter-check">✓</span>}
+                        {selectedValues.includes("unassigned") && <span className="assignee-filter-check">{checkmarkIco}</span>}
                     </button>
                     {USERS.map((user) => (
                         <button
@@ -54,7 +55,7 @@ function AssigneeFilterButton({ selectedValues, onToggle, onClear}) {
                         >
                             <UserAvatar user={user} size={22} />
                             {user.name}
-                            {selectedValues.includes(user.id) && <span className="assignee-filter-check">✓</span>}
+                            {selectedValues.includes(user.id) && <span className="assignee-filter-check">{checkmarkIco}</span>}
                         </button>
                     ))}
                 </div>
