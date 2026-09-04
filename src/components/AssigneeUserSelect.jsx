@@ -42,7 +42,7 @@ function AssignedUserSelect({ assignedIds, onToggle }) {
             <button type="button" ref={triggerRef} className="assignee-user-button" onClick={handleToggleOpen}>
                 <AvatarStack userIds={assignedIds} size={30} max={3} emptyIcon={<img src={userFilter} alt="User filter" className="avatar-icon" />} />
                 {assignedIds.length === 0 && <span className="assignee-placeholder">User</span>}
-                <span className={`chevron ${isOpen ? "" : "closed"}`}>{chevronIco}</span>
+                <span className="chevron">{chevronIco}</span>
             </button>
             {isOpen && dropdownPosition && (
                 <div className="assignee-filter-dropdown" 
