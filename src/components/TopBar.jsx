@@ -1,8 +1,22 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { historyIco, bellIco, layoutIco, layoutRightIco, searchIcon } from "../icons";
 
 function TopBar({ projectName, activeUserId, onSelectUser, onToggleRightPanel, onToggleSidebar, searchQuery, onSearchChange }) {
     const searchInputRef = useRef(null);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key !== "/") return;
+            const target = event.target;
+            const isTyping = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
+            if (isTyping) return;
+            event.preventDefault();
+            searchInputRef.current?.focus();
+        };
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, []);
+    
   return (
     <div className="top-bar">
       <nav className="top-bar-breadcrumb">

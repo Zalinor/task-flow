@@ -76,13 +76,14 @@ function TaskCard({text, id, priority, status, assignedTo, dueDate, subtasks, is
     <div className="card-high-layer">
       <span className={`priority-badge ${priorityClass}`}>{getDisplayPriority({priority, status})}</span>
       {isSelectMode && (
-        <input 
-          type="checkbox" 
-          className="card-select-checkbox"
-          checked={isSelected}
-          onChange={() => onToggleSelect(id)}
-          onClick={(event) => event.stopPropagation()}  
-        />
+        <label className="select-checkbox-label" onClick={(event) => event.stopPropagation()}>
+          <input 
+            type="checkbox" 
+            checked={isSelected}
+            onChange={() => onToggleSelect(id)}
+          />
+          <span className="select-checkmark"></span>
+        </label>
       )}
       
       {!isSelectMode && (

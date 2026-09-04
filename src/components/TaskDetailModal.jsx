@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { USERS, normalizeAssignees, getUserById } from "../users";
 import UserAvatar from "./UserAvatar";
-import { sendIco, pencilIco, crossIco, ellipsisIco, subtaskRemove, unionIco, addUserUnionIco } from "../icons"
+import { sendIco, pencilIco, crossIco, ellipsisIco, subtaskRemove, unionIco, addUserUnionIco, chevronIco } from "../icons"
 import DateTimePicker from "./DateTimePicker";
 import TaskDetailMenu from "./TaskDetailMenu";
 import { formatDueDate, formatTimestamp, autoResizeTextarea } from "../utils/task";
@@ -19,6 +19,7 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
     const [editingSubtaskId, setEditingSubtaskId] = useState(null);
     const [editingSubtaskDraft, setEditingSubtaskDraft] = useState("");
     const editingSubtaskRef = useRef(null);
+    const [isSubtasksOpen, setIsSubtasksOpen] = useState(true);
 
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [draftTitle, setDraftTitle] = useState(task.text);
@@ -230,13 +231,18 @@ function TaskDetailModal({task, columns, finalColumnId, currentUser, onClose, on
                         </div>
                         <div className="subtask-container">
                             <div className="task-detail-subtasks">
-                                <label className="">
+                                <button
+                                    type="button"
+                                    className="task-detail-subtasks-toggle"
+                                    onClick={() => setIsSubtasksOpen((open) => !open)}
+                                >
                                     Subtasks
                                     {subtasks.length > 0 && (
                                         <span className="subtasks-progress">{subtasks.filter((s) => s.completed).length} of {subtasks.length}</span>
                                     )}
-                                </label>
-                                {subtasks.length > 0 && (
+                                    <span className={`chevron ${isSubtasksOpen ? "" : "closed"}`}>{chevronIco}</span>
+                                </button>
+                                {isSubtasksOpen && subtasks.length > 0 && (
                                     <div className="subtasks-list">
                                         {subtasks.map((subtask) => (
                                             <div key={subtask.id} className="subtask-row">

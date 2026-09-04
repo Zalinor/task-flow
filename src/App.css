@@ -941,6 +941,8 @@
     padding: 28px;
     width: 660px;
     min-height: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
   .modal-header {
@@ -1243,7 +1245,7 @@
 
   .task-detail-modal {
     width: 960px;
-    height: 746x;
+    max-height: 90vh;
     padding: 28px;
   }
 
@@ -2421,13 +2423,6 @@
     cursor: pointer;
   }
 
-  .card-select-checkbox {
-    width: 16px;
-    height: 16px;
-    margin-right: 4px;
-    cursor: pointer;
-  }
-
   .confirm-dialog {
     width: 480px;
     min-height: auto;
@@ -3057,6 +3052,21 @@
   gap: 16px;
 }
 
+.task-detail-subtasks-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--modal-text);
+  cursor: pointer;
+  font-family: var(--sans);
+  text-align: left;
+}
+
 .subtasks-progress {
   width: auto;
   height: 24px;
@@ -3292,6 +3302,60 @@
   transition: opacity 0.2s ease;
 }
 
+.select-checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.select-checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.select-checkmark {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid #d0d5dd;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.select-checkmark::after {
+  content: "";
+  width: 4px;
+  height: 4px;
+  background-color: #030213;
+  border-radius: 50%;
+  display: block;
+}
+
+.select-checkbox-label input:checked ~ .select-checkmark {
+  background-color: #030213;
+  border-color: #030213;
+}
+
+.select-checkbox-label input:checked ~ .select-checkmark::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+  border-radius: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
 
 .text {
   transition: color 0.2s ease, text-decoration 0.2s ease;
@@ -3379,16 +3443,27 @@
 }
 
 .card-title-edit-button {
+  width: 20px;
+  height: 20px;
   opacity: 0;
   transition: opacity 0.15s ease;
   background: none;
   border: none;
   cursor: pointer;
   color: #9E9E9E;
-  padding: 2px;
+  padding: 4px;
   display: inline-flex;
   vertical-align: middle;
-  margin-left: 4px;
+  margin-left: 2px;
+}
+
+.card-title-edit-button:hover {
+  background: #f7f7f8;
+  border-radius: 4px;
+}
+
+.card-title-edit-button svg path {
+  stroke: #82858d;
 }
 
 .card:hover .card-title-edit-button {
@@ -3484,7 +3559,6 @@
   }
   .task-detail-modal {
     width: 90vw;
-    height: auto;
     max-height: 90vh;
   }
   .task-detail-body {
@@ -3492,12 +3566,19 @@
   }
   .task-detail-left {
     width: 100%;
-    height: auto;
+    max-height: none;
+    overflow-y: visible;
+    padding-right: 0;
+    border-right: none;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-task);
+    margin-bottom: 20px;
   }
 
   .task-detail-right {
     width: 100%;
     height: auto;
+    margin-left: 0;
   }
 }
 
@@ -3540,6 +3621,10 @@
   .report-bottom {
     grid-template-columns: 1fr;
   }
+
+  .due-date-trigger {
+    width: 100%;
+  } 
 }
 
 @media (max-width: 480px) {
@@ -3552,4 +3637,8 @@
   .modal-row {
     flex-direction: column;
   }
+
+  .due-date-trigger {
+    width: 100%;
+  } 
 }
